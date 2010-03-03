@@ -1,6 +1,8 @@
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
 set nocompatible
+"set autoread
+runtime macros/matchit.vim
 
 "allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -215,7 +217,7 @@ if has("gui_running")
         set term=gnome-256color
         colorscheme desert
     else
-        colorscheme vibrantink
+        colorscheme desertEx
         set guitablabel=%M%t
         set lines=40
         set columns=115
@@ -224,7 +226,7 @@ if has("gui_running")
         set guifont=Menlo:h15
     endif
     if has("gui_win32") || has("gui_win32s")
-        set guifont=Consolas:h12
+        set guifont=Consolas:h9
 				set enc=utf-8
     endif
 else
