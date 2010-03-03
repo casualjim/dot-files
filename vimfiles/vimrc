@@ -1,8 +1,9 @@
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
 set nocompatible
-"set autoread
+set autoread
 runtime macros/matchit.vim
+set bg=dark     
 
 "allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -170,8 +171,8 @@ function! s:Median(nums)
 endfunction
 
 "indent settings
-set shiftwidth=4
-set softtabstop=4
+set shiftwidth=2
+set softtabstop=2
 set expandtab
 set autoindent
 
@@ -219,8 +220,8 @@ if has("gui_running")
     else
         colorscheme desertEx
         set guitablabel=%M%t
-        set lines=40
-        set columns=115
+        set lines=60
+        set columns=200
     endif
     if has("gui_mac") || has("gui_macvim")
         set guifont=Menlo:h15
@@ -234,6 +235,11 @@ else
     let g:CSApprox_loaded = 1
 endif
 
+"don't clutter my directories with swap files, bitch!
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+
+let mapleader = ","             "remap leader to ',' which is much easier than '\'
 nmap <silent> <Leader>p :NERDTreeToggle<CR>
 
 "make <c-l> clear the highlight as well as redraw
@@ -309,3 +315,88 @@ function! s:HighlightLongLines(width)
         echomsg "Usage: HighlightLongLines [natural number]"
     endif
 endfunction
+
+" Quick timeouts on key combinations.
+set timeoutlen=400 
+au BufWritePre * :if &readonly | !tf edit %
+au BufNewFile,BufRead *.ps1  setf ps1
+au BufNewFile,BufRead *.psm1 setf ps1
+au BufNewFile,BufRead *.boo  setf boo
+au BufNewFile,BufRead *.config  setf xml
+au BufNewFile,BufRead *.xaml  setf xml
+au BufNewFile,BufRead *.ps1xml setf xml
+au BufNewFile,BufRead *.vbproj setf xml
+au BufNewFile,BufRead *.csproj setf xml
+au BufNewFile,BufRead *.wxs setf xml
+au BufNewFile,BufRead *.io  setf io
+au BufNewFile,BufRead *.notes setf notes
+au BufNewFile,BufRead *.il setlocal syntax=ilasm
+au FileType ruby,eruby call UseRubyIndent()
+au FileType ruby,eruby let ruby_fold=1
+au FileType ruby,eruby set omnifunc=rubycomplete#Complete
+au FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+au FileType ruby,eruby let g:rubycomplete_rails = 1
+au FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+highlight Pmenu ctermbg=238 gui=bold
+
+au FileType python setlocal foldmethod=syntax
+au FileType python set noexpandtab
+au FileType xml setlocal foldmethod=indent
+au BufReadPost *
+  \ if line("'\"") > 0 && line("'\"") <= line("$") |
+  \   exe "normal g`\"" |
+  \ endif
+
+function RubyEndToken ()
+    let current_line = getline('.')
+    let braces_at_end = '{\s*\(|\(,\|\s\|\w\)*|\s*\)\?\(\s*#.*\)\?$'
+    let stuff_without_do = '^\s*\<\(class\|if\|unless\|begin\|case\|for\|module\|while\|until\|def\)\>'
+    let with_do = '\<do\>\s*\(|\(,\|\s\|\w\)*|\s*\)\?\(\s*#.*\)\?$'
+
+    if getpos('.')[2] < len(current_line)
+        return "\<CR>"
+    elseif match(current_line, braces_at_end) >= 0
+        return "\<CR>}\<C-O>O"
+    elseif match(current_line, stuff_without_do) >= 0
+        return "\<CR>end\<C-O>O"
+    elseif match(current_line, with_do) >= 0
+        return "\<CR>end\<C-O>O"
+    else
+        return "\<CR>"
+    endif
+endfunction
+
+function UseRubyIndent ()
+  setlocal tabstop=4
+  setlocal softtabstop=2
+  setlocal shiftwidth=2
+  setlocal expandtab
+
+  imap <buffer> <CR> <C-R>=RubyEndToken()<CR>
+endfunction
+
+
+function! ToggleScratch()
+  if expand('%') == g:ScratchBufferName
+    quit
+  else
+    Sscratch
+  endif
+endfunction
+
+function! Browser ()
+   let line = getline (".")
+   let line = matchstr (line, "http[^   ]*")
+   exec "!chrome ".line
+endfunction
+
+"}}}
+
+" backspace in Visual mode deletes selection
+vnoremap <BS> d
+
+" Auto surround using mapped surroundings in visual mode
+vmap ) s)
+vmap ] s]
+vmap ' s'
+vmap } s}
