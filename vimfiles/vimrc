@@ -19,6 +19,7 @@ set hlsearch    "hilight searches by default
 
 set nowrap      "dont wrap lines
 set linebreak   "wrap lines at convenient points
+set nu!
 
 "statusline setup
 set statusline=%f       "tail of the filename
@@ -224,7 +225,7 @@ if has("gui_running")
         set columns=200
     endif
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Menlo:h15
+        set guifont=Consolas:h12
     endif
     if has("gui_win32") || has("gui_win32s")
         set guifont=Consolas:h9
