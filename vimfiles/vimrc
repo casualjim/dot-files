@@ -171,6 +171,9 @@ function! s:Median(nums)
     endif
 endfunction
 
+let g:rsenseHome = "$RSENSE_HOME"
+let g:rsenseUseOmniFunc = 1
+
 "indent settings
 set shiftwidth=2
 set softtabstop=2
