@@ -35,10 +35,10 @@
 # And so forth.
 class FuzzyFileFinder
   module Version
-    MAJOR = 1
-    MINOR = 0
-    TINY  = 4
-    STRING = [MAJOR, MINOR, TINY].join(".")
+    MAJOR = 1 unless defined? MAJOR
+    MINOR = 0 unless defined? MINOR
+    TINY  = 4 unless defined? TINY
+    STRING = [MAJOR, MINOR, TINY].join(".") unless defined? STRING
   end
 
   # This is the exception that is raised if you try to scan a
@@ -50,7 +50,13 @@ class FuzzyFileFinder
   # Used internally to represent a run of characters within a
   # match. This is used to build the highlighted version of
   # a file name.
-  class CharacterRun < Struct.new(:string, :inside) #:nodoc:
+  class CharacterRun  #:nodoc:
+    attr_accessor :string, :inside
+
+    def initialize(string, inside)
+      @string, @inside = string, inside
+    end
+    
     def to_s
       if inside
         "(#{string})"

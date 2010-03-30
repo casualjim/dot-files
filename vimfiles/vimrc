@@ -19,6 +19,7 @@ set hlsearch    "hilight searches by default
 
 set nowrap      "dont wrap lines
 set linebreak   "wrap lines at convenient points
+set nu!
 
 "statusline setup
 set statusline=%f       "tail of the filename
@@ -170,6 +171,9 @@ function! s:Median(nums)
     endif
 endfunction
 
+let g:rsenseHome = "$RSENSE_HOME"
+let g:rsenseUseOmniFunc = 1
+
 "indent settings
 set shiftwidth=2
 set softtabstop=2
@@ -225,7 +229,7 @@ if has("gui_running")
     set gfn=Consolas\ Regular\ 10
 
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Menlo:h15
+        set guifont=Consolas:h12
     endif
     if has("gui_win32") || has("gui_win32s")
         set guifont=Consolas:h9
