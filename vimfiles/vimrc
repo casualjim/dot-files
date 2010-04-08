@@ -19,7 +19,6 @@ set hlsearch    "hilight searches by default
 
 set nowrap      "dont wrap lines
 set linebreak   "wrap lines at convenient points
-set nu!
 
 "statusline setup
 set statusline=%f       "tail of the filename
@@ -405,4 +404,6 @@ vmap ) s)
 vmap ] s]
 vmap ' s'
 vmap } s}
+
+set nu!
 
