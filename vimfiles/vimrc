@@ -405,5 +405,3 @@ vmap ] s]
 vmap ' s'
 vmap } s}
 
-set nu!
-
