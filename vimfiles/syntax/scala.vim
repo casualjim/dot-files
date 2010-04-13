@@ -2,8 +2,8 @@
 " Language   : Scala (http://scala-lang.org/)
 " Maintainers: Stefan Matthias Aust, Julien Wetterwald
 " Last Change: 2007 June 13
-" Revision   : $Id$
-"        $URL$
+" Revision   : $Id: scala.vim 15234 2008-05-29 21:54:59Z stepancheg $
+"        $URL: https://lampsvn.epfl.ch/svn-repos/scala/scala-tool-support/trunk/src/vim/syntax/scala.vim $
 
 if version < 600
   syntax clear
