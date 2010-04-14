@@ -1,3 +1,4 @@
 [submodule "vimfiles/snippets"]
 	path = vimfiles/snippets
-	url = git://github.com/scrooloose/snipmate-snippets.git
+	url = git://github.com/casualjim/snipmate-snippets.git
+
