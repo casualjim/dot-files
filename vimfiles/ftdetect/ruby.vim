@@ -18,3 +18,6 @@ au BufNewFile,BufRead *.ru				set filetype=ruby.rackup
 
 " eRuby
 au BufNewFile,BufRead *.erb,*.rhtml			set filetype=eruby
+
+" Watchr
+au BufNewFile,BufRead .watchr  set filetype=ruby
