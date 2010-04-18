@@ -11,10 +11,11 @@ function! MakeRubyFile()
     
     let b:template_used = 1
     call append("0", "# coding: utf-8")
+    call append(".", "# vim: set si ts=2 sw=2 sts=2 et:")
     call append(".", "")
     
 endfunction
 
 au BufNewFile *.rb call MakeRubyFile()
 
-" vim: set ts=2 sw=2 et:
+" vim: set si ts=2 sw=2 sts=2 et:

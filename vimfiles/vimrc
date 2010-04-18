@@ -174,10 +174,12 @@ let g:rsenseHome = "$RSENSE_HOME"
 let g:rsenseUseOmniFunc = 1
 
 "indent settings
+set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
 set autoindent
+set smartindent
 
 "folding settings
 set foldmethod=indent   "fold based on indent
@@ -215,8 +217,8 @@ set ttymouse=xterm2
 set hidden
 
 if has("gui_running")
-		"tell the term has 256 colors
-		set t_Co=256
+    "tell the term has 256 colors
+    set t_Co=256
 
     if has("gui_gnome")
         set term=gnome-256color
@@ -228,14 +230,14 @@ if has("gui_running")
     set gfn=Consolas\ Regular\ 10
 
     if has("gui_mac") || has("gui_macvim")
-        set guifont=Consolas:h12
+      set guifont=Consolas:h12
     endif
     if has("gui_win32") || has("gui_win32s")
-        set guifont=Consolas:h9
-				set enc=utf-8
+      set guifont=Consolas:h9
+      set enc=utf-8
     endif
 else
-		"dont load csapprox if we no gui support - silences an annoying warning
+    "dont load csapprox if we no gui support - silences an annoying warning
     let g:CSApprox_loaded = 1
 endif
 
