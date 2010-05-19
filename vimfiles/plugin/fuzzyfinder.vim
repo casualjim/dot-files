@@ -915,8 +915,8 @@ function! g:FuzzyFinderMode.Base.make_complete_func(name)
   return s:GetSidPrefix() . a:name
 endfunction
 
-" fuzzy  : 'str' -> {'base':'str', 'wi':'*s*t*r*', 're':'\V\.\*s\.\*t\.\*r\.\*'}
-" partial: 'str' -> {'base':'str', 'wi':'*str*', 're':'\V\.\*str\.\*'}
+" fuzzy  : 'str' -> {'base':'str', 'wi':'*s*t*r*', 're':'\V\.\*s\.\*t\.\*r\.\*(<!class|<!jar)'}
+" partial: 'str' -> {'base':'str', 'wi':'*str*', 're':'\V\.\*str\.\*(<!class|<!jar)'}
 function! g:FuzzyFinderMode.Base.make_pattern(base)
   if self.partial_matching
     let wi = (a:base !~ '^[*?]'  ? '*' : '') . a:base .

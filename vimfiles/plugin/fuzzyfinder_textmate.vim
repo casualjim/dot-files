@@ -61,7 +61,8 @@ RUBY
   " Configuration option: g:fuzzy_ignore
   " A semi-colon delimited list of file glob patterns to ignore
   if !exists('g:fuzzy_ignore')
-    let g:fuzzy_ignore = ""
+    echo ""
+    let g:fuzzy_ignore = "*.class;*.jar"
   endif
 
   " Configuration option: g:fuzzy_matching_limit

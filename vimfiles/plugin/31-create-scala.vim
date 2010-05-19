@@ -24,6 +24,7 @@ function! MakeScalaFile()
     let p = substitute(p, ".*\.src\.", "!", "")
     let p = substitute(p, "^!main\.scala\.", "!", "") "
     let p = substitute(p, "^!.*\.ru\.", "!ru.", "")
+    let p = substitute(p, "^!.*\.eu\.", "!eu.", "")
     let p = substitute(p, "^!.*\.org\.", "!org.", "")
     let p = substitute(p, "^!.*\.com\.", "!com.", "")
     let p = substitute(p, "^!.*\.net\.", "!net.", "")
@@ -48,7 +49,7 @@ function! MakeScalaFile()
     "norm G
     "call append(".", "} /// end of " . class)
     
-    call append(".", "// vim: set ts=2 sw=2 et:")
+    call append(".", "// vim: set si ts=2 sw=2 sts=2 et:")
     call append(".", "")
     
 endfunction
