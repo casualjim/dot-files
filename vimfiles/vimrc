@@ -407,3 +407,17 @@ vmap ] s]
 vmap ' s'
 vmap } s}
 
+" Scala Support
+"
+" customize colors a little bit (should be a different file)
+hi scalaNew gui=underline
+hi scalaMethodCall gui=italic
+hi scalaValName gui=underline
+hi scalaVarName gui=underline
+
+" scala language
+let s:tlist_def_scala_settings = 'scala;p:package;c:class;t:trait;' .
+                               \ 'T:type;m:method;' .
+                               \ 'c:case class;o:object;' .
+                               \ 'C:constant;l:local variable'
+

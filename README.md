@@ -23,6 +23,11 @@ source ~/.vim/vimrc      "linux
 source ~/vimfiles/vimrc  "windows
 </code></pre>
 
+
+For Scala and JavaScript ctags support 
+<pre><code>
+  ln -s ctags ~/.ctags
+</code></pre>
 = Dependencies
 
 You will need these dependencies figured out:
