@@ -220,9 +220,9 @@ if has("gui_running")
     "tell the term has 256 colors
     set t_Co=256
 
-    if has("gui_gnome")
-        set term=gnome-256color
-    endif
+    "if has("gui_gnome")
+        "set term=gnome-256color
+    "endif
     colorscheme desertEx
     set guitablabel=%M%t
     set lines=60
