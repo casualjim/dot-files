@@ -4,13 +4,20 @@ if exists("loaded_codefellow")
 endif
 let loaded_codefellow=1
 
+if !has('python')
+    throw "CodeFellow requires Python support!"
+endif
+
+if !exists('g:codefellow_verbose')
+  let g:codefellow_verbose = 0
+endif
 
 if !exists('g:codefellow_no_default_mappings')
   " default completion: (<c-s> will not work in console Vim !):
   autocmd FileType scala inoremap <buffer> <C-x><C-o> <C-O>:set omnifunc=codefellow#CompleteMember<CR><c-x><c-o>
 
-  autocmd FileType scala inoremap <buffer> <C-s><C-m> <C-O>:set omnifunc=codefellow#CompleteMember<CR><c-x><c-o>
-  autocmd FileType scala inoremap <buffer> <C-s><C-s> <C-O>:set omnifunc=codefellow#CompleteScope<CR><c-x><c-o>
+  autocmd FileType scala inoremap <buffer> <S-Tab> <C-O>:set omnifunc=codefellow#CompleteMember<CR><c-x><c-o>
+  autocmd FileType scala inoremap <buffer> <C-Tab> <C-O>:set omnifunc=codefellow#CompleteScope<CR><c-x><c-o>
   "autocmd FileType scala inoremap <buffer> <C-s><C-n> <C-O>:set omnifunc=codefellow#CompleteSmart<CR><c-x><c-o>
   
   autocmd FileType scala noremap <buffer> <C-s><C-t> <esc>:<c-u>call codefellow#PrintTypeInfo()<CR>
@@ -18,6 +25,8 @@ if !exists('g:codefellow_no_default_mappings')
 
   autocmd FileType scala noremap <buffer> <F9> :call codefellow#CompileFile()<CR>
 endif
+
+command CodefellowCompileAll call codefellow#CompileFile()
 
 " Balloon type information
 if has("balloon_eval")
@@ -29,5 +38,4 @@ endif
 " Hooks to sync Vim with CodeFellow daemon
 autocmd BufReadPost *.scala call codefellow#ReloadFile()
 autocmd BufWritePost *.scala call codefellow#ReloadFile()
-
 
