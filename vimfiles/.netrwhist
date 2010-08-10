@@ -1,4 +1,10 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =2
+let g:netrw_dirhist_cnt =8
 let g:netrw_dirhist_1='/home/ivan/temp/tig-test'
 let g:netrw_dirhist_2='/media/data/ivan/src/xmpp/tigase'
+let g:netrw_dirhist_3='/home/ivan/socialinsight/workspace/backchat'
+let g:netrw_dirhist_4='/media/data/ivan/src/dot-files/vimfiles'
+let g:netrw_dirhist_5='/home/ivan/temp/protojs'
+let g:netrw_dirhist_6='/home/ivan/socialinsight/workspace/backchat'
+let g:netrw_dirhist_7='/home/ivan/temp/camel-node'
+let g:netrw_dirhist_8='/home/ivan/socialinsight/workspace/backchat'

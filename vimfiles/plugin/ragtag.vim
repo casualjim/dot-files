@@ -12,7 +12,7 @@ if has("autocmd")
   augroup ragtag
     autocmd!
     autocmd FileType *html*,wml,xml,xslt,xsd,jsp    call s:Init()
-    autocmd FileType php,asp*,cf,mason,eruby        call s:Init()
+    autocmd FileType php,asp*,cf,mason,eruby,ejs    call s:Init()
     if version >= 700
       autocmd InsertLeave * call s:Leave()
     endif
