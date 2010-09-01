@@ -1,5 +1,9 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =7
 let g:netrw_dirhist_1='/Users/ivan/.bundle/ruby/1.9.1/gems/xmpp4r-simple-0.8.8'
 let g:netrw_dirhist_2='/Users/ivan/projects/cloudslide/source/server/cs-minutes/lib/cs-minutes'
 let g:netrw_dirhist_3='/Users/ivan'
+let g:netrw_dirhist_4='/Users/ivan/projects/dot-files'
+let g:netrw_dirhist_5='/Users/ivan/projects/social-insight/workspace/backchat'
+let g:netrw_dirhist_6='/Users/ivan/projects/mojolly/logger'
+let g:netrw_dirhist_7='/Users/ivan/projects/social-insight/workspace/backchat'
