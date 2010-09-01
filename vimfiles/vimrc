@@ -188,7 +188,7 @@ set nofoldenable        "dont fold by default
 
 set wildmode=list:longest   "make cmdline tab completion similar to bash
 set wildmenu                "enable ctrl-n and ctrl-p to scroll thru matches
-set wildignore=*.o,*.obj,*~ "stuff to ignore when tab completing
+set wildignore=*.o,*.obj,*~,*.class "stuff to ignore when tab completing
 
 "display tabs and trailing spaces
 set list
@@ -220,9 +220,9 @@ if has("gui_running")
     "tell the term has 256 colors
     set t_Co=256
 
-    if has("gui_gnome")
-        set term=gnome-256color
-    endif
+    "if has("gui_gnome")
+        "set term=gnome-256color
+    "endif
     colorscheme desertEx
     set guitablabel=%M%t
     set lines=60
@@ -420,4 +420,4 @@ let s:tlist_def_scala_settings = 'scala;p:package;c:class;t:trait;' .
                                \ 'T:type;m:method;' .
                                \ 'c:case class;o:object;' .
                                \ 'C:constant;l:local variable'
-
+let g:ragtag_global_maps = 1

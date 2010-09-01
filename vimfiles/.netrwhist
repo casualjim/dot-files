@@ -1,4 +1,5 @@
 let g:netrw_dirhistmax  =10
+<<<<<<< HEAD
 let g:netrw_dirhist_cnt =7
 let g:netrw_dirhist_1='/Users/ivan/.bundle/ruby/1.9.1/gems/xmpp4r-simple-0.8.8'
 let g:netrw_dirhist_2='/Users/ivan/projects/cloudslide/source/server/cs-minutes/lib/cs-minutes'
@@ -7,3 +8,8 @@ let g:netrw_dirhist_4='/Users/ivan/projects/dot-files'
 let g:netrw_dirhist_5='/Users/ivan/projects/social-insight/workspace/backchat'
 let g:netrw_dirhist_6='/Users/ivan/projects/mojolly/logger'
 let g:netrw_dirhist_7='/Users/ivan/projects/social-insight/workspace/backchat'
+=======
+let g:netrw_dirhist_cnt =2
+let g:netrw_dirhist_1='/home/ivan/temp/tig-test'
+let g:netrw_dirhist_2='/media/data/ivan/src/xmpp/tigase'
+>>>>>>> 5c458fbea8026d661b4975db5b180392aac42bb5
