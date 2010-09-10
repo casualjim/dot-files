@@ -5,8 +5,6 @@
 " package com.mycompany.myapp
 "
 " Author     :   Stepan Koltsov <yozh@mx1.ru>
-" Revision   : $Id: 31-create-scala.vim 17312 2009-03-16 04:02:05Z stepancheg $
-"        $URL: https://lampsvn.epfl.ch/svn-repos/scala/scala-tool-support/trunk/src/vim/plugin/31-create-scala.vim $
 
 function! MakeScalaFile()
     if exists("b:template_used") && b:template_used
@@ -24,10 +22,8 @@ function! MakeScalaFile()
     let p = substitute(p, ".*\.src\.", "!", "")
     let p = substitute(p, "^!main\.scala\.", "!", "") "
     let p = substitute(p, "^!.*\.ru\.", "!ru.", "")
-    let p = substitute(p, "^!.*\.eu\.", "!eu.", "")
     let p = substitute(p, "^!.*\.org\.", "!org.", "")
     let p = substitute(p, "^!.*\.com\.", "!com.", "")
-    let p = substitute(p, "^!.*\.net\.", "!net.", "")
     
     " ! marks that we found package name.
     if match(p, "^!") == 0
@@ -49,7 +45,7 @@ function! MakeScalaFile()
     "norm G
     "call append(".", "} /// end of " . class)
     
-    call append(".", "// vim: set si ts=2 sw=2 sts=2 et:")
+    call append(".", "// vim: set ts=4 sw=4 et:")
     call append(".", "")
     
 endfunction

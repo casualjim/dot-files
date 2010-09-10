@@ -2,7 +2,6 @@
 " Language   : Scala (http://scala-lang.org/)
 " Maintainer : Stefan Matthias Aust
 " Last Change: 2006 Apr 13
-"        $URL: https://lampsvn.epfl.ch/svn-repos/scala/scala-tool-support/trunk/src/vim/indent/scala.vim $
 
 if exists("b:did_indent")
   finish
