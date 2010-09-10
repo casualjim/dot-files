@@ -2,3 +2,6 @@
 	path = vimfiles/snippets
 	url = git://github.com/casualjim/snipmate-snippets.git
 
+[submodule "emacs.d"]
+	path = emacs.d
+	url = http://github.com/casualjim/emacs-starter-kit.git
