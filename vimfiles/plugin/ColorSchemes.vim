@@ -470,9 +470,9 @@ if !exists("g:running_ReloadColors")
 	function! <SID>ReloadColors()
 		let g:running_ReloadColors = 1
 		aunmenu &ColorSchemes
-		execute 'source /home/marty/.vim/plugin/ColorSchemes.vim'
+		execute 'source ~/.vim/plugin/ColorSchemes.vim'
 		unlet g:running_ReloadColors
-		echomsg 'Done Reloading /home/marty/.vim/plugin/ColorSchemes.vim'
+		echomsg 'Done Reloading ~/.vim/plugin/ColorSchemes.vim'
 	endfunction
 endif
 if !exists("g:running_RefreshColors")
@@ -481,6 +481,6 @@ if !exists("g:running_RefreshColors")
 		call WriteColorSchemeMenu()
 		call <SID>ReloadColors()
 		unlet g:running_RefreshColors
-		echomsg 'Done Refreshing /home/marty/.vim/plugin/ColorSchemes.vim'
+		echomsg 'Done Refreshing ~/.vim/plugin/ColorSchemes.vim'
 	endfunction
 endif
