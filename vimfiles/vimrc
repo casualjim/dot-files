@@ -5,6 +5,17 @@ set autoread
 runtime macros/matchit.vim
 set bg=dark
 
+fun ActivateAddons()
+  set runtimepath+=~/.vim-addons/vim-addon-manager
+  try
+    call scriptmanager#Activate(['vim-addon-async', 'vim-addon-completion', 'vim-addon-json-encoding'])
+  catch /.*/
+    echoe v:exception
+  endtry
+endf
+"call ActivateAddons()
+
+
 "allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
