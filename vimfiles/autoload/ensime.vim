@@ -1,0 +1,1 @@
+/Users/ivan/src/scala/ensime/vim/autoload/ensime.vim
