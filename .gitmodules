@@ -8,3 +8,6 @@
 [submodule "vim-addons/vim-addon-manager"]
 	path = vim-addons/vim-addon-manager
 	url = git://github.com/MarcWeber/vim-addon-manager.git
+[submodule "oh-my-zsh"]
+	path = oh-my-zsh
+	url = git@github.com:casualjim/oh-my-zsh.git
