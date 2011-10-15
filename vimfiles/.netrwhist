@@ -1,4 +1,6 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =2
+let g:netrw_dirhist_cnt =4
 let g:netrw_dirhist_1='/Users/ivan/.sbt/plugins'
 let g:netrw_dirhist_2='/Users/ivan/.oh-my-zsh'
+let g:netrw_dirhist_3='/Users/ivan/projects/mojolly/chef-cookbooks/client-config'
+let g:netrw_dirhist_4='/Users/ivan/.rbenv/versions/1.9.3-rc1/lib/ruby/gems/1.9.1/gems/chef-0.9.18'
