@@ -223,7 +223,8 @@ if has("gui_running")
     "if has("gui_gnome")
         "set term=gnome-256color
     "endif
-    colorscheme desertEx
+    "colorscheme desertEx
+    colorscheme github
     "colorscheme solarized
     set guitablabel=%M%t
     set lines=60
