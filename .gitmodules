@@ -4,7 +4,7 @@
 
 [submodule "emacs.d"]
 	path = emacs.d
-	url = http://github.com/casualjim/emacs-starter-kit.git
+	url = http://github.com/casualjim/emacs.d.git
 [submodule "vim-addons/vim-addon-manager"]
 	path = vim-addons/vim-addon-manager
 	url = git://github.com/MarcWeber/vim-addon-manager.git

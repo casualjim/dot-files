@@ -1,9 +1,5 @@
 *vim-dltk-buildpath*
 
-
-Dltk Build Path
-***************
-
 Source code completion, searching, and other features make use of the
 eclipse dltk's (http://eclipse.org/dltk/) .buildpath to locate
 resources. When you first create a dltk project (currently php

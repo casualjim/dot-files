@@ -1,6 +1,5 @@
 *vim-code_completion*
 
-
 Code Completion
 ***************
 
@@ -21,10 +20,43 @@ then you can use the SuperTab
 (http://www.vim.org/scripts/script.php?script_id=1643) plugin which
 allows you to use the Tab key for completion.
 
-To find out more about Vim's insert completion execute
+Another option, which can be used in lieu of or with SuperTab, is the
+AutoComplPop (http://www.vim.org/scripts/script.php?script_id=1879)
+plugin, which will automatically trigger code completion as you type.
+
+AutoComplPop by default only supports triggering code completion for
+file types who have an omni completion that ships with vim, but you
+can configure it to support eclim code completion. Here is an example
+of some vim script you can add to your vimrc to enabled AutoComlPop
+for java file types (this example will trigger the completion popup
+when at least 3 characters have been typed after a dot, but you can
+tweak this to your tastes):
+
+>
+
+   let g:acp_behaviorJavaEclimLength = 3
+   function MeetsForJavaEclim(context)
+     return g:acp_behaviorJavaEclimLength >= 0 &&
+           \ a:context =~ '\k\.\k\{' . g:acp_behaviorJavaEclimLength . ',}$'
+   endfunction
+   let g:acp_behavior = {
+       \ 'java': [{
+         \ 'command': "\<c-x>\<c-u>",
+         \ 'completefunc' : 'eclim#java#complete#CodeComplete',
+         \ 'meets'        : 'MeetsForJavaEclim',
+       \ }]
+     \ }
+
+<
+
+
+To find out more about Vim's insert completion execute the following
+from within Vim:
+
+>
 
    :h ins-completion
 
-from within Vim.
+<
 
 vim:ft=eclimhelp

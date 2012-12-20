@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2011  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 " Invoked when a buffer opened from eclipse is saved, to notify eclipse of the
 " save.
 function eclim#vimplugin#BufferWritten()
-  if has('netbeans_enabled')
+  if has('netbeans_enabled') && exists('g:vimplugin_running')
     if exists('b:eclim_file_modified')
       unlet b:eclim_file_modified
     endif
@@ -34,30 +34,38 @@ function eclim#vimplugin#BufferWritten()
   endif
 endfunction " }}}
 
-" BufferUnmodified() {{{
+" BufferModified() {{{
 " Invoked on cursor hold to check if a previously modified buffer is now
-" unmodified, so that eclipse can be notified.
-function eclim#vimplugin#BufferUnmodified()
-  if has('netbeans_enabled')
+" unmodified, and vice versa, so that eclipse can be notified.
+function eclim#vimplugin#BufferModified()
+  if has('netbeans_enabled') && exists('g:vimplugin_running')
     if !exists('b:eclim_file_modified')
       let b:eclim_file_modified = &modified
     endif
 
-    if !&modified && b:eclim_file_modified
+    if &modified != b:eclim_file_modified
       unlet b:eclim_file_modified
-      nbkey unmodified
-    else
-      let b:eclim_file_modified = &modified
+      exec 'nbkey ' . (&modified ? 'modified' : 'unmodified')
     endif
+    let b:eclim_file_modified = &modified
   endif
 endfunction " }}}
 
 " BufferClosed() {{{
 " Invoked when a buffer is removed from a window to signal that eclipse should
-" close the associated editor tab.
+" close the associated editor tab. This is only needed for external vim +
+" tabbed mode.
 function eclim#vimplugin#BufferClosed()
-  if has('netbeans_enabled')
+  if has('netbeans_enabled') && exists('g:vimplugin_tabbed')
     exec 'nbkey fileClosed ' . expand('<afile>:p')
+  endif
+endfunction " }}}
+
+" BufferEnter() {{{
+" Invoked when switching buffers so we can update the eclipse tab title.
+function eclim#vimplugin#BufferEnter()
+  if has('netbeans_enabled') && exists('g:vimplugin_running')
+    exec 'nbkey bufferEnter ' . expand('<afile>:p')
   endif
 endfunction " }}}
 
@@ -65,7 +73,7 @@ endfunction " }}}
 " Feeds eclipse compatible key string to eclipse if current gvim instance is
 " attached via the netbeans protocol.
 function eclim#vimplugin#FeedKeys(keys, ...)
-  if has('netbeans_enabled')
+  if has('netbeans_enabled') && exists('g:vimplugin_running')
     let refocus = a:0 > 0 && a:1 ? ',refocus' : ''
     silent exec 'nbkey feedkeys ' . a:keys . refocus
   endif

@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2009  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -32,7 +32,14 @@ if !exists('g:EclimAntCompilerAdditionalErrorFormat')
 endif
 
 if !exists('g:EclimAntErrorFormat')
-  let g:EclimAntErrorFormat = '\%A%f:%l:\ %m,'
+  let g:EclimAntErrorFormat = ''
+endif
+
+if !exists('g:EclimAntErrorsEnabled')
+  let g:EclimAntErrorsEnabled = 0
+endif
+if g:EclimAntErrorsEnabled
+  let g:EclimAntErrorFormat .= '\%A%f:%l:\ %m,'
 endif
 
 CompilerSet makeprg=ant\ -find\ build.xml\ $*
@@ -62,6 +69,12 @@ exec 'CompilerSet errorformat=' .
   \ '\%-Z%.%#[cactus]\ Test\ %f\ FAILED,' .
   \ '\%.%#[checkstyle]\ %f:%l:%c:\ %m,' .
   \ '\%.%#[checkstyle]\ %f:%l:\ %m,' .
+  \ '\%E%.%#[scalac]\ %f:%l:\ error:\ %m,' .
+  \ '\%-Z%.%#[scalac]\ %p^,' .
+  \ '\%W%.%#[scalac]\ %f:%l:\ warning:\ %m,' .
+  \ '\%-Z%.%#[scalac]\ %p^,' .
+  \ '\%A%.%#[scalac]\ %f:%l:\ %m,' .
+  \ '\%-Z%.%#[scalac]\ %p^,' .
   \ '\%+A%.%#eclim\ testng:\ %f:%m,' .
   \ '\%.%#\ ERROR\ %.%#\ line\ %l\ in\ file:\ %.%f%.:\ %m,' .
   \ g:EclimAntCompilerAdditionalErrorFormat .

@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -127,20 +127,29 @@ function eclim#python#validate#ValidateSyntax()
   let syntax_error = ''
 
   if has('python')
-
 python << EOF
 import re, vim
-from compiler import parseFile
 try:
-  parseFile(vim.eval('expand("%:p")'))
-except SyntaxError, se:
-  vim.command("let syntax_error = \"%s\"" % re.sub(r'"', r'\"', str(se)))
-except IndentationError, ie:
-  vim.command("let syntax_error = \"%s (line %s)\"" % (
-    re.sub(r'"', r'\"', ie.msg), ie.lineno)
-  )
+  try:
+    from ast import parse
+    filename = vim.eval('expand("%:p")')
+    with open(filename) as f:
+      parse(f.read(), filename)
+  except SyntaxError as se:
+    vim.command("let syntax_error = \"%s (line %s)\"" % (se.msg, se.lineno))
+  except ImportError:
+    from compiler import parseFile
+    try:
+      parseFile(vim.eval('expand("%:p")'))
+    except SyntaxError, se:
+      vim.command("let syntax_error = \"%s\"" % re.sub(r'"', r'\"', str(se)))
+    except IndentationError, ie:
+      vim.command("let syntax_error = \"%s (line %s)\"" % (
+        re.sub(r'"', r'\"', ie.msg), ie.lineno)
+      )
+except Exception, e:
+  vim.command("let syntax_error = \"%s\"" % str(e))
 EOF
-
   endif
 
   return syntax_error
@@ -183,7 +192,7 @@ function eclim#python#validate#PyLint()
       if has('win32') || has('win64')
         let pylint_env .= 'set "PYTHONPATH=' . join(paths, ';') . '" && '
       else
-        let pylint_env .= 'PYTHONPATH="$PYTHONPATH:' . join(paths, ':') . '"'
+        let pylint_env .= 'PYTHONPATH="' . join(paths, ':') . ':$PYTHONPATH"'
       endif
     endif
   endif
@@ -206,9 +215,9 @@ function eclim#python#validate#PyLint()
   if result =~ ':'
     let errors = []
     for error in split(result, '\n')
-      if error =~ '^[CWERF]\(:\s\+\)\?[0-9]'
-        let line = substitute(error, '.\{-}:\s*\([0-9]\+\):.*', '\1', '')
-        let message = substitute(error, '.\{-}:\s*[0-9]\+:\(.*\)', '\1', '')
+      if error =~ '^[CWERF]\d*\(:\s\+\)\?\d'
+        let line = substitute(error, '.\{-}:\s*\(\d\+\)[:,].*', '\1', '')
+        let message = substitute(error, '.\{-}:\s*.\{-}:\s*\(.*\)', '\1', '')
         let dict = {
             \ 'filename': eclim#util#Simplify(file),
             \ 'lnum': line,

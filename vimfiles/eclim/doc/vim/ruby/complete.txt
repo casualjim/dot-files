@@ -1,11 +1,10 @@
 *vim-ruby-complete*
 
-
 Ruby Code Completion
 ********************
 
 Ruby code completion uses the standard Vim code completion mechanism
-(|vim-code-completion|) like so:
+(|vim-code_completion|) like so:
 
 >
 
@@ -22,10 +21,5 @@ Ruby code completion uses the standard Vim code completion mechanism
    test.getName()
 
 <
-
-
-Note: This feature depends on the eclipse dltk (http://eclipse.org/dltk)
-  ruby plugin which should be installed for you when choosing ruby
-  support in the eclim installer.
 
 vim:ft=eclimhelp

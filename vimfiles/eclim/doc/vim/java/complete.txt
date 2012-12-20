@@ -1,11 +1,10 @@
 *vim-java-complete*
 
-
 Java Code Completion
 ********************
 
 Java code completion uses the standard Vim code completion mechanism
-(|vim-code-completion|) like so:
+(|vim-code_completion|) like so:
 
 >
 
@@ -23,7 +22,7 @@ Screenshot of completion in action:
 Configuration
 =============
 
-Vim Variables
+Vim Settings (|vim-settings|)
 
 *g:EclimJavaCompleteCaseSensitive*
 

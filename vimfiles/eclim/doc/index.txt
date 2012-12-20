@@ -1,36 +1,24 @@
+*index*
+
 Welcome to Eclim
 ****************
 
-*overview*
+The power of Eclipse in your favorite editor.
 
 
-Overview
-========
+What is it?
+===========
 
-The primary goal of eclim is to bring Eclipse (http://eclipse.org)
-functionality to the Vim (http://vim.org) editor.  The initial goal
-was to provide Eclipse's java functionality in vim, but support for
-various other languages (c/c++, php, python, ruby, css, html, xml,
-etc.) have been added and several more are planned.
+Eclim provides the ability to access Eclipse (http://eclipse.org)
+features (code completion, searching, code validation, and many more
+(|features|)) via the command line or a local network connection,
+allowing those features to be integrated with your favorite editor.
+Eclim provides an integration with Vim (http://www.vim.org), but third
+party clients (|relatedprojects|) have been created to add eclim
+support to other editors as well (emacs, sublime text 2, textmate).
 
-Eclim is less of an application and more of an integration of two
-great projects. The first, Vim, is arguably
-(http://en.wikipedia.org/wiki/Editor_wars) one of the best text
-editors in existence.  The second, Eclipse, provides many great tools
-for development in various languages.  Each provides many features
-that can increase developer productivity, but both still leave
-something to be desired.  Vim lacks native Java support and many of
-the advanced features available in Eclipse. Eclipse, on the other
-hand, still requires the use of the mouse for many things, and when
-compared to Vim, provides a less than ideal interface for editing
-text.
-
-That is where eclim comes into play.  Instead of trying to write an
-IDE in Vim or a Vim editor in Eclipse, eclim provides an Eclipse
-plug-in that exposes Eclipse features through a server interface, and
-a set of Vim plug-ins that communicate with Eclipse over that
-interface.  This functionality can be leveraged in three primary ways,
-as illustrated below.
+There are three primary usage scenarios in which eclim is designed to
+be used:
 
 [image]
 
@@ -50,263 +38,188 @@ as illustrated below.
    the eclipse interface full time, but want to use gvim as an
    embedded eclipse editor. Just like the previous use case, the eclim
    server is run inside of the eclipse gui and the embedded gvim will
-   interact with it just like external vim instances would.
-
-
-Emacs Users
-===========
-
-Development of an emacs client (http://github.com/senny/emacs-eclim)
-for eclim has been started over on github.
-
-*license*
-
-
-License
-=======
+   interact with it just like external vim instances would. This
+   feature is only support on Windows and Unix systems (where gvim is
+   compiled with the gtk gui).
 
 Eclim is released under the GPLv3
 (http://www.gnu.org/licenses/gpl-3.0-standalone.html).
 
-*news*
+
+How do I get/install it?
+========================
+
+You can follow the eclim install guide (|install|) which will walk you
+through downloading and installing eclim..
 
 
-News
-====
+How do I use it?
+================
+
+After you've installed eclim, you can refer to the getting started
+(|gettingstarted|) page which will walk you through creating your
+first project.
 
 
-2010-03-06
+Where can I get help?
+=====================
+
+
+Mailing Lists
+-------------
+
+If at any time you have any questions or feedback, feel free to post
+to one of the eclim mailing lists:
+
+- eclim-user (http://groups.google.com/group/eclim-user): For all
+  questions regarding installation, usage, troubleshooting, etc.
+
+- eclim-dev (http://groups.google.com/group/eclim-dev): For all eclim
+  development related discussions.
+
+
+IRC (#eclim on freenode.net)
+----------------------------
+
+If you would like to get help or ask questions on IRC, then feel free
+to join #eclim on freenode.net. Please note that I (Eric Van
+Dewoestine, ervandew on irc) try to stay in the channel as much as
+possible, but I might not be available to answer questions
+immediately. It's also worth noting that I live in California, so if
+you are in Europe, Asia, or some other timezone whose normal waking
+hours don't overlap well with mine, then you may be better off getting
+help using one of the mailing lists above.
+
+
+How do I report a bug?
+======================
+
+
+Reporting Bugs
+--------------
+
+If you've found a bug please report the issue to either the eclim-dev
+(http://groups.google.com/group/eclim-dev) mailing list or create a
+new issue on eclim's github issue tracker
+(http://github.com/ervandew/eclim/issues).
+
+When reporting a bug, please include the following information:
+
+- What OS are you on?
+
+  - Linux users: please include the distro and version.
+
+- What version of eclim, vim, and eclipse are you using?
+
+  - Linux users: please indicate whether you installed eclipse via
+    your distro's package manager or not, and if not, please indicate
+    what distribution of eclipse you are using ("Eclipse Classic",
+    "Eclipse IDE for C/C++ Developers", some other eclipse bundle).
+
+
+What's New?
+===========
+
+[image: Rss Feed for What's New][image] (index.rss)
+
+
+2012-10-19
 ----------
 
-Eclim 1.5.6 is now available.
+This is a bug fix release for Windows users which fixes executing of
+eclim commands from vim:
 
-You can view the release notes (|id1|) for more info.
+- Eclim 2.2.3 (|2.2.3|) for Eclipse 4.2 (Juno).
+
+- Eclim 1.7.11 (|1.7.11|) for Eclipse 3.7 (Indigo).
 
 
-2010-02-22
+2012-10-07
 ----------
 
-Eclim 1.5.5 is now available.
-This is a bug fix release for the eclim installer.
+Two new eclim updates are once again available with several bug fixes
+and improvements.
 
-You can view the release notes (|id2|) for more info.
+- Eclim 2.2.2 (|2.2.2|) for Eclipse 4.2 (Juno).
+
+- Eclim 1.7.10 (|1.7.10|) for Eclipse 3.7 (Indigo).
 
 
-2009-12-18
+2012-09-09
 ----------
 
-Eclim 1.5.4 is now available.
-This is primarily a bug fix release for OSX users.
+Eclim 1.7.9 (|1.7.9|) for Eclipse 3.7 (Indigo) is now available.
+This release adds initial support for scala (|vim-scala-index|).
 
-You can view the release notes (|id3|) for more info.
+Please note that the Scala IDE (http://scala-ide.org) , which eclim
+uses to provide scala support, is not yet available for Eclipse 4.2
+(Juno), so eclim's scala support will not be available for the eclim
+2.2.x releases until sometime after the Scala IDE has been updated for
+Juno.
 
 
-2009-12-12
+2012-09-01
 ----------
 
-Eclim 1.5.3 is now available.
+Another set of releases are now available for both Juno and Indigo.
+These both include several bug fixes along with new support for
+creating android projects.
 
-You can view the release notes (|id4|) for more info.
+- Eclim 2.2.1 (|2.2.1|) for Eclipse 4.2 (Juno).
+
+- Eclim 1.7.8 (|1.7.8|) for Eclipse 3.7 (Indigo).
+
+Eclim also has a newly redesigned site using the sphinx bootstrap
+theme (https://github.com/ervandew/sphinx-bootstrap-theme).
 
 
-2009-08-30
+2012-08-07
 ----------
 
-Eclim 1.5.2 is now available.
+Two new versions of eclim have been released, one for the latest
+Eclipse version, Juno, the other a bug fix release for the previous
+version of Eclipse, Indigo.
 
-You can view the release notes (|id5|) for more info.
+- Eclim 2.2.0 (|2.2.0|) for Eclipse 4.2 (Juno).
+
+- Eclim 1.7.7 (|1.7.7|) for Eclipse 3.7 (Indigo).
 
 
-2009-07-18
+2012-06-07
 ----------
 
-Eclim 1.5.1 is now available.
-This is primarily a bug fix release
-
-You can view the release notes (|id6|) for more info.
+Eclim 1.7.6 (|1.7.6|) is now available.
+This is a minor bug fix release.
 
 
-2009-07-12
+2012-06-03
 ----------
 
-Eclim 1.5.0 is now available.
-The most notable changes are:
-
-- Eclim has been upgraded to support Eclipse 3.5 (Galileo).
-
-  Note: Eclim now requires Eclipse 3.5.
-
-- Ruby support has been added using the eclipse dltk
-  (http://eclipse.org/dltk/).
-
-You can view the release notes (|id7|) for more info.
+Eclim 1.7.5 (|1.7.5|) is now available.
+This is a minor release with an improved installer, some bug fixes, and a few
+minor enhancements.
 
 
-2009-06-14
+2012-04-22
 ----------
 
-Eclim 1.4.9 is now available.
-This is primarily a bug fix release, with a few refinements.
-
-You can view the release notes (|id8|) for more info.
+Eclim 1.7.4 (|1.7.4|) is now available.
+This is a bug fix release.
 
 
-2009-05-30
+2012-03-18
 ----------
 
-Eclim 1.4.8 is now available.
-This is primarily a bug fix release with a few enhancements.
+Eclim 1.7.3 (|1.7.3|) is now available.
+This version fixes numerious small bugs and adds a handful of small features.
 
-You can view the release notes (|id9|) for more info.
+Warning: Non vim users (emacs-eclim, subclim, etc.): The underlying command
+  response format for eclim has changed, which means that any project
+  relying on the old format isn't going to work. So if you are
+  installing eclim for use with a client other than vim, then be sure
+  to check with the client project to see if it has been updated for
+  eclim 1.7.3 or later.
 
-
-2009-05-02
-----------
-
-Eclim 1.4.7 is now available.
-This is a bug fix release which resolves an installation on unix based
-operating systems.
-
-
-2009-05-02
-----------
-
-Eclim 1.4.6 is now available.
-The major highlight of this release is support for c/c++ using the
-eclipse cdt (http://eclipse.org/cdt/) plugin.
-
-You can view the release notes (|id11|) for more info.
-
-
-2009-04-04
-----------
-
-Eclim 1.4.5 is now available.
-This is primarily a bug fix release.
-
-You can view the release notes (|id13|) for more info.
-
-
-2009-01-10
-----------
-
-Eclim 1.4.4 is now available.
-Highlights of this release include:
-
-- re-enabled php support
-
-- added ability to run eclimd inside of eclipse gui
-
-- added support for embedding gvim in eclipse
-
-You can view the release notes (|id14|) for more info.
-
-
-2008-11-15
-----------
-
-Eclim 1.4.3 is now available.
-This release focuses on updating the installer to support ganymede's p2 for
-upgrading / installing external dependencies and adding additional python
-support.
-You can view the release notes (|id15|) for more info.
-
-
-2008-09-30
-----------
-
-Eclim 1.4.2 is now available.
-This is primary a bug fix release.
-You can view the release notes (|id16|) for more info.
-
-
-2008-08-24
-----------
-
-Eclim 1.4.1 is now available.
-This is primary a bug fix release, but there are some new features included
-as well.
-You can view the release notes (|id17|) for more info.
-
-
-2008-07-27
-----------
-
-Eclim 1.4.0 is now available.
-Please note that eclim now requires the latest version of eclipse (http://eclipse.org)
-(Ganymede, 3.4.x).
-
-Also note that the eclipse pdt plugin which serves as the base for
-eclim's php support has not yet been released for the latest version
-of eclipse.  For this reason php support has been temporarily removed
-from this release and will hopefully return soon after the pdt team
-release a Ganymede (3.4) compatible version.
-
-Another major change worth noting, is that eclim is now licensed under
-the GPLv3.  This was done to give eclim the freedom to integrate with
-other GPL projects in the future.
-
-You can view the release notes (|id18|) for more info.
-
-
-2008-03-11
-----------
-
-Eclim 1.3.5 is now available.
-You can view the release notes (|id19|) for
-more info.
-
-
-2008-02-05
-----------
-
-Eclim 1.3.4 is now available.
-This release fixes a few minor bugs, improves the installer to account for
-eclipse installs with per user plugin locations, and adds php support.
-You can view the release notes (|id20|) for more info.
-
-
-2007-12-15
-----------
-
-Eclim 1.3.3 is now available.
-This release fixes some installer issues.  If you have already installed
-1.3.2, then there is no need to upgrade to 1.3.3.
-
-
-2007-12-04
-----------
-
-Eclim 1.3.2 is now available.
-You can view the release notes (|id22|) for more info.
-
-
-2007-07-13
-----------
-
-Eclim 1.3.1 is now available.
-This is only a bug fix release.
-You can view the release notes (|id23|) for more info.
-
-
-2007-07-01
-----------
-
-Eclim 1.3.0 is now available.
-The most notable changes are:
-
-- Eclim has been upgraded to support Eclipse 3.3.
-
-  Note: Eclim now requires Eclipse 3.3 and JDK 1.5.
-
-- A new graphical installer (|installer|) built on the formic
-  (http://github.com/ervandew/formic/) installer framework.
-
-- New functionality based on and requiring the eclipse wst
-  (http://eclipse.org/webtools/).
-
-- Many more changes (|id24|).
-
-View the release notes (|id24|) for more info.
+Eclim News Archive (|archive-news|)
 
 vim:ft=eclimhelp

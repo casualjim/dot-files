@@ -1,4 +1,6 @@
-*vim-c-validate* *:Validate_c*
+*vim-c-validate*
+
+*:Validate_c*
 
 
 C/C++ Validation
@@ -16,15 +18,11 @@ g:EclimCValidate variable (described below).  If you choose to disable
 automatic validation, you can still use the :Validate command to
 manually validate the current file.
 
-Note: This feature depends on the eclipse cdt (http://eclipse.org/cdt)
-  which should be installed for you when choosing c/c++ support in the
-  eclim installer.
-
 
 Configuration
 =============
 
-Vim Variables:
+Vim Settings (|vim-settings|)
 
 *g:EclimCValidate*
 

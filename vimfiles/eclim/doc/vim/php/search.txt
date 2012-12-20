@@ -1,6 +1,5 @@
 *vim-php-search*
 
-
 Php Search
 **********
 
@@ -13,7 +12,7 @@ Pattern Search
 Pattern searching provides a means to widen a search beyond a single
 element.  A pattern search can be executed using the command
 
-   :PhpSearch -p <pattern> [-t <type> -s <scope> -i]
+:PhpSearch -p <pattern> [-t <type> -s <scope> -i]
 
 All of the results will be placed into the current window's location
 list (:help location-list) so that you can easily navigate the
@@ -38,11 +37,12 @@ exception of the pattern to search for.
 
   Ex.
 
+  >
      MyClass
-
      myFunction
-
      my*
+
+  <
 
 - -t <type> (Default: all): The type of element to search for where
   possible types include
@@ -95,7 +95,7 @@ search depending on the context of the element.
 Configuration
 =============
 
-Vim Variables
+Vim Settings (|vim-settings|)
 
 *g:EclimPhpSearchSingleResult*
 
@@ -108,10 +108,16 @@ Vim Variables
 
   - 'edit' - open the result in the current window.
 
+  - 'tabnew' - open the result in a new tab.
+
   - 'lopen' - open the location list to display the result.
 
-Note: Search support depends on the eclipse pdt (http://eclipse.org/pdt)
-  which should be installed for you when choosing php support in the
-  eclim installer.
+  This setting overrides the global default for all supported language
+  types which can be set using the g:EclimDefaultFileOpenAction
+  setting which accepts the same possible values.
+
+- g:EclimLocationListHeight (Default: 10) - Sets the height in lines
+  of the location list window when eclim opens it to display search
+  results.
 
 vim:ft=eclimhelp

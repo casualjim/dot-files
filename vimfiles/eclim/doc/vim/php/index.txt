@@ -1,19 +1,30 @@
 *vim-php-index*
 
-
 Php
 ***
 
-- PDT Build Path (|vim-php-buildpath|)
 
-- Php Code Completion (|vim-php-complete|)
+Features
+========
 
-- Php Validation (|vim-php-validate|)
+- Php Build Path (vim-php-buildpath)
+- Php Code Completion (vim-php-complete)
+- Php Validation (vim-php-validate)
+- Php Search (vim-php-search)
 
-- Php Search (|vim-php-search|)
+Suggested Mappings
+==================
 
-Note: These features depends on the eclipse pdt (http://eclipse.org/pdt)
-  which should be installed for you when choosing php support in the
-  eclim installer.
+Here are some mappings for the php funtionality provided by eclim.  To
+make use of these mappings, simply create a ftplugin file for php and
+place your mappings there (:help ftplugin-name).
+
+- The following mapping allows you to simply hit <enter> on an element
+  to perform a search to find it.
+
+  >
+     nnoremap <silent> <buffer> <cr> :PhpSearchContext<cr>
+
+  <
 
 vim:ft=eclimhelp

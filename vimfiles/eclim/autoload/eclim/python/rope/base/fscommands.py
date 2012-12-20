@@ -82,9 +82,19 @@ class MercurialCommands(object):
     def __init__(self, root):
         self.hg = self._import_mercurial()
         self.normal_actions = FileSystemCommands()
-        self.ui = self.hg.ui.ui(
-            verbose=False, debug=False, quiet=True,
-            interactive=False, traceback=False, report_untrusted=False)
+        try:
+            self.ui = self.hg.ui.ui(
+                verbose=False, debug=False, quiet=True,
+                interactive=False, traceback=False, report_untrusted=False)
+        except:
+            self.ui = self.hg.ui.ui()
+            self.ui.setconfig('ui', 'interactive', 'no')
+            self.ui.setconfig('ui', 'debug', 'no')
+            self.ui.setconfig('ui', 'traceback', 'no')
+            self.ui.setconfig('ui', 'verbose', 'no')
+            self.ui.setconfig('ui', 'report_untrusted', 'no')
+            self.ui.setconfig('ui', 'quiet', 'yes')
+
         self.repo = self.hg.hg.repository(self.ui, root)
 
     def _import_mercurial(self):
@@ -196,15 +206,21 @@ def file_data_to_unicode(data, encoding=None):
     return result
 
 def _decode_data(data, encoding):
+    if isinstance(data, unicode):
+        return data
     if encoding is None:
         encoding = read_str_coding(data)
+    if encoding is None:
+        # there is no encoding tip, we need to guess.
+        # PEP263 says that "encoding not explicitly defined" means it is ascii,
+        # but we will use utf8 instead since utf8 fully covers ascii and btw is
+        # the only non-latin sane encoding.
+        encoding = 'utf-8'
     try:
-        if encoding is not None:
-            return unicode(data, encoding)
-        return unicode(data)
-    except (UnicodeDecodeError, LookupError):
-        # Using ``utf-8`` if guessed encoding fails
-        return unicode(data, 'utf-8')
+        return data.decode(encoding)
+    except (UnicodeError, LookupError):
+        # fallback to latin1: it should never fail
+        return data.decode('latin1')
 
 
 def read_file_coding(path):

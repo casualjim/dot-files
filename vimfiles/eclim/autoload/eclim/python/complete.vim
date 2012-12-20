@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -25,13 +25,12 @@
 " CodeComplete(findstart, base) {{{
 " Handles python code completion.
 function! eclim#python#complete#CodeComplete(findstart, base)
-  if a:findstart
-    " update the file before vim makes any changes.
-    call eclim#util#ExecWithoutAutocmds('silent update')
+  if !eclim#project#util#IsCurrentFileInProject(0)
+    return a:findstart ? -1 : []
+  endif
 
-    if !eclim#project#util#IsCurrentFileInProject(0) || !filereadable(expand('%'))
-      return -1
-    endif
+  if a:findstart
+    call eclim#lang#SilentUpdate(1)
 
     " locate the start of the word
     let line = getline('.')
@@ -49,27 +48,57 @@ function! eclim#python#complete#CodeComplete(findstart, base)
 
     return start
   else
-    if !eclim#project#util#IsCurrentFileInProject(0) || !filereadable(expand('%'))
-      return []
-    endif
-
     let offset = eclim#python#rope#GetOffset() + len(a:base)
     let encoding = eclim#util#GetEncoding()
     let project = eclim#project#util#GetCurrentProjectRoot()
-    let file = eclim#project#util#GetProjectRelativeFilePath()
+    let file = eclim#lang#SilentUpdate(1, 0)
+    if file == ''
+      return []
+    endif
 
     let completions = []
     let results = eclim#python#rope#Completions(project, file, offset, encoding)
 
+    let open_paren = getline('.') =~ '\%' . col('.') . 'c\s*('
+    let close_paren = getline('.') =~ '\%' . col('.') . 'c\s*(\s*)'
+
     for result in results
-      let menu = result[1]
+      let word = result[0]
+      let kind = result[1]
       let info = ''
       if result[2] != ''
+        let word .= '('
         let info = result[0] . '(' . result[2] . ')'
         let menu = info
+      else
+        if kind == 'f'
+          let word .= '()'
+        endif
+        let menu = word
       endif
+
+      " map 'a' (attribute) to 'v'
+      if kind == 'a'
+        let kind = 'v'
+
+      " map 'c' (class) to 't'
+      elseif kind == 'c'
+        let kind = 't'
+      endif
+
+      " strip off close paren if necessary.
+      if word =~ ')$' && close_paren
+        let word = strpart(word, 0, strlen(word) - 1)
+      endif
+
+      " strip off open paren if necessary.
+      if word =~ '($' && open_paren
+        let word = strpart(word, 0, strlen(word) - 1)
+      endif
+
       let dict = {
-          \ 'word': result[0],
+          \ 'word': word,
+          \ 'kind': kind,
           \ 'menu': menu,
           \ 'info': info,
         \ }

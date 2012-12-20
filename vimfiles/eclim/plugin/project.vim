@@ -4,7 +4,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -27,17 +27,25 @@ if !exists("g:EclimProjectRefreshFiles")
 endif
 
 if !exists("g:EclimProjectKeepLocalHistory")
-  let g:EclimProjectKeepLocalHistory = 1
+  let g:EclimProjectKeepLocalHistory = exists('g:vimplugin_running')
 endif
 
 if !exists("g:EclimProjectProblemsUpdateOnSave")
   let g:EclimProjectProblemsUpdateOnSave = 1
 endif
 
+if !exists("g:EclimProjectProblemsUpdateOnBuild")
+  let g:EclimProjectProblemsUpdateOnBuild = 1
+endif
+
 let g:EclimProjectTreeTitle = 'ProjectTree_'
 
-if !exists('g:EclimProjectTreeAutoOpen')
+if !exists('g:EclimProjectTreeAutoOpen') || exists('g:vimplugin_running')
   let g:EclimProjectTreeAutoOpen = 0
+endif
+
+if !exists('g:EclimProjectTabTreeAutoOpen')
+  let g:EclimProjectTabTreeAutoOpen = 1
 endif
 
 if !exists('g:EclimProjectTreeExpandPathOnOpen')
@@ -45,7 +53,7 @@ if !exists('g:EclimProjectTreeExpandPathOnOpen')
 endif
 
 if !exists('g:EclimProjectTreeSharedInstance')
-  let g:EclimProjectTreeSharedInstance = 0
+  let g:EclimProjectTreeSharedInstance = 1
 endif
 
 if g:EclimProjectTreeAutoOpen && !exists('g:EclimProjectTreeAutoOpenProjects')
@@ -57,7 +65,7 @@ endif
 
 " w/ external vim refresh is optional, w/ embedded gvim it is mandatory
 " disabling at all though is discouraged.
-if g:EclimProjectRefreshFiles || has('netbeans_intg')
+if g:EclimProjectRefreshFiles || exists('g:vimplugin_running')
   augroup eclim_refresh_files
     autocmd!
     autocmd BufWritePre * call eclim#project#util#RefreshFileBootstrap()
@@ -114,6 +122,9 @@ if !exists(":ProjectCreate")
   command -nargs=*
     \ -complete=customlist,eclim#project#util#CommandCompleteProject
     \ ProjectRefresh :call eclim#project#util#ProjectRefresh('<args>')
+  command -nargs=?
+    \ -complete=customlist,eclim#project#util#CommandCompleteProject
+    \ ProjectBuild :call eclim#project#util#ProjectBuild('<args>')
   command ProjectRefreshAll :call eclim#project#util#ProjectRefreshAll()
   command ProjectCacheClear :call eclim#project#util#ClearProjectsCache()
   command -nargs=? -complete=customlist,eclim#eclipse#CommandCompleteWorkspaces
@@ -144,19 +155,20 @@ if !exists(":ProjectCreate")
 endif
 
 if !exists(":ProjectProblems")
-  command -nargs=?
+  command -nargs=? -bang
     \ -complete=customlist,eclim#project#util#CommandCompleteProject
-    \ ProjectProblems :call eclim#project#problems#Problems('<args>', 1)
+    \ ProjectProblems :call eclim#project#problems#Problems('<args>', 1, '<bang>')
 endif
 
 if !exists(":ProjectTree")
   command -nargs=*
-    \ -complete=customlist,eclim#project#util#CommandCompleteProject
+    \ -complete=customlist,eclim#project#util#CommandCompleteProjectOrDirectory
     \ ProjectTree :call eclim#project#tree#ProjectTree(<f-args>)
+  command -nargs=0 ProjectTreeToggle :call eclim#project#tree#ProjectTreeToggle()
   command -nargs=0 ProjectsTree
     \ :call eclim#project#tree#ProjectTree(eclim#project#util#GetProjectNames())
   command -nargs=1
-    \ -complete=customlist,eclim#project#util#CommandCompleteProject
+    \ -complete=customlist,eclim#project#util#CommandCompleteProjectOrDirectory
     \ ProjectTab :call eclim#project#util#ProjectTab('<args>')
 endif
 
@@ -185,10 +197,6 @@ if !exists(":Todo")
 endif
 if !exists(":ProjectTodo")
   command -nargs=0 ProjectTodo :call eclim#project#util#ProjectTodo()
-endif
-
-if !exists(":TrackerTicket")
-  command -nargs=1 TrackerTicket :call eclim#project#tracker#Ticket('<args>')
 endif
 " }}}
 

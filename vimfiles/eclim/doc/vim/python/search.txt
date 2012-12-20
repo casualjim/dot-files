@@ -1,6 +1,5 @@
 *vim-python-search*
 
-
 Python Search
 *************
 
@@ -13,17 +12,13 @@ Element Search
 Element searching allows you to place the cursor over just about any
 element in a source file (method call, class name, constant) and
 perform a search for that element by issuing the command
-:PhpFindDefinition.
+:PythonFindDefinition.
 
 If only one result is found and that result is in the current source
 file, the cursor will be moved to the element found.  Otherwise, on
 single result matches, the value of |g:EclimPythonSearchSingleResult|
 will be consulted for the action to take.  If there are multiple
 results, the location list will be opened with the list of results.
-
-Note: Searching support is provided via eclim's integration with rope
-  (|vim-python-rope|).Please see the rope (|vim-python-rope|) docs for
-  more information.
 
 *:PythonSearchContext*
 
@@ -40,7 +35,7 @@ search depending on the context of the element.
 Configuration
 =============
 
-Vim Variables
+Vim Settings (|vim-settings|)
 
 *g:EclimPythonSearchSingleResult*
 
@@ -53,6 +48,16 @@ Vim Variables
 
   - 'edit' - open the result in the current window.
 
+  - 'tabnew' - open the result in a new tab.
+
   - 'lopen' - open the location list to display the result.
+
+  This setting overrides the global default for all supported language
+  types which can be set using the g:EclimDefaultFileOpenAction
+  setting which accepts the same possible values.
+
+- g:EclimLocationListHeight (Default: 10) - Sets the height in lines
+  of the location list window when eclim opens it to display search
+  results.
 
 vim:ft=eclimhelp

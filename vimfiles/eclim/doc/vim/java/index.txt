@@ -1,83 +1,57 @@
 *vim-java-index*
 
-
 Java
 ****
 
 
-Ant
-===
+Features
+========
 
-- Ant Execution (|vim-java-ant-execute|)
+- Eclipse Classpath Editing (vim-java-classpath)
+- Java Validation / Correction (vim-java-validate)
+- Java Code Completion (vim-java-complete)
+- Java Search (vim-java-search)
+- Java / Jps (vim-java-java)
+- Javadoc Support (vim-java-javadoc)
+- Java Source Code Formatting (vim-java-format)
+- Java Refactoring (vim-java-refactor)
+- Java Code Inspection (vim-java-inspection)
+- Automated Imports (vim-java-import)
+- Method Generation (vim-java-methods)
+- Unit Tests (vim-java-unittests)
+- Logging (log4j, etc) (vim-java-logging)
+- Ant (vim-java-ant)
+- Maven (vim-java-maven)
+- WEB-INF/web.xml (vim-java-webxml)
 
-- Ant Code Completion (|vim-java-ant-complete|)
+Suggested Mappings
+==================
 
-- Ant File Validation (|vim-java-ant-validate|)
+Here are some mappings for the java funtionality provided by eclim.
+To make use of these mappings, simply create a ftplugin file for java
+and place your mappings there (:help ftplugin-name).
 
-- Ant Documentation Lookup (|vim-java-ant-doc|)
+- Import the class under the cursor with <leader>i (:h mapleader):
 
+  >
+     nnoremap <silent> <buffer> <leader>i :JavaImport<cr>
 
-Maven
-=====
+  <
 
-- Maven Execution (|vim-java-maven-execute|)
+- Search for the javadocs of the element under the cursor with
+  <leader>d.
 
-- Maven Dependencies (|vim-java-maven-dependencies|)
+  >
+     nnoremap <silent> <buffer> <leader>d :JavaDocSearch -x declarations<cr>
 
+  <
 
-Log4j
-=====
+- Perform a context sensitive search of the element under the cursor
+  with <enter>.
 
-- Log4j File Validation (|vim-java-log4j-validate|)
+  >
+     nnoremap <silent> <buffer> <cr> :JavaSearchContext<cr>
 
-
-web.xml
-=======
-
-- WEB-INF/web.xml Validation (|vim-java-webxml-validate|)
-
-
-Java
-====
-
-- Eclipse Classpath Editing (|vim-java-classpath|)
-
-- Java Validation (|vim-java-validate|)
-
-- Java Search (|vim-java-search|)
-
-- Java / Javac Support (|vim-java-java|)
-
-- Javadoc Support (|vim-java-javadoc|)
-
-- Automated Imports (|vim-java-import|)
-
-- Java Code Completion (|vim-java-complete|)
-
-- Java Code Correction (|vim-java-correct|)
-
-- Class Constructor Generation (|vim-java-constructor|)
-
-- Method Override / Impl (|vim-java-impl|)
-
-- Delegate Methods (|vim-java-delegate|)
-
-- Java Bean Functionality (|vim-java-bean|)
-
-- Class / Interface Hierarchy (|vim-java-hierarchy|)
-
-- Java Source Code Formatting (|vim-java-format|)
-
-- Checkstyle (|vim-java-checkstyle|)
-
-- JUnit (|vim-java-junit|)
-
-- TestNG (|vim-java-testng|)
-
-- Logging (|vim-java-logging|)
-
-- Regex Testing (|vim-java-regex|)
-
-- Java Tools Integration (|vim-java-tools|)
+  <
 
 vim:ft=eclimhelp

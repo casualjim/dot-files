@@ -1,6 +1,5 @@
 *vim-python-django*
 
-
 Django
 ******
 
@@ -32,7 +31,7 @@ set the proper file type.
 Configuration
 =============
 
-Vim Variables
+Vim Settings (|vim-settings|)
 
 *g:EclimPythonInterpreter*
 
@@ -200,7 +199,7 @@ under the cursor.
 Configuration
 =============
 
-Vim Variables
+Vim Settings (|vim-settings|)
 
 *g:HtmlDjangoUserBodyElements*
 

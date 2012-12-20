@@ -1,11 +1,10 @@
 *vim-c-complete*
 
-
 C/C++ Code Completion
 *********************
 
 C/C++ code completion uses the standard Vim code completion mechanism
-(|vim-code-completion|) like so:
+(|vim-code_completion|) like so:
 
 >
 
@@ -21,15 +20,5 @@ C/C++ code completion uses the standard Vim code completion mechanism
    }
 
 <
-
-
-Note: This feature depends on the eclipse cdt (http://eclipse.org/cdt)
-  which should be installed for you when choosing c/c++ support in the
-  eclim installer.
-
-Warning: C/C++ completion has been disabled on Windows when using the
-  headless version of eclim because of a native call which blocks
-  indefinitely.  Hopefully in the future this issue will be resolved
-  or a work around found.
 
 vim:ft=eclimhelp

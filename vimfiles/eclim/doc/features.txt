@@ -1,10 +1,12 @@
+*features*
+
 Features
 ********
 
 The following is a partial list of eclim features with much more still
 to come.  For more details please see the detailed documentation
 (|vim-index|).  For a more comprehensive list you can also visit the
-cheatsheet (|vim-cheatsheet|).
+cheatsheet (|cheatsheet|).
 
 
 Eclipse Projects
@@ -17,21 +19,8 @@ Eclipse Projects
 - Quickly and easily manage settings globally or on a project basis.
 
 
-Ant Integration
-===============
-
-- Ant execution from any file.
-
-- Context sensitive code completion when editing build files.
-
-- Automatic validation of build files (w/ visual marking of errors and
-  warnings).
-
-- Quick access to ant documentation.
-
-
-C/C++ Integration
-=================
+C/C++
+=====
 
 - Context sensitive code completion.
 
@@ -40,30 +29,24 @@ C/C++ Integration
 - Source code validation.
 
 
-Css Integration
-===============
+Css
+===
 
 - Context sensitive code completion.
 
 - Source code validation.
 
 
-Dtd Integration
-===============
-
-- Automatic validation (w/ visual marking of errors and warnings).
-
-
-Html Integration
-================
+Html
+====
 
 - Context sensitive code completion.
 
 - Automatic validation (w/ visual marking of errors and warnings).
 
 
-Java Integration
-================
+Java
+====
 
 - Automatic source code validation (w/ visual marking of errors and
   warnings).
@@ -95,31 +78,44 @@ Java Integration
 
 - Support for Checkstyle.
 
-
-JavaScript Integration
-======================
-
-- File validation using jsl (http://www.javascriptlint.com/).
-
-- Improved taglist (outline) support.
-
-
-Log4j Integration
-=================
-
 - Validation of log4j xml files.
 
 
-Maven Integration
-=================
+Android
+-------
+
+- Support for creating android projects from vim.
+
+
+Ant
+---
+
+- Ant execution from any file.
+
+- Context sensitive code completion when editing build files.
+
+- Automatic validation of build files (w/ visual marking of errors and
+  warnings).
+
+- Quick access to ant documentation.
+
+
+Maven
+-----
 
 - Maven execution from any file.
 
 - Maven repository searching and ability to add results to pom file.
 
 
-Php Integration
-===============
+JavaScript
+==========
+
+- File validation using jsl (http://www.javascriptlint.com/).
+
+
+Php
+===
 
 - Code completion.
 
@@ -128,8 +124,8 @@ Php Integration
 - Source code validation.
 
 
-Python Integration
-==================
+Python
+======
 
 - Context sensitive code completion.
 
@@ -144,8 +140,8 @@ Python Integration
   (http://www.logilab.org/857).
 
 
-Ruby Integration
-================
+Ruby
+====
 
 - Context sensitive code completion.
 
@@ -154,8 +150,8 @@ Ruby Integration
 - Source code validation.
 
 
-Vim Script Integration
-======================
+Vim Script
+==========
 
 - Find user defined command, function, or global variable declarations
   / references.
@@ -163,13 +159,7 @@ Vim Script Integration
 - Quickly lookup help topic for a keyword, functions, command, etc.
 
 
-Wsdl Integration
-================
-
-- Automatic validation (w/ visual marking of errors and warnings).
-
-
-Xml Integration
+Xml / Dtd / Xsd
 ===============
 
 - Automatic validation (w/ visual marking of errors and warnings).
@@ -180,24 +170,11 @@ Xml Integration
 - Context sensitive code completion.
 
 
-Xsd Integration
-===============
-
-- Automatic validation (w/ visual marking of errors and warnings).
-
-
 Common Vim Functionality
 ========================
 
-- :Split / :Tabnew supporting multiple files.
-
-- :SplitRelative / :EditRelative / :TabnewRelative / :ReadRelative for
-  opening / reading a file relative to the current one.
-
 - Commands to locate a project, workspace, or current file relative
   file and open it (split, edit, or tabnew).
-
-- Enhanced taglist support.
 
 - Much more...
 

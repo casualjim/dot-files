@@ -1,11 +1,10 @@
 *vim-php-complete*
 
-
 Php Code Completion
 *******************
 
 Php code completion uses the standard Vim code completion mechanism
-(|vim-code-completion|) like so:
+(|vim-code_completion|) like so:
 
 >
 
@@ -24,10 +23,5 @@ Php code completion uses the standard Vim code completion mechanism
    ?>
 
 <
-
-
-Note: This feature depends on the eclipse pdt (http://eclipse.org/pdt)
-  which should be installed for you when choosing php support in the
-  eclim installer.
 
 vim:ft=eclimhelp

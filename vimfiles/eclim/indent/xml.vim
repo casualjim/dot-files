@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2009  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@
 "
 " }}}
 
-let b:did_indent = 1
 if &indentexpr =~ 'EclimGetXmlIndent' ||
     \ (!exists('b:disableOverride') && exists('g:EclimXmlIndentDisabled'))
   finish
 endif
 
+let b:did_indent = 1
 let b:disableOverride = 1
+runtime eclim/indent/indentanything.vim
 runtime! indent/dtd.vim
 
 setlocal indentexpr=EclimGetXmlIndent(v:lnum)

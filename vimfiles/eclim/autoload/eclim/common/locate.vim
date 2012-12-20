@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -35,9 +35,22 @@ if !exists('g:EclimLocateFileFuzzy')
   let g:EclimLocateFileFuzzy = 1
 endif
 
+if !exists('g:EclimLocateFileCaseInsensitive')
+  " one of: 'lower', 'never', 'always'
+  let g:EclimLocateFileCaseInsensitive = 'lower'
+endif
+
 if !exists('g:EclimLocateUserScopes')
   let g:EclimLocateUserScopes = []
 endif
+
+let g:eclim_locate_default_updatetime = &updatetime
+
+" disable autocomplpop in the locate prompt
+if exists('g:acp_behavior')
+  let g:acp_behavior['locate_prompt'] = []
+endif
+
 " }}}
 
 " Script Variables {{{
@@ -47,7 +60,6 @@ let s:scopes = [
     \ 'workspace',
     \ 'buffers',
     \ 'quickfix',
-    \ 'vcsmodified',
   \ ]
 
 let s:help = [
@@ -129,7 +141,7 @@ function! eclim#common#locate#LocateFile(action, file, ...)
     unlet! b:project
   endtry
 
-  call map(results, "split(v:val, '|')[2]")
+  call map(results, "v:val.path")
 
   let result = ''
   " One result.
@@ -160,8 +172,7 @@ function! eclim#common#locate#LocateFile(action, file, ...)
   call eclim#util#Echo(' ')
 endfunction " }}}
 
-" LocateFileCompletion() {{{
-function! eclim#common#locate#LocateFileCompletion()
+function! eclim#common#locate#LocateFileCompletion() " {{{
   let line = getline('.')
   if line !~ '^> '
     call setline(1, substitute(line, '^>\?\s*', '> \1', ''))
@@ -179,11 +190,10 @@ function! eclim#common#locate#LocateFileCompletion()
     let results = s:LocateFileFunction(b:scope)(pattern)
     if !empty(results)
       for result in results
-        let parts = split(result, '|')
-        let rel = eclim#util#Simplify(parts[1])
-        let dict = {'word': parts[0], 'menu': rel, 'info': parts[2]}
+        let rel = eclim#util#Simplify(get(result, 'projectPath', result.path))
+        let dict = {'word': result.name, 'menu': rel, 'info': result.path}
         call add(completions, dict)
-        call add(display, parts[0] . '  ' . rel)
+        call add(display, result.name . '  ' . rel)
       endfor
     endif
   endif
@@ -203,8 +213,7 @@ function! eclim#common#locate#LocateFileCompletion()
   call s:LocateFileSelection(1)
 endfunction " }}}
 
-" LocateFileClose() {{{
-function! eclim#common#locate#LocateFileClose()
+function! eclim#common#locate#LocateFileClose() " {{{
   if bufname(bufnr('%')) !~ '^\[Locate.*\]$'
     let bufnr = bufnr('\[Locate in *\]')
     let winnr = bufwinnr(bufnr)
@@ -223,8 +232,7 @@ function! eclim#common#locate#LocateFileClose()
   endif
 endfunction " }}}
 
-" s:LocateFileCompletionInit(action, scope, project, workspace) {{{
-function! s:LocateFileCompletionInit(action, scope, project, workspace)
+function! s:LocateFileCompletionInit(action, scope, project, workspace) " {{{
   let file = expand('%')
   let bufnum = bufnr('%')
   let winrestcmd = winrestcmd()
@@ -238,7 +246,7 @@ function! s:LocateFileCompletionInit(action, scope, project, workspace)
   let results_bufnum = bufnr('%')
 
   let locate_in = (a:scope == 'project' ? a:project : a:scope)
-  exec 'topleft 1split ' . escape('[Locate in ' . locate_in . ']', ' ')
+  exec 'topleft 1split ' . escape('[Locate in ' . locate_in . ']', ' -')
   setlocal modifiable
   call setline(1, '> ')
   call cursor(1, col('$'))
@@ -257,17 +265,17 @@ function! s:LocateFileCompletionInit(action, scope, project, workspace)
   let b:results_bufnum = results_bufnum
   let b:help_bufnum = 0
   let b:selection = 1
-  let b:updatetime = &updatetime
+  let b:winrestcmd = winrestcmd
 
   set updatetime=300
 
   augroup locate_file_init
     autocmd!
     autocmd BufEnter <buffer> nested startinsert! | let &updatetime = 300
-    autocmd BufLeave <buffer> nested stopinsert | let &updatetime = b:updatetime
     autocmd BufLeave \[Locate*\]
       \ call eclim#util#DelayedCommand('call eclim#common#locate#LocateFileClose()')
     exec 'autocmd InsertLeave <buffer> ' .
+      \ 'let &updatetime = g:eclim_locate_default_updatetime | ' .
       \ 'doautocmd BufWinLeave | bw | ' .
       \ 'doautocmd BufWinLeave | bw ' . b:results_bufnum . ' | ' .
       \ 'call eclim#util#GoToBufferWindow(' .  b:bufnum . ') | ' .
@@ -296,24 +304,21 @@ function! s:LocateFileCompletionInit(action, scope, project, workspace)
   startinsert!
 endfunction " }}}
 
-" s:LocateFileCompletionAutocmd() {{{
-function! s:LocateFileCompletionAutocmd()
+function! s:LocateFileCompletionAutocmd() " {{{
   augroup locate_file
     autocmd!
     autocmd CursorHoldI <buffer> call eclim#common#locate#LocateFileCompletion()
   augroup END
 endfunction " }}}
 
-" s:LocateFileCompletionAutocmdDeferred() {{{
-function! s:LocateFileCompletionAutocmdDeferred()
+function! s:LocateFileCompletionAutocmdDeferred() " {{{
   augroup locate_file
     autocmd!
     autocmd CursorMovedI <buffer> call <SID>LocateFileCompletionAutocmd()
   augroup END
 endfunction " }}}
 
-" s:LocateFileSelection(sel) {{{
-function! s:LocateFileSelection(sel)
+function! s:LocateFileSelection(sel) " {{{
   " pause completion while tabbing though results
   augroup locate_file
     autocmd!
@@ -363,30 +368,35 @@ function! s:LocateFileSelection(sel)
   return ''
 endfunction " }}}
 
-" s:LocateFileSelect(action) {{{
-function! s:LocateFileSelect(action)
+function! s:LocateFileSelect(action) " {{{
   if exists('b:completions') && !empty(b:completions)
-    let winnr = winnr()
+    let &updatetime = g:eclim_locate_default_updatetime
+
     let file = eclim#util#Simplify(b:completions[b:selection - 1].info)
     if has('win32unix')
       let file = eclim#cygwin#CygwinPath(file)
     endif
-    let bufnum = bufnr('%')
-    let results_bufnum = b:results_bufnum
-    let updatetime = b:updatetime
-    call eclim#util#GoToBufferWindow(b:bufnum)
+
+    let bufnum = b:bufnum
+    let winrestcmd = b:winrestcmd
+
+    " close locate windows
+    exec 'bdelete ' . b:results_bufnum
+    exec 'bdelete ' . bufnr('%')
+
+    " reset windows to pre-locate sizes
+    exec winrestcmd
+
+    " open the selected result
+    call eclim#util#GoToBufferWindow(bufnum)
     call eclim#util#GoToBufferWindowOrOpen(file, a:action)
-    call feedkeys(
-      \ "\<esc>:let &updatetime = " . updatetime . " | " .
-      \ ":bd " . bufnum . " | " .
-      \ "bd " . results_bufnum . " | " .
-      \ "doautocmd WinEnter\<cr>", 'n')
+    call feedkeys("\<esc>", 'n')
+    doautocmd WinEnter
   endif
   return ''
 endfunction " }}}
 
-" s:LocateFileChangeScope() {{{
-function! s:LocateFileChangeScope()
+function! s:LocateFileChangeScope() " {{{
   if b:help_bufnum && bufexists(b:help_bufnum)
     exec 'bdelete ' . b:help_bufnum
   endif
@@ -416,18 +426,17 @@ function! s:LocateFileChangeScope()
   setlocal noswapfile nobuflisted
   setlocal buftype=nofile bufhidden=delete
 
-  nmap <buffer> <silent> <cr> :call <SID>ChooseScope()<cr>
-  nmap <buffer> <silent> q :call <SID>CloseScopeChooser()<cr>
-  nmap <buffer> <silent> <c-c> :call <SID>CloseScopeChooser()<cr>
-  nmap <buffer> <silent> <c-l> :call <SID>CloseScopeChooser()<cr>
+  nnoremap <buffer> <silent> <cr> :call <SID>ChooseScope()<cr>
+  nnoremap <buffer> <silent> q :call <SID>CloseScopeChooser()<cr>
+  nnoremap <buffer> <silent> <c-c> :call <SID>CloseScopeChooser()<cr>
+  nnoremap <buffer> <silent> <c-l> :call <SID>CloseScopeChooser()<cr>
 
   autocmd BufLeave <buffer> call <SID>CloseScopeChooser()
 
   return ''
 endfunction " }}}
 
-" s:ChooseScope() {{{
-function! s:ChooseScope()
+function! s:ChooseScope() " {{{
   let scope = getline('.')
   if scope =~ '^"\|^\s*$'
     return
@@ -460,26 +469,6 @@ function! s:ChooseScope()
   elseif scope == 'workspace'
     let project = ''
     let workspace = eclim#eclipse#ChooseWorkspace()
-
-  elseif scope == 'vcsmodified'
-    let winnr = winnr()
-    let bufwinnr = bufwinnr(getbufvar(b:locate_bufnr, 'bufnum'))
-    noautocmd exec bufwinnr . 'winc w'
-    let cwd = getcwd()
-    exec 'lcd ' . escape(expand('%:p:h'), ' ')
-    try
-      let vcs = eclim#vcs#util#GetVcsType()
-    finally
-      exec 'lcd ' . escape(cwd, ' ')
-      noautocmd exec winnr . 'winc w'
-    endtry
-    if vcs == ''
-      call eclim#util#EchoError('Unable to determine vcs type.')
-      return
-    elseif vcs == 'cvs'
-      call eclim#util#EchoError('cvs not yet supported')
-      return
-    endif
   endif
 
   call s:CloseScopeChooser()
@@ -493,8 +482,7 @@ function! s:ChooseScope()
   call eclim#common#locate#LocateFileCompletion()
 endfunction " }}}
 
-" s:CloseScopeChooser() {{{
-function! s:CloseScopeChooser()
+function! s:CloseScopeChooser() " {{{
   let winnum = b:locate_winnr
   bwipeout
   exec winnum . 'winc w'
@@ -513,8 +501,7 @@ function! s:CloseScopeChooser()
   augroup END
 endfunction " }}}
 
-" s:LocateFileHelp() {{{
-function! s:LocateFileHelp()
+function! s:LocateFileHelp() " {{{
   let winnr = winnr()
   noautocmd exec bufwinnr(b:results_bufnum) . 'winc w'
   let help_bufnum = eclim#help#BufferHelp(s:help, 'vertical', 50)
@@ -524,8 +511,7 @@ function! s:LocateFileHelp()
   return ''
 endfunction " }}}
 
-" s:LocateFileConvertPattern(pattern, fuzzy) {{{
-function! s:LocateFileConvertPattern(pattern, fuzzy)
+function! s:LocateFileConvertPattern(pattern, fuzzy) " {{{
   let pattern = a:pattern
 
   if a:fuzzy
@@ -547,43 +533,45 @@ function! s:LocateFileConvertPattern(pattern, fuzzy)
   return pattern
 endfunction " }}}
 
-" s:LocateFileFunction(scope) {{{
-function! s:LocateFileFunction(scope)
+function! s:LocateFileFunction(scope) " {{{
   if eclim#util#ListContains(s:scopes, a:scope)
     return function('s:LocateFile_' . a:scope)
   endif
   return function('LocateFile_' . a:scope)
 endfunction " }}}
 
-" s:LocateFile_workspace(pattern) {{{
-function! s:LocateFile_workspace(pattern)
+function! s:LocateFileCommand(pattern) " {{{
   let command = s:command_locate
-  let command = substitute(command, '<scope>', 'workspace', '')
+  if g:EclimLocateFileCaseInsensitive == 'always' ||
+   \ (a:pattern !~# '[A-Z]' && g:EclimLocateFileCaseInsensitive != 'never')
+    let command .= ' -i'
+  endif
   let command .= ' -p "' . a:pattern . '"'
+  return command
+endfunction " }}}
+
+function! s:LocateFile_workspace(pattern) " {{{
+  let command = substitute(s:LocateFileCommand(a:pattern), '<scope>', 'workspace', '')
   let port = eclim#client#nailgun#GetNgPort(b:workspace)
-  let results = split(eclim#ExecuteEclim(command, port), '\n')
-  if len(results) == 1 && results[0] == '0'
+  let results = eclim#ExecuteEclim(command, port)
+  if type(results) != g:LIST_TYPE
     return []
   endif
   return results
 endfunction " }}}
 
-" s:LocateFile_project(pattern) {{{
-function! s:LocateFile_project(pattern)
-  let command = s:command_locate
-  let command = substitute(command, '<scope>', 'project', '')
-  let command .= ' -p "' . a:pattern . '"'
+function! s:LocateFile_project(pattern) " {{{
+  let command = substitute(s:LocateFileCommand(a:pattern), '<scope>', 'project', '')
   let command .= ' -n "' . b:project . '"'
   let port = eclim#client#nailgun#GetNgPort(b:workspace)
-  let results = split(eclim#ExecuteEclim(command, port), '\n')
-  if len(results) == 1 && results[0] == '0'
+  let results = eclim#ExecuteEclim(command, port)
+  if type(results) != g:LIST_TYPE
     return []
   endif
   return results
 endfunction " }}}
 
-" s:LocateFile_buffers(pattern) {{{
-function! s:LocateFile_buffers(pattern)
+function! s:LocateFile_buffers(pattern) " {{{
   redir => list
   silent exec 'buffers'
   redir END
@@ -606,8 +594,7 @@ function! s:LocateFile_buffers(pattern)
   return []
 endfunction " }}}
 
-" s:LocateFile_quickfix(pattern) {{{
-function! s:LocateFile_quickfix(pattern)
+function! s:LocateFile_quickfix(pattern) " {{{
   let buffers = []
   let prev = ''
   for entry in getqflist()
@@ -633,54 +620,16 @@ function! s:LocateFile_quickfix(pattern)
   return []
 endfunction " }}}
 
-" s:LocateFile_vcsmodified(pattern) {{{
-function! s:LocateFile_vcsmodified(pattern)
-  " cache results
-  if !exists('b:locate_vcs_modified_files')
-    let winnr = winnr()
-    let bufwinnr = bufwinnr(b:bufnum)
-    exec bufwinnr . 'winc w'
-    try
-      let root = eclim#vcs#util#GetRoot('')
-      let files = eclim#vcs#util#GetModifiedFiles()
-      call map(files, "substitute(v:val, '^' . root . '/', '', '')")
-    finally
-      exec winnr . 'winc w'
-    endtry
-    let b:locate_vcs_root = root
-    let b:locate_vcs_modified_files = files
-  else
-    let root = b:locate_vcs_root
-    let files = b:locate_vcs_modified_files
-  endif
-
-  if len(files) > 0
-    let tempfile = substitute(tempname(), '\', '/', 'g')
-    call writefile(files, tempfile)
-    try
-      let results = eclim#common#locate#LocateFileFromFileList(a:pattern, tempfile)
-      call map(results, "substitute(v:val, '\\(.*|\\)', '\\1' . root . '/', '')")
-      return results
-    finally
-      call delete(tempfile)
-    endtry
-  endif
-  return []
-endfunction " }}}
-
-" LocateFileFromFileList(pattern, file) {{{
-function! eclim#common#locate#LocateFileFromFileList(pattern, file)
+function! eclim#common#locate#LocateFileFromFileList(pattern, file) " {{{
   let file = a:file
   if has('win32unix')
     let file = eclim#cygwin#WindowsPath(file)
   endif
-  let command = s:command_locate
-  let command = substitute(command, '<scope>', 'list', '')
-  let command .= ' -p "' . a:pattern . '"'
+  let command = substitute(s:LocateFileCommand(a:pattern), '<scope>', 'list', '')
   let command .= ' -f "' . file . '"'
   let port = eclim#client#nailgun#GetNgPort(b:workspace)
-  let results = split(eclim#ExecuteEclim(command, port), '\n')
-  if len(results) == 1 && results[0] == '0'
+  let results = eclim#ExecuteEclim(command, port)
+  if type(results) != g:LIST_TYPE
     return []
   endif
   return results

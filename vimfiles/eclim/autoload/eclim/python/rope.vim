@@ -5,7 +5,7 @@
 "
 " License:
 "
-" Copyright (C) 2005 - 2009  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 " }}}
 
 " Init(project) {{{
-function eclim#python#rope#Init(project)
+function! eclim#python#rope#Init(project)
   if !has('python')
     call eclim#util#EchoError(
       \ "This functionality requires 'python' support compiled into vim.")
@@ -48,7 +48,7 @@ if ropepath not in sys.path:
   sys.path.insert(0, ropepath)
 
   from contextlib import contextmanager
-  from rope.base import pyobjects, pynames
+  from rope.base import builtins, pyobjects, pynames
 
   @contextmanager
   def projectroot():
@@ -70,12 +70,30 @@ if ropepath not in sys.path:
       u = u.replace('\r\n', '\n') # rope ignore \r, so don't count them.
       return len(u)
 
+  def kind(proposal):
+    pyname = proposal.pyname
+    if hasattr(pyname, 'get_object'):
+      pyobject = pyname.get_object()
+      if isinstance(pyobject, pyobjects.AbstractClass):
+        return 'c'
+
+      if isinstance(pyobject, pyobjects.AbstractFunction):
+        return 'f'
+
+    return proposal.scope[0]
+
   def parameters(proposal):
     pyname = proposal.pyname
     if isinstance(pyname, pynames.ImportedName):
       pyname = pyname._get_imported_pyname()
-    if isinstance(pyname, pynames.DefinedName):
+    if hasattr(pyname, 'get_object'):
       pyobject = pyname.get_object()
+      if isinstance(pyobject, builtins.BuiltinFunction):
+        params = pyobject.get_param_names()
+        if params and params[0] == 'self':
+          params = params[1:]
+        return ', '.join(params)
+
       if isinstance(pyobject, pyobjects.AbstractFunction):
         args = [(a.id, a.col_offset) for a in pyobject.arguments.args]
         defaults = []
@@ -85,6 +103,9 @@ if ropepath not in sys.path:
 
         params = StringIO()
         for ii, arg in enumerate(args):
+          if arg[0] == 'self':
+            continue
+
           if len(params.getvalue()) > 0:
             params.write(', ')
           if defaults:
@@ -133,7 +154,7 @@ endfunction " }}}
 
 " RopePath() {{{
 " Gets the base directory where the rope code is located.
-function eclim#python#rope#RopePath()
+function! eclim#python#rope#RopePath()
   if !exists("g:RopePath")
     let savewig = &wildignore
     set wildignore=""
@@ -155,7 +176,7 @@ endfunction " }}}
 " Completions(project, filename, offset, encoding) {{{
 " Attempts to suggest code completions for a given project path, project
 " relative file path and offset.
-function eclim#python#rope#Completions(project, filename, offset, encoding)
+function! eclim#python#rope#Completions(project, filename, offset, encoding)
   if !eclim#python#rope#Init(a:project)
     return []
   endif
@@ -186,18 +207,22 @@ with(projectroot()):
       project, code, offset, resource=resource, maxfixes=3)
     proposals = codeassist.sorted_proposals(proposals)
     for ii, p in enumerate(proposals):
-      proposals[ii] = [p.name, p.kind, parameters(p)]
-    vim.command("let results = %s" % repr(proposals))
+      proposals[ii] = [p.name, kind(p), parameters(p)]
+    vim.command("let results = %r" % proposals)
+
+    if resource.name.startswith('__eclim_temp_'):
+      #resource.remove()
+      os.unlink(resource.real_path)
   except IndentationError, e:
     vim.command(
       "let completion_error = 'Completion failed due to indentation error.'"
     )
   except ModuleSyntaxError, e:
-    message = 'Completion failed due to syntax error: %s' % e.message
-    vim.command("let completion_error = %s" % repr(message))
+    message = 'Completion failed due to syntax error: %s' % e.args[0]
+    vim.command("let completion_error = %r" % message)
   except RopeError, e:
     message = 'Completion failed due to rope error: %s' % type(e)
-    vim.command("let completion_error = %s" % repr(message))
+    vim.command("let completion_error = %r" % message)
 EOF
 
   if completion_error != ''
@@ -205,11 +230,10 @@ EOF
   endif
 
   return results
-
 endfunction " }}}
 
 " Find(project, filename, offset, encoding, context) {{{
-function eclim#python#rope#Find(project, filename, offset, encoding, context)
+function! eclim#python#rope#Find(project, filename, offset, encoding, context)
   if !eclim#python#rope#Init(a:project)
     return []
   endif
@@ -257,6 +281,9 @@ with(projectroot()):
           path = location.resource.real_path.replace('\\', '/')
           lineno = location.lineno
         else: # codeassist result
+          if location[1] is None:
+            continue
+
           path = location[0] and \
             location[0].real_path or \
             '%s/%s' % (vim.eval('a:project'), vim.eval('a:filename'))
@@ -266,17 +293,17 @@ with(projectroot()):
         # TODO: use location.offset
         results.append(str('%s|%s col 1|' % (path, lineno)))
 
-    vim.command("let results = %s" % repr(results))
+    vim.command("let results = %r" % results)
   except IndentationError, e:
     vim.command(
       "let search_error = 'Search failed due to indentation error.'"
     )
   except ModuleSyntaxError, e:
-    message = 'Search failed due to syntax error: %s' % e.message
-    vim.command("let search_error = %s" % repr(message))
+    message = 'Search failed due to syntax error: %s' % e.args[0]
+    vim.command("let search_error = %r" % message)
   except RopeError, e:
     message = 'Search failed due to rope error: %s' % type(e)
-    vim.command("let search_error = %s" % repr(message))
+    vim.command("let search_error = %r" % message)
 EOF
 
   if search_error != ''
@@ -289,7 +316,7 @@ endfunction " }}}
 
 " GetOffset() {{{
 " Gets the character offset for the current cursor position.
-function eclim#python#rope#GetOffset()
+function! eclim#python#rope#GetOffset()
   " NOTE: rope doesn't recognize dos line endings as 2 characters, so just
   " handle as a single character.  It uses true character offsets, vs eclipse
   " which uses bytes.
@@ -310,7 +337,7 @@ endfunction " }}}
 
 " GetSourceDirs(project) {{{
 " Attempts to determine the source directories for the supplied project.
-function eclim#python#rope#GetSourceDirs(project)
+function! eclim#python#rope#GetSourceDirs(project)
   if !eclim#python#rope#Init(a:project)
     return []
   endif
@@ -330,7 +357,7 @@ with(projectroot()):
       dirs.append(src_folder.real_path)
     except ResourceNotFoundError:
       pass
-  vim.command("let dirs = %s" % repr(dirs))
+  vim.command("let dirs = %r" % dirs)
 EOF
 
   return dirs
@@ -339,7 +366,7 @@ endfunction " }}}
 
 " Validate(project, filename) {{{
 " Attempts to validate the supplied file.
-function eclim#python#rope#Validate(project, filename)
+function! eclim#python#rope#Validate(project, filename)
   if !eclim#python#rope#Init(a:project)
     return []
   endif
@@ -359,7 +386,7 @@ with(projectroot()):
   # code completion
   errors = finderrors.find_errors(project, resource)
   errors = ['%s:%s:%s' % (filepath, e.lineno, e.error) for e in errors]
-  vim.command("let results = %s" % repr(errors))
+  vim.command("let results = %r" % errors)
 EOF
 
   return results

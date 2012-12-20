@@ -1,14 +1,8 @@
 " Author:  Eric Van Dewoestine
 "
-" Description: {{{
-"   Utility functions.
+" License: {{{
 "
-"   This plugin contains shared functions that can be used regardless of the
-"   current file type being edited.
-"
-" License:
-"
-" Copyright (C) 2005 - 2010  Eric Van Dewoestine
+" Copyright (C) 2005 - 2012  Eric Van Dewoestine
 "
 " This program is free software: you can redistribute it and/or modify
 " it under the terms of the GNU General Public License as published by
@@ -36,6 +30,8 @@
   let s:c_shells = ['csh', 'tcsh']
 
   let s:show_current_error_displaying = 0
+
+  let s:command_setting = '-command setting -s <setting>'
 " }}}
 
 " Balloon(message) {{{
@@ -47,6 +43,19 @@ function! eclim#util#Balloon(message)
     let message = substitute(message, '\n', ' ', 'g')
   endif
   return message
+endfunction " }}}
+
+" CompilerExists(compiler) {{{
+" Check whether a particular vim compiler is available.
+function! eclim#util#CompilerExists(compiler)
+  if !exists('s:compilers')
+    redir => compilers
+    silent compiler
+    redir END
+    let s:compilers = split(compilers, '\n')
+    call map(s:compilers, 'fnamemodify(v:val, ":t:r")')
+  endif
+  return index(s:compilers, a:compiler) != -1
 endfunction " }}}
 
 " DelayedCommand(command, [delay]) {{{
@@ -112,15 +121,34 @@ endfunction " }}}
 " Echos the supplied message at the supplied level with the specified
 " highlight.
 function! s:EchoLevel(message, level, highlight)
-  " only echo if the result is not 0, which signals that ExecuteEclim failed.
-  if a:message != "0" && g:EclimLogLevel >= a:level
-    exec "echohl " . a:highlight
-    redraw
-    for line in split(a:message, '\n')
+  " don't echo if the message is 0, which signals an ExecuteEclim failure.
+  if type(a:message) == g:NUMBER_TYPE && a:message == 0
+    return
+  endif
+
+  if g:EclimLogLevel < a:level
+    return
+  endif
+
+  if type(a:message) == g:LIST_TYPE
+    let messages = a:message
+  else
+    let messages = split(a:message, '\n')
+  endif
+
+  exec "echohl " . a:highlight
+  redraw
+  if mode() == 'n'
+    for line in messages
       echom line
     endfor
-    echohl None
+  else
+    " if we aren't in normal mode then use regular 'echo' since echom
+    " messages won't be displayed while the current mode is displayed in
+    " vim's command line.
+    echo join(messages, "\n") . "\n"
   endif
+  echohl None
 endfunction " }}}
 
 " Echo(message) {{{
@@ -149,11 +177,12 @@ function! eclim#util#EscapeBufferName(name)
   return substitute(name, '\(.\{-}\)\[\(.\{-}\)\]\(.\{-}\)', '\1[[]\2[]]\3', 'g')
 endfunction " }}}
 
-" Exec(cmd) {{{
+" Exec(cmd [,output]) {{{
 " Used when executing ! commands that may be disrupted by non default vim
 " options.
-function! eclim#util#Exec(cmd)
-  call eclim#util#System(a:cmd, 1)
+function! eclim#util#Exec(cmd, ...)
+  let exec_output = len(a:000) > 0 ? a:000[0] : 0
+  return eclim#util#System(a:cmd, 1, exec_output)
 endfunction " }}}
 
 " ExecWithoutAutocmds(cmd, [events]) {{{
@@ -218,11 +247,34 @@ function! eclim#util#GetEncoding()
   return encoding
 endfunction " }}}
 
-" GetOffset() {{{
-" Gets the byte offset for the current cursor position.
-function! eclim#util#GetOffset()
-  let offset = line2byte(line('.')) - 1
-  let offset += col('.') - 1
+" GetOffset([line, col]) {{{
+" Gets the byte offset for the current cursor position or supplied line, col.
+function! eclim#util#GetOffset(...)
+  let lnum = a:0 > 0 ? a:000[0] : line('.')
+  let cnum = a:0 > 1 ? a:000[1] : col('.')
+  let offset = 0
+
+  " handle case where display encoding differs from the underlying file
+  " encoding
+  if &fileencoding != '' && &encoding != '' && &fileencoding != &encoding
+    let prev = lnum - 1
+    if prev > 0
+      let lineEnding = &ff == 'dos' ? "\r\n" : "\n"
+      " convert each line to the file encoding and sum their lengths
+      let offset = eval(
+        \ join(
+        \   map(
+        \     range(1, prev),
+        \     'len(iconv(getline(v:val), &encoding, &fenc) . "' . lineEnding . '")'),
+        \   '+'))
+    endif
+
+  " normal case
+  else
+    let offset = line2byte(lnum) - 1
+  endif
+
+  let offset += cnum - 1
   return offset
 endfunction " }}}
 
@@ -376,6 +428,30 @@ function! eclim#util#GetPathEntry(file)
   return 0
 endfunction " }}}
 
+" GetSetting(setting, [workspace]) {{{
+" Gets a global setting from eclim.  Returns '' if the setting does not
+" exist, 0 if an error occurs communicating with the server.
+function! eclim#util#GetSetting(setting, ...)
+  let workspace = a:0 > 0 ? a:1 : eclim#eclipse#ChooseWorkspace()
+  if workspace == '0'
+    return
+  endif
+
+  let command = s:command_setting
+  let command = substitute(command, '<setting>', a:setting, '')
+
+  let port = eclim#client#nailgun#GetNgPort(workspace)
+  let result = eclim#ExecuteEclim(command, port)
+  if result == '0'
+    return result
+  endif
+
+  if result == ''
+    call eclim#util#EchoWarning("Setting '" . a:setting . "' does not exist.")
+  endif
+  return result
+endfunction " }}}
+
 " GetVisualSelection(line1, line2, default) {{{
 " Returns the contents of, and then clears, the last visual selection.
 " If default is set, the default range will be honor.
@@ -449,11 +525,11 @@ endfunction " }}}
 " Focuses the window containing the supplied buffer name or buffer number.
 " Returns 1 if the window was found, 0 otherwise.
 function! eclim#util#GoToBufferWindow(buf)
-  if type(a:buf) == 0
+  if type(a:buf) == g:NUMBER_TYPE
     let winnr = bufwinnr(a:buf)
   else
     let name = eclim#util#EscapeBufferName(a:buf)
-    let winnr = bufwinnr(bufnr('^' . name))
+    let winnr = bufwinnr(bufnr('^' . name . '$'))
   endif
   if winnr != -1
     exec winnr . "winc w"
@@ -468,7 +544,7 @@ endfunction " }}}
 " none, opens the file using the supplied command.
 function! eclim#util#GoToBufferWindowOrOpen(name, cmd)
   let name = eclim#util#EscapeBufferName(a:name)
-  let winnr = bufwinnr(bufnr('^' . name))
+  let winnr = bufwinnr(bufnr('^' . name . '$'))
   if winnr != -1
     exec winnr . "winc w"
     call eclim#util#DelayedCommand('doautocmd WinEnter')
@@ -517,19 +593,40 @@ endfunction " }}}
 " To determine element equality both '==' and 'is' are tried as well as
 " ^element$ to support a regex supplied element string.
 function! eclim#util#ListContains(list, element)
-  let string = type(a:element) == 1 ? a:element : escape(string(a:element), '\')
+  let string = type(a:element) == g:STRING_TYPE ?
+    \ a:element : escape(string(a:element), '\')
   for element in a:list
     if element is a:element ||
         \ (type(element) == type(a:element) && element == a:element)
       return 1
     else
-      let estring = type(element) == 1 ? element : string(element)
+      let estring = type(element) == g:STRING_TYPE ? element : string(element)
       if estring =~ '^' . string . '$'
         return 1
       endif
     endif
   endfor
   return 0
+endfunction " }}}
+
+" Make(bang, args) {{{
+" Executes make using the supplied arguments.
+function! eclim#util#Make(bang, args)
+  let makefile = findfile('makefile', '.;')
+  let makefile2 = findfile('Makefile', '.;')
+  if len(makefile2) > len(makefile)
+    let makefile = makefile2
+  endif
+  let cwd = getcwd()
+  let save_mlcd = g:EclimMakeLCD
+  exec 'lcd ' . fnamemodify(makefile, ':h')
+  let g:EclimMakeLCD = 0
+  try
+    call eclim#util#MakeWithCompiler('eclim_make', a:bang, a:args)
+  finally
+    exec 'lcd ' . escape(cwd, ' ')
+    let g:EclimMakeLCD = save_mlcd
+  endtry
 endfunction " }}}
 
 " MakeWithCompiler(compiler, bang, args) {{{
@@ -558,29 +655,36 @@ function! eclim#util#MakeWithCompiler(compiler, bang, args, ...)
     exec 'compiler ' . a:compiler
     let make_cmd = substitute(&makeprg, '\$\*', a:args, '')
 
-    " windows machines where 'tee' is available
-    if (has('win32') || has('win64')) && executable('tee')
-      let outfile = g:EclimTempDir . '/eclim_make_output.txt'
-      let teefile = eclim#cygwin#CygwinPath(outfile)
-      let command = '!cmd /c "' . make_cmd . ' 2>&1 | tee "' . teefile . '" "'
-
-      doautocmd QuickFixCmdPre make
-      call eclim#util#Exec(command)
-      if filereadable(outfile)
-        if a:bang == ''
-          exec 'cfile ' . escape(outfile, ' ')
-        else
-          exec 'cgetfile ' . escape(outfile, ' ')
-        endif
-        call delete(outfile)
+    if g:EclimMakeLCD
+      let w:quickfix_dir = getcwd()
+      let dir = eclim#project#util#GetCurrentProjectRoot()
+      if dir != ''
+        exec 'lcd ' . escape(dir, ' ')
       endif
-      doautocmd QuickFixCmdPost make
+    endif
+
+    " windows machines where 'tee' is available
+    if (has('win32') || has('win64')) && (executable('tee') || executable('wtee'))
+      doautocmd QuickFixCmdPre make
+      let resultfile = eclim#util#Exec(make_cmd, 2)
+      if filereadable(resultfile)
+        if a:bang == ''
+          exec 'cfile ' . escape(resultfile, ' ')
+        else
+          exec 'cgetfile ' . escape(resultfile, ' ')
+        endif
+        call delete(resultfile)
+      endif
+      silent doautocmd QuickFixCmdPost make
 
     " all other platforms
     else
       call eclim#util#EchoTrace('make: ' . make_cmd)
       exec 'make' . a:bang . ' ' . a:args
     endif
+  catch /E42\>/
+    " ignore 'E42: No Errors' which occurs when the make has qf results, but a
+    " QuickFixCmdPost filters them all out.
   finally
     if exists('saved_compiler')
       unlet! g:current_compiler b:current_compiler
@@ -592,6 +696,10 @@ function! eclim#util#MakeWithCompiler(compiler, bang, args, ...)
     endif
     if has('win32') || has('win64')
       let &shellpipe = saved_shellpipe
+    endif
+    if exists('w:quickfix_dir')
+      exec 'lcd ' . escape(w:quickfix_dir, ' ')
+      unlet w:quickfix_dir
     endif
   endtry
 endfunction " }}}
@@ -610,6 +718,18 @@ endfunction " }}}
 function! eclim#util#MarkSave()
   let s:markCol = col("'`")
   return line("''")
+endfunction " }}}
+
+" Pad(string, length, [char]) {{{
+" Pad the supplied string.
+function! eclim#util#Pad(string, length, ...)
+  let char = a:0 > 0 ? a:1 : ' '
+
+  let string = a:string
+  while len(string) < a:length
+    let string .= char
+  endwhile
+  return string
 endfunction " }}}
 
 " ParseArgs(args) {{{
@@ -648,6 +768,9 @@ function! eclim#util#ParseArgs(args)
         let escape = 0
       endif
     else
+      if escape && char != ' '
+        let arg .= '\'
+      endif
       let arg .= char
       let escape = 0
     endif
@@ -680,7 +803,7 @@ function! eclim#util#ParseLocationEntries(entries, ...)
     let dict = s:ParseLocationEntry(entry)
 
     " partition by severity
-    if type(entries) == 4 " dictionary
+    if type(entries) == g:DICT_TYPE
       " empty key not allowed
       let type = dict.type == '' ? ' ' : tolower(dict.type)
       if !has_key(entries, type)
@@ -695,7 +818,7 @@ function! eclim#util#ParseLocationEntries(entries, ...)
   endfor
 
   " re-assemble severity partitioned results
-  if type(entries) == 4 " dictionary
+  if type(entries) == g:DICT_TYPE
     let results = []
     if has_key(entries, 'e')
       let results += remove(entries, 'e')
@@ -722,13 +845,27 @@ endfunction " }}}
 " s:ParseLocationEntry(entry) {{{
 function! s:ParseLocationEntry(entry)
   let entry = a:entry
-  let file = substitute(entry, '\(.\{-}\)|.*', '\1', '')
-  let line = substitute(entry, '.*|\([0-9]\+\) col.*', '\1', '')
-  let col = substitute(entry, '.*col \([0-9]\+\)|.*', '\1', '')
-  let message = substitute(entry, '.*col [0-9]\+|\(.\{-}\)\(|.*\|$\)', '\1', '')
-  let type = substitute(entry, '.*|\(e\|w\)$', '\1', '')
-  if type == entry
+  if type(entry) == g:DICT_TYPE
+    let file = entry.filename
+    let line = entry.line
+    let col = entry.column
+    let message = entry.message
     let type = ''
+    if has_key(entry, 'warning')
+      let type = entry.warning ? 'w' : 'e'
+    endif
+
+  " FIXME: should be safe to remove this block after all commands have gone
+  " through the json conversion.
+  else
+    let file = substitute(entry, '\(.\{-}\)|.*', '\1', '')
+    let line = substitute(entry, '.*|\([0-9]\+\) col.*', '\1', '')
+    let col = substitute(entry, '.*col \([0-9]\+\)|.*', '\1', '')
+    let message = substitute(entry, '.*col [0-9]\+|\(.\{-}\)\(|.*\|$\)', '\1', '')
+    let type = substitute(entry, '.*|\(e\|w\)$', '\1', '')
+    if type == entry
+      let type = ''
+    endif
   endif
 
   if has('win32unix')
@@ -746,11 +883,83 @@ function! s:ParseLocationEntry(entry)
   return dict
 endfunction " }}}
 
-" PromptList(prompt, list, highlight) {{{
+" Prompt(prompt, [validator], [highlight]) {{{
+" Creates a prompt for the user using the supplied prompt string, validator
+" and highlight. The prompt can be either a just a string to be displayed to
+" the user or a 2 item list where the first item is the prompt and the second
+" is the defaut value. The validator may return 0 to indicate an invalid input
+" or a message indicating why the input is invalid, which will be displayed to
+" the user. The validator should return 1 or the empty string to indicate
+" valid input. Returns an empty string if the user doesn't enter a value or
+" cancels the prompt.
+function! eclim#util#Prompt(prompt, ...)
+  " for unit testing
+  if exists('g:EclimTestPromptQueue') && len(g:EclimTestPromptQueue)
+    return remove(g:EclimTestPromptQueue, 0)
+  endif
+
+  let highlight = g:EclimInfoHighlight
+  if a:0 > 0
+    if type(a:1) == g:FUNCREF_TYPE
+      let Validator = a:1
+    elseif type(a:1) == g:STRING_TYPE
+      let highlight = a:1
+    endif
+  endif
+
+  if a:0 > 1
+    if type(a:2) == g:FUNCREF_TYPE
+      let Validator = a:2
+    elseif type(a:2) == g:STRING_TYPE
+      let highlight = a:2
+    endif
+  endif
+
+  if type(a:prompt) == g:LIST_TYPE
+    let prompt = a:prompt[0]
+    let default = a:prompt[1]
+  else
+    let prompt = a:prompt
+  endif
+
+  exec "echohl " . highlight
+  try
+    if exists('l:default')
+      let result = input(prompt . ': ', default)
+    else
+      let result = input(prompt . ': ')
+    endif
+    while result != ''
+      if exists('l:Validator')
+        let valid = Validator(result)
+        if type(valid) == g:STRING_TYPE && valid != ''
+          let result = input(valid . " (Ctrl-C to cancel): ", result)
+        elseif type(valid) == g:NUMBER_TYPE && !valid
+          let result = input(prompt, result)
+        else
+          return result
+        endif
+      else
+        return result
+      endif
+    endwhile
+  finally
+    echohl None
+  endtry
+
+  return result
+endfunction " }}}
+
+" PromptList(prompt, list, [highlight]) {{{
 " Creates a prompt for the user using the supplied prompt string and list of
 " items to choose from.  Returns -1 if the list is empty or if the user
 " canceled, and 0 if the list contains only one item.
-function! eclim#util#PromptList(prompt, list, highlight)
+function! eclim#util#PromptList(prompt, list, ...)
+  " for unit testing
+  if exists('g:EclimTestPromptQueue') && len(g:EclimTestPromptQueue)
+    return remove(g:EclimTestPromptQueue, 0)
+  endif
+
   " no elements, no prompt
   if empty(a:list)
     return -1
@@ -768,14 +977,18 @@ function! eclim#util#PromptList(prompt, list, highlight)
     let index = index + 1
   endfor
 
-  exec "echohl " . a:highlight
+  exec "echohl " . (a:0 ? a:1 : g:EclimInfoHighlight)
   try
     " clear any previous messages
     redraw
-    " echoing the list prompt vs. using it in the input() avoids apparent vim
-    " bug that causes "Internal error: get_tv_string_buf()".
-    echo prompt . "\n"
-    let response = input(a:prompt . ": ")
+    try
+      let response = input(prompt . "\n" . a:prompt . ": ")
+    catch
+      " echoing the list prompt vs. using it in the input() avoids apparent vim
+      " bug that causes "Internal error: get_tv_string_buf()".
+      echo prompt . "\n"
+      let response = input(a:prompt . ": ")
+    endtry
     while response !~ '\(^$\|^[0-9]\+$\)' ||
         \ response < 0 ||
         \ response > (len(a:list) - 1)
@@ -784,6 +997,7 @@ function! eclim#util#PromptList(prompt, list, highlight)
     endwhile
   finally
     echohl None
+    redraw!
   endtry
 
   if response == ''
@@ -793,11 +1007,17 @@ function! eclim#util#PromptList(prompt, list, highlight)
   return response
 endfunction " }}}
 
-" PromptConfirm(prompt, highlight) {{{
+" PromptConfirm(prompt, [highlight]) {{{
 " Creates a yes/no prompt for the user using the supplied prompt string.
 " Returns -1 if the user canceled, otherwise 1 for yes, and 0 for no.
-function! eclim#util#PromptConfirm(prompt, highlight)
-  exec "echohl " . a:highlight
+function! eclim#util#PromptConfirm(prompt, ...)
+  " for unit testing
+  if exists('g:EclimTestPromptQueue') && len(g:EclimTestPromptQueue)
+    let choice = remove(g:EclimTestPromptQueue, 0)
+    return choice =~ '\c\s*\(y\(es\)\?\)\s*'
+  endif
+
+  exec "echohl " . (a:0 ? a:1 : g:EclimInfoHighlight)
   try
     " clear any previous messages
     redraw
@@ -817,21 +1037,40 @@ function! eclim#util#PromptConfirm(prompt, highlight)
   return response =~ '\c\s*\(y\(es\)\?\)\s*'
 endfunction " }}}
 
-" RefreshFile() {{{
-function! eclim#util#RefreshFile()
-  "FIXME: doing an :edit clears the undo tree, but the code commented out below
-  "       causes a user prompt on the write.  Need to pose this senario on the
-  "       vim mailing lists.
+" Reload() {{{
+" Reload the current file using ':edit' and perform other operations based on
+" the options supplied.
+" Supported Options:
+"   retab: Issue a retab of the file taking care of preserving &expandtab
+"     before executing the edit to keep indent detection plugins from always
+"     setting it to 0 if eclipse inserts some tabbed code that the indent
+"     detection plugin uses for its calculations.
+"   pos: A line/column pair indicating the new cursor position post edit. When
+"     this pair is supplied, this function will attempt to preserve the
+"     current window's viewport.
+function! eclim#util#Reload(options)
+  let winview = winsaveview()
+  let save_expandtab = &expandtab
+
   edit!
-  "autocmd FileChangedShell nested <buffer> echom " ### file changed ### "
-  "checktime
-  "autocmd! FileChangedShell <buffer>
 
-  "1,$delete _
-  "silent exec "read " . expand('%:p')
-  "1delete _
+  if has_key(a:options, 'pos') && len(a:options.pos) == 2
+    let lnum = a:options.pos[0]
+    let cnum = a:options.pos[1]
+    if winheight(0) < line('$')
+      let winview.topline += lnum - winview.lnum
+      let winview.lnum = lnum
+      let winview.col = cnum
+      call winrestview(winview)
+    else
+      call cursor(lnum, cnum)
+    endif
+  endif
 
-  silent write!
+  if has_key(a:options, 'retab') && a:options.retab
+    let &expandtab = save_expandtab
+    retab
+  endif
 endfunction " }}}
 
 " SetLocationList(list, [action]) {{{
@@ -864,6 +1103,14 @@ function! eclim#util#SetLocationList(list, ...)
   else
     call setloclist(0, loclist, a:1)
   endif
+
+  let projectName = eclim#project#util#GetCurrentProjectName()
+  if projectName != ''
+    for item in getloclist(0)
+      call setbufvar(item.bufnr, 'eclim_project', projectName)
+    endfor
+  endif
+
   if g:EclimShowCurrentError && len(loclist) > 0
     call eclim#util#DelayedCommand('call eclim#util#ShowCurrentError()')
   endif
@@ -937,14 +1184,16 @@ endfunction " }}}
 " ShowCurrentError() {{{
 " Shows the error on the cursor line if one.
 function! eclim#util#ShowCurrentError()
+  if mode() != 'n' || expand('%') == ''
+    return
+  endif
+
   let message = eclim#util#GetLineError(line('.'))
   if message != ''
     " remove any new lines
     let message = substitute(message, '\n', ' ', 'g')
-
-    if len(message) > (&columns - 1)
-      let message = strpart(message, 0, &columns - 4) . '...'
-    endif
+    " convert tabs to spaces to ensure a consistent char to display length
+    let message = substitute(message, '\t', '  ', 'g')
 
     call eclim#util#WideMessage('echo', message)
     let s:show_current_error_displaying = 1
@@ -981,8 +1230,11 @@ function! eclim#util#Simplify(file)
   return file
 endfunction " }}}
 
-" System(cmd, [exec]) {{{
+" System(cmd, [exec, exec_results]) {{{
 " Executes system() accounting for possibly disruptive vim options.
+" exec (0 or 1): whether or not to use exec instead of system
+" exec_results (0, 1, or 2): 0 to not return the results of an exec, 1 to
+"   return the results, or 2 to return the filename containing the results.
 function! eclim#util#System(cmd, ...)
   let saveshell = &shell
   let saveshellcmdflag = &shellcmdflag
@@ -1008,7 +1260,6 @@ function! eclim#util#System(cmd, ...)
     else
       set shell=/bin/sh
     endif
-    set shell=/bin/sh
     set shellcmdflag=-c
     set shellpipe=2>&1\|\ tee
     set shellquote=
@@ -1018,84 +1269,140 @@ function! eclim#util#System(cmd, ...)
     set shellxquote=
   endif
 
-  if len(a:000) > 0 && a:000[0]
-    let result = ''
-    let begin = localtime()
-    try
-      exec a:cmd
-    finally
-      call eclim#util#EchoTrace('exec: ' . a:cmd, localtime() - begin)
-    endtry
-  else
-    let begin = localtime()
-    try
-      let result = system(a:cmd)
-    finally
-      call eclim#util#EchoTrace('system: ' . a:cmd, localtime() - begin)
-    endtry
-  endif
+  try
+    " use exec
+    if len(a:000) > 0 && a:000[0]
+      let cmd = a:cmd
+      let begin = localtime()
+      let exec_output = len(a:000) > 1 ? a:000[1] : 0
+      if exec_output
+        let outfile = g:EclimTempDir . '/eclim_exec_output.txt'
+        if has('win32') || has('win64') || has('win32unix')
+          let cmd = substitute(cmd, '^!', '', '')
+          if has('win32unix')
+            let cmd = '!cmd /c "' . cmd . ' 2>&1 " | tee "' . outfile . '"'
+          elseif executable('tee') || executable('wtee')
+            let tee = executable('wtee') ? 'wtee' : 'tee'
+            let cmd = '!cmd /c "' . cmd . ' 2>&1 | ' . tee . ' "' . outfile . '" "'
+          else
+            let cmd = '!cmd /c "' . cmd . ' >"' . outfile . '" 2>&1 "'
+          endif
+        else
+          let cmd .= ' 2>&1| tee "' . outfile . '"'
+        endif
+      endif
 
-  let &shell = saveshell
-  let &shellcmdflag = saveshellcmdflag
-  let &shellquote = saveshellquote
-  let &shellslash = saveshellslash
-  let &shelltemp = saveshelltemp
-  let &shellxquote = saveshellxquote
+      try
+        exec cmd
+      finally
+        call eclim#util#EchoTrace('exec: ' . cmd, localtime() - begin)
+      endtry
 
-  " If a System call is executed at startup, it appears to interfere with
-  " vim's setting of 'shellpipe' and 'shellredir' to their shell specific
-  " values.  So, if we detect that the values we are restoring look like
-  " uninitialized defaults, then attempt to mimic vim's documented
-  " (:h 'shellpipe' :h 'shellredir') logic for setting the proper values based
-  " on the shell.
-  " Note: still doesn't handle more obscure shells
-  if saveshellredir == '>'
-    if index(s:bourne_shells, fnamemodify(&shell, ':t')) != -1
-      set shellpipe=2>&1\|\ tee
-      set shellredir=>%s\ 2>&1
-    elseif index(s:c_shells, fnamemodify(&shell, ':t')) != -1
-      set shellpipe=\|&\ tee
-      set shellredir=>&
+      let result = ''
+      if exec_output == 1 && filereadable(outfile)
+        let result = join(readfile(outfile), "\n")
+        call delete(outfile)
+      elseif exec_output == 2
+        let result = outfile
+      endif
+
+    " use system
+    else
+      let begin = localtime()
+      let cmd = a:cmd
+      try
+        " Dos is pretty bad at dealing with quoting of commands resulting in
+        " eclim calls failing if the path to the eclim bat/cmd file is quoted
+        " and there is a quoted arg in that command as well. We can fix this
+        " by wrapping the whole command in quotes with a space between the
+        " quotes and the actual command.
+        if (has('win32') || has('win64')) && a:cmd =~ '^"'
+          let cmd = '" ' . cmd . ' "'
+        " same issue, but handle the fact that we prefix eclim calls with
+        " 'cmd /c' for cygwin
+        elseif has('win32unix') && a:cmd =~? '^cmd /c "[a-z]'
+          let cmd = 'cmd /c " ' . substitute(cmd, '^cmd /c ', '', '') . ' "'
+        endif
+        let result = system(cmd)
+      finally
+        call eclim#util#EchoTrace('system: ' . cmd, localtime() - begin)
+      endtry
+    endif
+  finally
+    let &shell = saveshell
+    let &shellcmdflag = saveshellcmdflag
+    let &shellquote = saveshellquote
+    let &shellslash = saveshellslash
+    let &shelltemp = saveshelltemp
+    let &shellxquote = saveshellxquote
+
+    " If a System call is executed at startup, it appears to interfere with
+    " vim's setting of 'shellpipe' and 'shellredir' to their shell specific
+    " values.  So, if we detect that the values we are restoring look like
+    " uninitialized defaults, then attempt to mimic vim's documented
+    " (:h 'shellpipe' :h 'shellredir') logic for setting the proper values based
+    " on the shell.
+    " Note: still doesn't handle more obscure shells
+    if saveshellredir == '>'
+      if index(s:bourne_shells, fnamemodify(&shell, ':t')) != -1
+        set shellpipe=2>&1\|\ tee
+        set shellredir=>%s\ 2>&1
+      elseif index(s:c_shells, fnamemodify(&shell, ':t')) != -1
+        set shellpipe=\|&\ tee
+        set shellredir=>&
+      else
+        let &shellpipe = saveshellpipe
+        let &shellredir = saveshellredir
+      endif
     else
       let &shellpipe = saveshellpipe
       let &shellredir = saveshellredir
     endif
-  else
-    let &shellpipe = saveshellpipe
-    let &shellredir = saveshellredir
-  endif
+  endtry
 
   return result
 endfunction " }}}
 
-" TempWindow(name, lines, [readonly]) {{{
+" TempWindow(name, lines, [options]) {{{
 " Opens a temp window w/ the given name and contents which is readonly unless
 " specified otherwise.
 function! eclim#util#TempWindow(name, lines, ...)
+  let options = a:0 > 0 ? a:1 : {}
   let filename = expand('%:p')
   let winnr = winnr()
 
-  call eclim#util#TempWindowClear(a:name)
-  let name = eclim#util#EscapeBufferName(a:name)
+  let bufname = eclim#util#EscapeBufferName(a:name)
+  let name = escape(a:name, ' ')
+  if has('unix')
+    let name = escape(name, '[]')
+  endif
 
-  if bufwinnr(name) == -1
-    silent! noautocmd exec "botright 10sview " . escape(a:name, ' ')
-    let b:eclim_temp_window = 1
+  let line = 1
+  let col = 1
 
-    " play nice with maximize.vim
-    if eclim#display#maximize#GetMaximizedWindow()
-      call eclim#display#maximize#AdjustFixedWindow(10, 1)
-    endif
-
+  if bufwinnr(bufname) == -1
+    let height = get(options, 'height', 10)
+    silent! noautocmd exec "botright " . height . "sview " . name
     setlocal nowrap
     setlocal winfixheight
     setlocal noswapfile
     setlocal nobuflisted
     setlocal buftype=nofile
     setlocal bufhidden=delete
+    silent doautocmd WinEnter
   else
-    exec bufwinnr(name) . "winc w"
+    let temp_winnr = bufwinnr(bufname)
+    if temp_winnr != winnr()
+      exec temp_winnr . 'winc w'
+      silent doautocmd WinEnter
+      if get(options, 'preserveCursor', 0)
+        let line = line('.')
+        let col = col('.')
+      endif
+    endif
   endif
+
+  call eclim#util#TempWindowClear(a:name)
 
   setlocal modifiable
   setlocal noreadonly
@@ -1103,7 +1410,9 @@ function! eclim#util#TempWindow(name, lines, ...)
   retab
   silent 1,1delete _
 
-  if len(a:000) == 0 || a:000[0]
+  call cursor(line, col)
+
+  if get(options, 'readonly', 1)
     setlocal nomodified
     setlocal nomodifiable
     setlocal readonly
@@ -1143,15 +1452,6 @@ endfunction " }}}
 function! eclim#util#TempWindowCommand(command, name, ...)
   let name = eclim#util#EscapeBufferName(a:name)
 
-  let line = 1
-  let col = 1
-  " if the window is open, save the cursor position
-  if bufwinnr(name) != -1
-    exec bufwinnr(name) . "winc w"
-    let line = line('.')
-    let col = col('.')
-  endif
-
   if len(a:000) > 0
     let port = a:000[0]
     let result = eclim#ExecuteEclim(a:command, port)
@@ -1164,9 +1464,7 @@ function! eclim#util#TempWindowCommand(command, name, ...)
     return 0
   endif
 
-  call eclim#util#TempWindow(name, results)
-
-  call cursor(line, col)
+  call eclim#util#TempWindow(name, results, {'preserveCursor': 1})
 
   return 1
 endfunction " }}}
@@ -1183,6 +1481,13 @@ function! eclim#util#WideMessage(command, message)
 
   set noruler noshowcmd
   redraw
+  let vimwidth = &columns * &cmdheight
+  if len(message) > vimwidth - 1
+    let remove = len(message) - vimwidth
+    let start = (len(message) / 2) - (remove / 2) - 4
+    let end = start + remove + 4
+    let message = substitute(message, '\%' . start . 'c.*\%' . end . 'c', '...', '')
+  endif
   exec a:command . ' "' . escape(message, '"\') . '"'
 
   let &ruler = saved_ruler

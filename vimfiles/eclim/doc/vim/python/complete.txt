@@ -1,11 +1,10 @@
 *vim-python-complete*
 
-
 Python Code Completion
 **********************
 
 Python code completion uses the standard Vim code completion mechanism
-(|vim-code-completion|) like so:
+(|vim-code_completion|) like so:
 
 >
 
@@ -18,10 +17,5 @@ Python code completion uses the standard Vim code completion mechanism
    t.testMethod
 
 <
-
-
-Note: Code completion support is provided via eclim's integration with
-  rope (|vim-python-rope|).Please see the rope (|vim-python-rope|)
-  docs for more information.
 
 vim:ft=eclimhelp
