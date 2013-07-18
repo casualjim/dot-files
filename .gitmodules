@@ -10,4 +10,4 @@
 	url = git://github.com/MarcWeber/vim-addon-manager.git
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
-	url = git@github.com:casualjim/oh-my-zsh.git
+	url = git://github.com/casualjim/oh-my-zsh.git
