@@ -93,7 +93,30 @@ set nocompatible
     " REQUIREMENTS: (exuberant)-ctags
     Bundle 'majutsushi/tagbar'
 
+    " Scala support
     Bundle 'derekwyatt/vim-scala'
+    Bundle 'ktvoelker/sbt-vim'
+
+    " Ansible support
+    Bundle 'chase/vim-ansible-yaml'
+    
+    " NGinX support
+    Bundle 'evanmiller/nginx-vim-syntax'
+
+    " Varnish cache support
+    Bundle "casualjim/vim-varnish"
+
+    " Go support
+    Bundle "jnwhiteh/vim-golang"
+    Bundle "Blackrush/vim-gocode"
+
+    Bundle "bufexplorer.zip"
+    Bundle "scrooloose/nerdtree"
+    Bundle "airblade/vim-gitgutter"
+    Bundle "mpollmeier/vim-scalaConceal"
+    Bundle "kien/rainbow_parentheses.vim"
+    
+    
     """ }}}
     """ Installing plugins the first time {{{
         if has_vundle == 0
@@ -115,10 +138,14 @@ set nocompatible
         syntax on                                   " syntax highlighting
         set t_Co=256                                " 256-colors
         set background=dark                         " we're using a dark bg
-        colors desertEx                      " select colorscheme
+        colors jellybeans                           " select colorscheme
         au BufNewFile,BufRead *.txt se ft=sh tw=119  " opens .txt w/highlight
         au BufNewFile,BufRead *.tex se ft=tex tw=119 " we don't want plaintex
         au BufNewFile,BufRead *.md se ft=markdown tw=119 " markdown, not modula
+        au VimEnter * RainbowParenthesesToggle
+        au Syntax * RainbowParenthesesLoadRound
+        au Syntax * RainbowParenthesesLoadSquare
+        au Syntax * RainbowParenthesesLoadBraces
         """ Tab colors, overwritten by lightline(?) {{{
             "hi TabLineFill ctermfg=NONE ctermbg=233
             "hi TabLine ctermfg=241 ctermbg=233
@@ -144,9 +171,20 @@ set nocompatible
         set showcmd                                 " show cmds being typed
         set title                                   " window title
         set vb t_vb=                                " disable beep and flashing
-        set wildignore=*.bak,*.pyc,*.o,*.ojb,*.a,
-                       \*.pdf,*.jpg,*.gif,*.png,
-                       \*.avi,*.mkv,*.so,*.class        " ignore said files
+        set wildignore+=.hg,.git,.svn " Version Controls"
+        set wildignore+=*.aux,*.out,*.toc "Latex Indermediate files"
+        set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg "Binary Imgs"
+        set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a "Compiled Object files"
+        set wildignore+=*.spl "Compiled speolling world list"
+        set wildignore+=*.sw? "Vim swap files"
+        set wildignore+=*.DS_Store "OSX SHIT"
+        set wildignore+=*.luac "Lua byte code"
+        set wildignore+=migrations "Django migrations"
+        set wildignore+=*.pyc "Python Object codes"
+        set wildignore+=*.orig "Merge resolution files"
+        set wildignore+=*.pdf,*.mkv "No video files
+        set wildignore+=*.class "java/scala class files"
+        set wildignore+=*.bak " Backup files
         set wildmenu                                " better auto complete
         set wildmode=longest,list                   " bash-like auto complete
         """ Encoding {{{
@@ -244,6 +282,11 @@ set nocompatible
     set tabstop=2                                   " replace <TAB> w/4 spaces
     """ Only auto-comment newline for block comments {{{
         au FileType c,cpp setlocal comments -=:// comments +=f://
+
+    " http://stackoverflow.com/questions/16743112/open-item-from-quickfix-window-in-vertical-split
+    autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
+    
+
     """ }}}
 """ }}}
 """ Keybindings {{{
@@ -390,7 +433,7 @@ set nocompatible
 """ Plugin settings {{{
     """ Lightline {{{
         let g:lightline = {
-            \ 'colorscheme': 'desertEx',
+            \ 'colorscheme': 'jellybeans',
             \ 'active': {
             \     'left': [
             \         ['mode', 'paste'],
@@ -605,6 +648,40 @@ set nocompatible
         \ }
     \ }
 
+    " define the go language tags
+    " assumes you have 
+    " make use of the gotags tool: https://github.com/jstemmer/gotags
+    " cd $GOPATH
+    " go get -u github.com/jstemmer/gotags
+    " 
+    let g:tagbar_type_go = {
+        \ 'ctagstype' : 'go',
+        \ 'kinds'     : [
+            \ 'p:package',
+            \ 'i:imports:1',
+            \ 'c:constants',
+            \ 'v:variables',
+            \ 't:types',
+            \ 'n:interfaces',
+            \ 'w:fields',
+            \ 'e:embedded',
+            \ 'm:methods',
+            \ 'r:constructor',
+            \ 'f:functions'
+        \ ],
+        \ 'sro' : '.',
+        \ 'kind2scope' : {
+            \ 't' : 'ctype',
+            \ 'n' : 'ntype'
+        \ },
+        \ 'scope2kind' : {
+            \ 'ctype' : 't',
+            \ 'ntype' : 'n'
+        \ },
+        \ 'ctagsbin'  : 'gotags',
+        \ 'ctagsargs' : '-sort -silent'
+    \ }
+
     " Syntastic - This is largely up to your own usage, and override these
     "             changes if be needed. This is merely an exemplification.
     let g:syntastic_cpp_check_header = 1
@@ -613,6 +690,9 @@ set nocompatible
         \ 'mode': 'passive',
         \ 'active_filetypes':
             \ ['c', 'cpp', 'perl', 'python', 'scala'] }
+
+    " enable gitgutter
+    "let g:gitgutter_highlight_lines = 1
 
     " Automatically remove preview window after autocomplete (mainly for clang_complete)
     autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
