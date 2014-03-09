@@ -530,7 +530,7 @@ set nocompatible
 
         augroup AutoSyntastic
             autocmd!
-            autocmd BufWritePost *.c,*.cpp,*.perl,*py,*.scala,*.sbt call s:syntastic()
+            autocmd BufWritePost *.c,*.cpp,*.perl,*py,*.scala call s:syntastic()
         augroup END
         function! s:syntastic()
             SyntasticCheck
@@ -579,12 +579,11 @@ set nocompatible
             \ {'short' : 'p', 'long' : 'packages',       'fold' : 1, 'stl' : 0},
             \ {'short' : 'i', 'long' : 'includes',       'fold' : 1, 'stl' : 0},
             \ {'short' : 'c', 'long' : 'classes',        'fold' : 0, 'stl' : 1},
-            \ {'short' : 'a', 'long' : 'abstract classes', 'fold' : 0, 'stl' : 1},
             \ {'short' : 't', 'long' : 'traits', 'fold' : 0, 'stl' : 1},
             \ {'short' : 'o', 'long' : 'objects',        'fold' : 0, 'stl' : 1},
-            \ {'short' : 'm', 'long' : 'case classes',        'fold' : 0, 'stl' : 1},
-            \ {'short' : 'n', 'long' : 'case objects',        'fold' : 0, 'stl' : 1},
-            \ {'short' : 'f', 'long' : 'functions',      'fold' : 0, 'stl' : 1},
+            \ {'short' : 'C', 'long' : 'case classes',        'fold' : 0, 'stl' : 1},
+            \ {'short' : 'O', 'long' : 'case objects',        'fold' : 0, 'stl' : 1},
+            \ {'short' : 'm', 'long' : 'methods',      'fold' : 0, 'stl' : 1},
             \ {'short' : 'V', 'long' : 'values',      'fold' : 0, 'stl' : 0},
             \ {'short' : 'v', 'long' : 'variables',      'fold' : 0, 'stl' : 0},
             \ {'short' : 'T', 'long' : 'types',      'fold' : 0, 'stl' : 0}
@@ -593,17 +592,15 @@ set nocompatible
         \ 'kind2scope': {  
             \ 't' : 'trait',
             \ 'o' : 'object',
-            \ 'm' : 'case class',
-            \ 'n' : 'case object',
-            \ 'a' : 'abstract class',
+            \ 'C' : 'case class',
+            \ 'O' : 'case object',
             \ 'c' : 'class'
         \ },
         \ 'scope2kind': {
             \ 'trait'          : 't',
             \ 'object'         : 'o',
-            \ 'case class'     : 'm',
-            \ 'case object'    : 'n',
-            \ 'abstract class' : 'a',
+            \ 'case class'     : 'C',
+            \ 'case object'    : 'O',
             \ 'class'          : 'c'
         \ }
     \ }

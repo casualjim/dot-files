@@ -1,0 +1,22 @@
+--fields=+l
+--verbose=no
+--recurse=yes
+--tag-relative=yes
+--sort=yes
+--langdef=Scala
+--langmap=Scala:.scala
+--regex-Scala=/^[^\*\/]*import[ \t]*([a-zA-Z0-9_{}., \t=>]+$)/\1/i,includes/
+--regex-Scala=/^[^\*\/]*package[ \t]*([a-zA-Z0-9_.]+$)/\1/p,packages/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private|protected)?[ \t]*class[ \t]*([a-zA-Z0-9_]+)/\4/c,classes/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private|protected)?[ \t]*object[ \t]*([a-zA-Z0-9_]+)/\4/o,objects/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private|protected)?[ \t]*trait[ \t]*([a-zA-Z0-9_]+)/\4/t,traits/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private|protected)?[ \t]*case[ \t]*class[ \t]*([a-zA-Z0-9_]+)/\4/C,case classes/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*(private|protected)?[ \t]*case[ \t]*class[ \t]*([a-zA-Z0-9_]+)/\4/O,case objects/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*def[ \t]*([a-zA-Z0-9_]+)[ \t]*.*[:=]/\3/m,methods/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*val[ \t]*([a-zA-Z0-9_]+)[ \t]*[:=]/\3/V,values/
+--regex-Scala=/^[^\*\/]*((abstract|final|sealed|implicit|lazy)[ \t]*)*var[ \t]*([a-zA-Z0-9_]+)[ \t]*[:=]/\3/v,variables/
+--regex-Scala=/^[^\*\/]*type[ \t]*([a-zA-Z0-9_]+)[ \t]*[\[<>=]/\1/T,types/
+--regex-Scala=/(TODO)/\1/d,todo/
+--exclude=target
+--exclude=.git
+
