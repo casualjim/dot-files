@@ -1,7 +1,8 @@
 "Use Vim settings, rather then Vi settings (much better!).
 "This must be first, because it changes other options as a side effect.
-set nocompatible
+set nocompatible | filetype indent plugin on | syn on
 set autoread
+execute pathogen#infect()
 runtime macros/matchit.vim
 set bg=dark
 
@@ -423,3 +424,5 @@ let s:tlist_def_scala_settings = 'scala;p:package;c:class;t:trait;' .
                                \ 'c:case class;o:object;' .
                                \ 'C:constant;l:local variable'
 let g:ragtag_global_maps = 1
+
+

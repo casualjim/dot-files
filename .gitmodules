@@ -1,13 +1,6 @@
 [submodule "vimfiles/snippets"]
 	path = vimfiles/snippets
 	url = git://github.com/casualjim/snipmate-snippets.git
-
-[submodule "emacs.d"]
-	path = emacs.d
-	url = git://github.com/casualjim/emacs.d.git
-[submodule "vim-addons/vim-addon-manager"]
-	path = vim-addons/vim-addon-manager
-	url = git://github.com/MarcWeber/vim-addon-manager.git
 [submodule "oh-my-zsh"]
 	path = oh-my-zsh
 	url = git://github.com/casualjim/oh-my-zsh.git
