@@ -61,6 +61,7 @@ set nocompatible
     Bundle 'nanotech/jellybeans.vim'
     Bundle 'jaromero/vim-monokai-refined'
 
+
     " Super easy commenting, toggle comments etc
     Bundle 'scrooloose/nerdcommenter'
 
@@ -69,21 +70,28 @@ set nocompatible
 
     " Git wrapper inside Vim
     Bundle 'tpope/vim-fugitive'
+    Bundle "airblade/vim-gitgutter"
 
     " Handle surround chars like ''
     Bundle 'tpope/vim-surround'
+    Bundle "kien/rainbow_parentheses.vim"
 
     " Align your = etc.
     Bundle 'vim-scripts/Align'
 
     " Snippets like textmate
-    Bundle 'MarcWeber/vim-addon-mw-utils'
-    Bundle 'tomtom/tlib_vim'
+    " Bundle 'MarcWeber/vim-addon-mw-utils'
+    " Bundle 'tomtom/tlib_vim'    
+    " Bundle 'garbas/vim-snipmate'
+    Bundle 'Shougo/neocomplete'
+    Bundle 'Shougo/neosnippet'
+    Bundle 'Shougo/neosnippet-snippets'
     Bundle 'honza/vim-snippets'
-    Bundle 'garbas/vim-snipmate'
 
     " A fancy start screen, shows MRU etc.
     Bundle 'mhinz/vim-startify'
+    Bundle "scrooloose/nerdtree"
+    Bundle "bufexplorer.zip"
 
     " Awesome syntax checker.
     " REQUIREMENTS: See :h syntastic-intro
@@ -95,10 +103,17 @@ set nocompatible
 
     " Scala support
     Bundle 'derekwyatt/vim-scala'
+    Bundle 'derekwyatt/vim-sbt'
     Bundle 'ktvoelker/sbt-vim'
+    Bundle "mpollmeier/vim-scalaConceal"
+    Bundle "tpope/vim-classpath"
+    Bundle "GEverding/vim-hocon"
 
     " Ansible support
     Bundle 'chase/vim-ansible-yaml'
+
+    " Docker support
+    Bundle "ekalinin/Dockerfile.vim"
     
     " NGinX support
     Bundle 'evanmiller/nginx-vim-syntax'
@@ -110,12 +125,24 @@ set nocompatible
     Bundle "jnwhiteh/vim-golang"
     Bundle "Blackrush/vim-gocode"
 
-    Bundle "bufexplorer.zip"
-    Bundle "scrooloose/nerdtree"
-    Bundle "airblade/vim-gitgutter"
-    Bundle "mpollmeier/vim-scalaConceal"
-    Bundle "kien/rainbow_parentheses.vim"
-    
+    " Ruby support
+    Bundle "vim-ruby/vim-ruby"
+    Bundle "skalnik/vim-vroom"
+    Bundle "tpope/vim-rails"
+    Bundle "tpope/vim-rake"
+    Bundle "tpope/vim-bundler"
+    Bundle "tpope/vim-rbenv"
+    Bundle "ngmy/vim-rubocop"
+
+    " Haml support
+    Bundle "tpope/vim-haml"
+    Bundle "digitaltoad/vim-jade"
+
+    " JavaScript
+    Bundle "mklabs/grunt.vim"
+    Bundle "moll/vim-node"
+    Bundle "pangloss/vim-javascript"
+    Bundle "myhere/vim-nodejs-complete"
     
     """ }}}
     """ Installing plugins the first time {{{
@@ -693,6 +720,108 @@ set nocompatible
 
     " enable gitgutter
     "let g:gitgutter_highlight_lines = 1
+
+    " Disable AutoComplPop.
+    let g:acp_enableAtStartup = 0
+    " Use neocomplete.
+    let g:neocomplete#enable_at_startup = 1
+    " Use smartcase.
+    let g:neocomplete#enable_smart_case = 1
+    " Set minimum syntax keyword length.
+    let g:neocomplete#sources#syntax#min_keyword_length = 3
+    let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+    " Define dictionary.
+    let g:neocomplete#sources#dictionary#dictionaries = {
+        \ 'default' : '',
+        \ 'vimshell' : $HOME.'/.vimshell_hist',
+        \ 'scheme' : $HOME.'/.gosh_completions'
+            \ }
+
+    " Define keyword.
+    if !exists('g:neocomplete#keyword_patterns')
+        let g:neocomplete#keyword_patterns = {}
+    endif
+    let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+    " Plugin key-mappings.
+    inoremap <expr><C-g>     neocomplete#undo_completion()
+    inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+    " Recommended key-mappings.
+    " <CR>: close popup and save indent.
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+      return neocomplete#close_popup() . "\<CR>"
+      " For no inserting <CR> key.
+      "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+    endfunction
+    " <TAB>: completion.
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><C-y>  neocomplete#close_popup()
+    inoremap <expr><C-e>  neocomplete#cancel_popup()
+    " Close popup by <Space>.
+    "inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
+
+    " For cursor moving in insert mode(Not recommended)
+    "inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
+    "inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
+    "inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
+    "inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
+    " Or set this.
+    "let g:neocomplete#enable_cursor_hold_i = 1
+    " Or set this.
+    "let g:neocomplete#enable_insert_char_pre = 1
+
+    " AutoComplPop like behavior.
+    "let g:neocomplete#enable_auto_select = 1
+
+    " Shell like behavior(not recommended).
+    "set completeopt+=longest
+    "let g:neocomplete#enable_auto_select = 1
+    "let g:neocomplete#disable_auto_complete = 1
+    "inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+    " Enable omni completion.
+    autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+    autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+    autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+    " Enable heavy omni completion.
+    if !exists('g:neocomplete#sources#omni#input_patterns')
+      let g:neocomplete#sources#omni#input_patterns = {}
+    endif
+    "let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+    "let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+    "let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+    " For perlomni.vim setting.
+    " https://github.com/c9s/perlomni.vim
+    let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+    imap  <silent><expr><tab>  g:neosnippet#expandable_or_jumpable() ? "\<plug>(neocomplcache_snippets_expand)" : (pumvisible() ? "\<C-k>" : "\<tab>")
+    smap  <tab>  <right><plug>(neosnippet_expand_or_jump) 
+    inoremap <expr><c-e>     g:neocomplete#complete_common_string()
+
+    " neosnippet
+    imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+    smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+    xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+    
+
+    if has('conceal')
+      set conceallevel=2 concealcursor=i
+    endif
+
+    let g:neosnippet#enable_snipmate_compatibility = 1
+
+    let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
     " Automatically remove preview window after autocomplete (mainly for clang_complete)
     autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
