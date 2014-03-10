@@ -302,7 +302,7 @@ set nocompatible
     set ignorecase                                  " by default ignore case
     set nrformats+=alpha                            " incr/decr letters C-a/-x
     set shiftround                                  " be clever with tabs
-    set shiftwidth=4                                " default 8
+    set shiftwidth=2                                " default 8
     set smartcase                                   " sensitive with uppercase
     set smarttab                                    " tab to 0,4,8 etc.
     set softtabstop=2                               " "tab" feels like <tab>
@@ -365,6 +365,9 @@ set nocompatible
         nnoremap gN :bprevious<CR>
         nnoremap gd :bdelete<CR>
         nnoremap gf <C-^>
+
+        nmap <silent> <F2> :NERDTreeToggle<CR>
+        nnoremap <silent> <C-L> :noh<CR><C-L>
     """ }}}
     """ Functions or fancy binds {{{{
         """ Toggle syntax highlighting {{{
