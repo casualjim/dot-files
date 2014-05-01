@@ -86,16 +86,9 @@ set nocompatible
     Bundle 'vim-scripts/Align'
 
     " Snippets like textmate
-    " Bundle 'MarcWeber/vim-addon-mw-utils'
-    " Bundle 'tomtom/tlib_vim'    
-    " Bundle 'garbas/vim-snipmate'
-    " Bundle 'Shougo/neocomplete'
-    " Bundle 'Shougo/neosnippet'
-    " Bundle 'Shougo/neosnippet-snippets'
     Bundle "Valloric/YouCompleteMe"
     Bundle 'SirVer/ultisnips'
     Bundle 'honza/vim-snippets'
-    
 
     " A fancy start screen, shows MRU etc.
     Bundle 'mhinz/vim-startify'
@@ -154,6 +147,7 @@ set nocompatible
     Bundle "moll/vim-node"
     Bundle "pangloss/vim-javascript"
     Bundle "myhere/vim-nodejs-complete"
+    Bundle "elzr/vim-json"
     
     """ }}}
     """ Installing plugins the first time {{{
@@ -738,14 +732,14 @@ set nocompatible
 
     let g:go_bin_path = expand("$HOME/gopath/bin")
     let g:go_disable_autoinstall = 0
-    let g:go_fmt_command = "goimports"
 
     
     au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
     au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
     au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
-    au Filetype go nnoremap <leader>r :GoRun %<CR>
-    au Filetype go nnoremap <leader>t :GoTest %<CR>
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>t <Plug>(go-test)
+    au FileType go nmap <leader>b <Plug>(go-build)
 
     function! g:UltiSnips_Complete()
         call UltiSnips#ExpandSnippet()

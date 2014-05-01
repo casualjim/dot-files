@@ -9,4 +9,12 @@ ln -sf ${curr_dir}/ctags ~/.ctags
 ln -sf ${curr_dir}/oh-my-zsh ~/.oh-my-zsh
 cp ${curr_dir}/oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
 
+echo "Installing vim plugins"
+
+. <(echo 'vim +BundleInstall +qall')
+
+cd ~/.vim/bundle/YouCompleteMe
+./install.sh --clang-completer
+cd ${curr_dir}
+
 echo "Environment has been configured."
