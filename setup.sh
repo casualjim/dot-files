@@ -11,7 +11,7 @@ cp ${curr_dir}/oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
 
 echo "Installing vim plugins"
 
-. <(echo 'vim +BundleInstall +qall')
+vim +BundleInstall +qall
 
 cd ~/.vim/bundle/YouCompleteMe
 ./install.sh --clang-completer
