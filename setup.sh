@@ -13,6 +13,9 @@ echo "Installing vim plugins"
 
 # vim +BundleInstall +qall
 
+# aptitude install cmake python-dev clang libclang-dev
+# yum install cmake28 python-devel clang clang-devel
+
 # cd ~/.vim/bundle/YouCompleteMe
 # ./install.sh --clang-completer
 # cd ${curr_dir}
