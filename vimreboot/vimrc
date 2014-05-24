@@ -46,7 +46,7 @@ set nocompatible
     Bundle 'chrisbra/SudoEdit.vim'
 
     " <Tab> everything!
-    Bundle 'ervandew/supertab'
+    " Bundle 'ervandew/supertab'
 
     " Fuzzy finder (files, mru, etc)
     Bundle 'kien/ctrlp.vim'
@@ -762,7 +762,7 @@ set nocompatible
     " this mapping Enter key to <C-y> to chose the current highlight item 
     " and close the selection list, same as other IDEs.
     " CONFLICT with some plugins like tpope/Endwise
-    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    "inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 """ }}}
 """ Local ending config, will overwrite anything above. Generally use this. {{{{
