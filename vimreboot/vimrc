@@ -37,16 +37,13 @@ set nocompatible
     Bundle 'gmarik/vundle'
 
     """ Local bundles (and only bundles in this file!) {{{{
-        if filereadable($HOME."/.vimrc.bundles")
-            source $HOME/.vimrc.bundles
-        endif
+    if filereadable($HOME."/.vimrc.bundles")
+        source $HOME/.vimrc.bundles
+    endif
     """ }}}
 
     " Edit files using sudo/su
     Bundle 'chrisbra/SudoEdit.vim'
-
-    " <Tab> everything!
-    " Bundle 'ervandew/supertab'
 
     " Fuzzy finder (files, mru, etc)
     Bundle 'kien/ctrlp.vim'
@@ -54,13 +51,11 @@ set nocompatible
     " A pretty statusline, bufferline integration
     Bundle 'itchyny/lightline.vim'
     Bundle 'bling/vim-bufferline'
-
-    " Easy... motions... yeah.
-    " Bundle 'Lokaltog/vim-easymotion'
+    Bundle 'christoomey/vim-tmux-navigator'
 
     " Glorious colorschemes
     Bundle 'nanotech/jellybeans.vim'
-    Bundle 'jaromero/vim-monokai-refined'
+    "Bundle 'jaromero/vim-monokai-refined'
 
     " Work with colors
     Bundle 'guns/xterm-color-table.vim'
@@ -71,16 +66,14 @@ set nocompatible
     Bundle 'scrooloose/nerdcommenter'
 
     " Autoclose (, " etc
-    Bundle 'Townk/vim-autoclose'
+    Bundle 'tpope/vim-unimpaired'
+    Bundle 'tpope/vim-surround'
+    Bundle 'tpope/vim-repeat'
+    "Bundle 'Townk/vim-autoclose'
 
     " Git wrapper inside Vim
     Bundle 'tpope/vim-fugitive'
     Bundle "airblade/vim-gitgutter"
-
-    " Handle surround chars like ''
-    Bundle 'tpope/vim-surround'
-    Bundle 'tpope/vim-repeat'
-    "Bundle "kien/rainbow_parentheses.vim"
 
     " Align your = etc.
     Bundle 'vim-scripts/Align'
@@ -94,7 +87,7 @@ set nocompatible
     Bundle 'mhinz/vim-startify'
     Bundle "scrooloose/nerdtree"
     Bundle "bufexplorer.zip"
-    Bundle "koron/minimap-vim"
+    "Bundle "koron/minimap-vim"
 
     " Awesome syntax checker.
     " REQUIREMENTS: See :h syntastic-intro
@@ -122,30 +115,20 @@ set nocompatible
     Bundle 'evanmiller/nginx-vim-syntax'
 
     " Varnish cache support
-    Bundle "casualjim/vim-varnish"
+    " Bundle "casualjim/vim-varnish"
 
     " Go support
     "Bundle "jnwhiteh/vim-golang"
     "Bundle "Blackrush/vim-gocode"
     Bundle "fatih/vim-go"
 
-    " Ruby support
-    Bundle "vim-ruby/vim-ruby"
-    Bundle "skalnik/vim-vroom"
-    Bundle "tpope/vim-rails"
-    Bundle "tpope/vim-rake"
-    Bundle "tpope/vim-bundler"
-    Bundle "tpope/vim-rbenv"
-    Bundle "ngmy/vim-rubocop"
-
-    " Haml support
-    Bundle "tpope/vim-haml"
-    Bundle "digitaltoad/vim-jade"
-
     " JavaScript
     Bundle "mklabs/grunt.vim"
     Bundle "moll/vim-node"
     Bundle "pangloss/vim-javascript"
+    Bundle "othree/javascript-libraries-syntax.vim"
+    Bundle "matthewsimo/angular-vim-snippets"
+    Bundle "burnettk/vim-angular"
     Bundle "myhere/vim-nodejs-complete"
     Bundle "elzr/vim-json"
     
@@ -207,7 +190,7 @@ set nocompatible
         set wildignore+=.hg,.git,.svn " Version Controls"
         set wildignore+=*.aux,*.out,*.toc "Latex Indermediate files"
         set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg "Binary Imgs"
-        set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a "Compiled Object files"
+        set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a,*.so,*.dylib "Compiled Object files"
         set wildignore+=*.spl "Compiled speolling world list"
         set wildignore+=*.sw? "Vim swap files"
         set wildignore+=*.DS_Store "OSX SHIT"
@@ -634,8 +617,8 @@ set nocompatible
         \ ]
 
     " CtrlP - don't recalculate files on start (slow)
-    let g:ctrlp_clear_cache_on_exit = 0
-    let g:ctrlp_working_path_mode = 'ra'
+    let g:ctrlp_clear_cache_on_exit = 1
+    let g:ctrlp_working_path_mode = 'ra' 
     let g:ctrlp_user_command = {
         \ 'types': {
             \ 1: ['.git', 'cd %s && git ls-files'],
@@ -648,6 +631,7 @@ set nocompatible
         \ 'file': '\v\.(exe|so|dll|class|a)$',
         \ 'link': 'SOME_BAD_SYMBOLIC_LINKS',
         \ }
+    let g:ctrlp_root_markers = ['.ctrlp']
 
     " TagBar
     let g:tagbar_left = 0
@@ -728,18 +712,31 @@ set nocompatible
     let g:syntastic_mode_map = {
         \ 'mode': 'passive',
         \ 'active_filetypes':
-            \ ['c', 'cpp', 'perl', 'python', 'scala', 'go'] }
+            \ ['c', 'cpp', 'perl', 'python', 'scala', 'go', 'js'] }
 
-    let g:go_bin_path = expand("$HOME/gopath/bin")
+    let g:go_bin_path = expand("$GOPATH/bin")
     let g:go_disable_autoinstall = 0
 
     
-    au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
-    au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
-    au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
-    au FileType go nmap <leader>r <Plug>(go-run)
-    au FileType go nmap <leader>t <Plug>(go-test)
-    au FileType go nmap <leader>b <Plug>(go-build)
+
+    "function! g:UltiSnips_Complete()
+      "call UltiSnips_ExpandSnippet()
+      "if g:ulti_expand_res == 0
+          "if pumvisible()
+              "return "\<C-n>"
+          "else
+              "call UltiSnips_JumpForwards()
+              "if g:ulti_jump_forwards_res == 0
+                "return "\<TAB>"
+              "endif
+          "endif
+      "endif
+      "return ""
+    "endfunction
+
+    "au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+    "let g:UltiSnipsJumpForwardTrigger="<tab>"
+    "let g:UltiSnipsListSnippets="<c-e>"
 
     function! g:UltiSnips_Complete()
         call UltiSnips#ExpandSnippet()
@@ -757,12 +754,22 @@ set nocompatible
     endfunction
 
     au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-    let g:UltiSnipsJumpForwardTrigger="<tab>"
+    let g:UltiSnipsExpandTrigger="<s-tab>"
     let g:UltiSnipsListSnippets="<c-e>"
     " this mapping Enter key to <C-y> to chose the current highlight item 
     " and close the selection list, same as other IDEs.
     " CONFLICT with some plugins like tpope/Endwise
-    "inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    let g:angular_find_ignore = ['build/', 'dist/']
+    iabbrev </ </<C-X><C-O>
+    autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
+    au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
+    au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
+    au FileType go nmap <leader>r <Plug>(go-run)
+    au FileType go nmap <leader>t <Plug>(go-test)
+    au FileType go nmap <leader>b <Plug>(go-build)
+    au FileType go nnoremap <leader>i :GoInfo<CR>
 
 """ }}}
 """ Local ending config, will overwrite anything above. Generally use this. {{{{
