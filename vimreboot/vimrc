@@ -110,6 +110,9 @@ set nocompatible
 
     " Docker support
     Bundle "ekalinin/Dockerfile.vim"
+
+    " Vagrant support
+    Bundle "markcornick/vim-vagrant"
     
     " NGinX support
     Bundle 'evanmiller/nginx-vim-syntax'
