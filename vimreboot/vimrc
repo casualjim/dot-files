@@ -51,6 +51,12 @@ set nocompatible
     " A pretty statusline, bufferline integration
     Bundle 'itchyny/lightline.vim'
     Bundle 'bling/vim-bufferline'
+
+    " Close all other buffers but this one
+    Bundle 'duff/vim-bufonly'
+
+    " tmux integration
+    Bundle 'benmills/vimux'
     Bundle 'christoomey/vim-tmux-navigator'
 
     " Glorious colorschemes
@@ -121,9 +127,8 @@ set nocompatible
     " Bundle "casualjim/vim-varnish"
 
     " Go support
-    "Bundle "jnwhiteh/vim-golang"
-    "Bundle "Blackrush/vim-gocode"
     Bundle "fatih/vim-go"
+    Bundle 'benmills/vimux-golang'
 
     " JavaScript
     Bundle "mklabs/grunt.vim"
@@ -773,6 +778,8 @@ set nocompatible
     au FileType go nmap <leader>t <Plug>(go-test)
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go nnoremap <leader>i :GoInfo<CR>
+    au FileType go map <leader>ra :wa<CR> :GolangTestCurrentPackage<CR>
+    au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
 
 """ }}}
 """ Local ending config, will overwrite anything above. Generally use this. {{{{
