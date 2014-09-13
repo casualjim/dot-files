@@ -13,10 +13,10 @@ ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 
 echo "Installing vim plugins"
 
-if [ `uname` = 'Darwin' ]; then 
-  $(mvim -ve -c 'BundleInstall' -c 'qall')
-else
-  $(vim -e -c 'BundleInstall' -c 'qall')
+vim -e -c 'BundleInstall' -c 'qall' > /dev/null
+
+if [ `uname` = 'Darwin' ]; then
+  brew install cmake 
 fi
 
 if [ -f /etc/os-release ]; then
