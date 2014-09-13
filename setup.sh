@@ -20,7 +20,7 @@ if [ `uname` = 'Darwin' ]; then
 fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
-  if [ "${ID_LIKE}" = debian ]; then
+  if [ "${ID_LIKE}" = "debian" ]; then
     sudo aptitude install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term
     cd /tmp
     curl -OLs https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz
