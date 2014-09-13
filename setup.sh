@@ -13,13 +13,25 @@ ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 
 echo "Installing vim plugins"
 
-# vim +BundleInstall +qall
+if [ `uname` = 'Darwin' ]; then 
+  mvim -ves -c 'BundleInstall' -c 'qall'
+else
+  vim -es -c 'BundleInstall' -c 'qall'
+fi
 
-# aptitude install cmake python-dev clang libclang-dev
-# yum install cmake28 python-devel clang clang-devel
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  if [ "${ID_LIKE}" = debian ]; then
+    sudo aptitude install cmake python-dev clang libclang-dev
+  fi
+fi
+if [ -f /etc/redhat-release ]; then
+  sudo yum install cmake28 python-devel clang clang-devel
+fi
 
-# cd ~/.vim/bundle/YouCompleteMe
-# ./install.sh --clang-completer
-# cd ${curr_dir}
+
+cd ~/.vim/bundle/YouCompleteMe
+./install.sh --clang-completer
+cd ${curr_dir}
 
 echo "Environment has been configured."

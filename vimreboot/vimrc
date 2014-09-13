@@ -61,6 +61,7 @@ set nocompatible
 
     " Glorious colorschemes
     Bundle 'nanotech/jellybeans.vim'
+    Bundle 'jnurmine/Zenburn'
     "Bundle 'jaromero/vim-monokai-refined'
 
     " Work with colors
@@ -138,7 +139,7 @@ set nocompatible
     Bundle "matthewsimo/angular-vim-snippets"
     Bundle "burnettk/vim-angular"
     Bundle "myhere/vim-nodejs-complete"
-    Bundle "elzr/vim-json"
+    "Bundle "elzr/vim-json"
     
     """ }}}
     """ Installing plugins the first time {{{
@@ -163,6 +164,7 @@ set nocompatible
         set background=dark                         " we're using a dark bg
         colors jellybeans                           " select colorscheme
         colors desertEx                             " select colorscheme
+        "colors zenburn                             " select colorscheme
         au BufNewFile,BufRead *.txt se ft=sh tw=119  " opens .txt w/highlight
         au BufNewFile,BufRead *.tex se ft=tex tw=119 " we don't want plaintex
         au BufNewFile,BufRead *.md se ft=markdown tw=119 " markdown, not modula
@@ -219,12 +221,12 @@ set nocompatible
         set encoding=utf-8                    " for character glyphs
         """ }}}
         """ Gvim {{{
-            set guifont=Consolas\ Regular\ 12
+            set guifont="Consolas Regular 13"
             if has("gui_mac") || has("gui_macvim") 
-              set guifont=Consolas:h12
+              set guifont=Consolas:h13
             endif
             if has("gui_win32") || has("gui_win32s") 
-              set guifont=Consolas:h9
+              set guifont=Consolas:h10
               set enc=utf-8
             endif
             "set guioptions-=m                       " remove menubar
@@ -725,7 +727,10 @@ set nocompatible
     let g:go_bin_path = expand("$GOPATH/bin")
     let g:go_disable_autoinstall = 0
 
-    
+    let g:go_highlight_operators = 1
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_structs = 1
 
     "function! g:UltiSnips_Complete()
       "call UltiSnips_ExpandSnippet()
