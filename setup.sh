@@ -14,9 +14,9 @@ ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 echo "Installing vim plugins"
 
 if [ `uname` = 'Darwin' ]; then 
-  mvim -ves -c 'BundleInstall' -c 'qall'
+  $(mvim -ve -c 'BundleInstall' -c 'qall')
 else
-  vim -es -c 'BundleInstall' -c 'qall'
+  $(vim -e -c 'BundleInstall' -c 'qall')
 fi
 
 if [ -f /etc/os-release ]; then
