@@ -21,11 +21,31 @@ fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE}" = debian ]; then
-    sudo aptitude install -y cmake python-dev clang libclang-dev
+    sudo aptitude install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term
+    cd /tmp
+    curl -OLs https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz
+    sudo tar -zxf /tmp/godeb-amd64.tar.gz -C /usr/bin
+    sudo /usr/bin/godeb install 1.3.1
   fi
 fi
 if [ -f /etc/redhat-release ]; then
-  sudo yum install -y cmake28 python-devel clang clang-devel
+  sudo yum install -y cmake28 python-devel clang clang-devel ctags ncurses-term ncurses-devel
+
+  cd /tmp 
+  wget https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz
+  tar -xvzf libevent-2.0.21-stable.tar.gz
+  cd libevent-2.0.21-stable
+  ./configure
+  make
+  sudo make install
+
+  cd /tmp
+  wget http://downloads.sourceforge.net/tmux/tmux-1.9a.tar.gz
+  tar -xvzf tmux-1.9a.tar.gz
+  cd tmux-1.9a
+  ./configure
+  make
+  sudo make install
 fi
 
 echo "Installing YouCompleteMe"
