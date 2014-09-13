@@ -22,11 +22,11 @@ fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE}" = debian ]; then
-    sudo aptitude install cmake python-dev clang libclang-dev
+    sudo aptitude install -y cmake python-dev clang libclang-dev
   fi
 fi
 if [ -f /etc/redhat-release ]; then
-  sudo yum install cmake28 python-devel clang clang-devel
+  sudo yum install -y cmake28 python-devel clang clang-devel
 fi
 
 
