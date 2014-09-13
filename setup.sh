@@ -12,13 +12,12 @@ ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 
 echo "Installing vim plugins"
-
 vim -e -c 'BundleInstall' -c 'qall' > /dev/null
 
+echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
   brew install cmake 
 fi
-
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE}" = debian ]; then
@@ -29,7 +28,7 @@ if [ -f /etc/redhat-release ]; then
   sudo yum install -y cmake28 python-devel clang clang-devel
 fi
 
-
+echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.sh --clang-completer
 cd ${curr_dir}
