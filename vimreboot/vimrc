@@ -50,6 +50,7 @@ set nocompatible
 
     " A pretty statusline, bufferline integration
     Bundle 'itchyny/lightline.vim'
+    "Bundle 'bling/vim-airline'
     Bundle 'bling/vim-bufferline'
 
     " Close all other buffers but this one
@@ -90,8 +91,6 @@ set nocompatible
     Bundle 'SirVer/ultisnips'
     Bundle 'honza/vim-snippets'
 
-    " A fancy start screen, shows MRU etc.
-    Bundle 'mhinz/vim-startify'
     Bundle "scrooloose/nerdtree"
     Bundle "bufexplorer.zip"
     "Bundle "koron/minimap-vim"
@@ -613,19 +612,6 @@ set nocompatible
         endfunction
     """ }}}
 
-    " Startify, the fancy start page
-    let g:ctrlp_reuse_window = 'startify' " don't split in startify
-    let g:startify_bookmarks = [
-        \ $HOME . "/.vimrc", $HOME . "/.vimrc.first",
-        \ $HOME . "/.vimrc.last", $HOME . "/.vimrc.bundles"
-        \ ]
-    let g:startify_custom_header = [
-        \ '   Author:      Tim Sæterøy',
-        \ '   Homepage:    http://thevoid.no',
-        \ '   Source:      http://github.com/timss/vimconf',
-        \ ''
-        \ ]
-
     " CtrlP - don't recalculate files on start (slow)
     let g:ctrlp_clear_cache_on_exit = 1
     let g:ctrlp_working_path_mode = 'ra' 
@@ -726,6 +712,7 @@ set nocompatible
 
     let g:go_bin_path = expand("$GOPATH/bin")
     let g:go_disable_autoinstall = 0
+    let g:go_fmt_command = "goimports"
 
     let g:go_highlight_operators = 1
     let g:go_highlight_functions = 1
@@ -776,13 +763,18 @@ set nocompatible
     let g:angular_find_ignore = ['build/', 'dist/']
     iabbrev </ </<C-X><C-O>
     autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+    au FileType go nmap <Leader>s <Plug>(go-implements)
+    au FileType go nmap <Leader>i <Plug>(go-info)
+    au FileType go nmap <Leader>gd <Plug>(go-doc)
+    au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+    au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
+    au FileType go nmap <Leader>e <Plug>(go-rename)
     au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
     au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
     au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
     au FileType go nmap <leader>r <Plug>(go-run)
     au FileType go nmap <leader>t <Plug>(go-test)
     au FileType go nmap <leader>b <Plug>(go-build)
-    au FileType go nnoremap <leader>i :GoInfo<CR>
     au FileType go map <leader>ra :wa<CR> :GolangTestCurrentPackage<CR>
     au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
 
