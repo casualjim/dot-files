@@ -16,22 +16,23 @@ vim -e -c 'BundleInstall' -c 'qall' > /dev/null
 
 echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
-  brew install cmake 
+  brew install cmake nodejs
 fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE}" = "debian" ]; then
-    sudo aptitude install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term
+    # sudo aptitude install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term
+    sudo aptitude install -y python-dev tmux exuberant-ctags ncurses-term nodejs npm
     cd /tmp
     curl -OLs https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz
     sudo tar -zxf /tmp/godeb-amd64.tar.gz -C /usr/bin
-    sudo /usr/bin/godeb install 1.3.1
+    sudo /usr/bin/godeb install
   fi
 fi
 if [ -f /etc/redhat-release ]; then
-  sudo yum install -y cmake28 python-devel clang clang-devel ctags ncurses-term ncurses-devel
+  sudo yum install -y cmake28 python-devel clang clang-devel ctags ncurses-term ncurses-devel nodejs npm
 
-  cd /tmp 
+  cd /tmp
   wget https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz
   tar -xvzf libevent-2.0.21-stable.tar.gz
   cd libevent-2.0.21-stable
@@ -51,6 +52,10 @@ fi
 echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.sh --clang-completer
+
+echo "Installing node-tern for vim"
+cd ~/.vim/bundle/tern_for_vim
+npm install
 cd ${curr_dir}
 
 echo "Environment has been configured."
