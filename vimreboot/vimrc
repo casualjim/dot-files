@@ -135,14 +135,16 @@ set nocompatible
 
     " JavaScript
     Bundle "mklabs/grunt.vim"
-    "Bundle "moll/vim-node"
+    Bundle "moll/vim-node"
     Bundle "pangloss/vim-javascript"
-    "Bundle "othree/javascript-libraries-syntax.vim"
+    Bundle "othree/javascript-libraries-syntax.vim"
     Bundle "matthewsimo/angular-vim-snippets"
     Bundle "burnettk/vim-angular"
-    Bundle "marijnh/tern_for_vim"
-    "Bundle "myhere/vim-nodejs-complete"
-    "Bundle "elzr/vim-json"
+    "Bundle "marijnh/tern_for_vim" 
+    Bundle "ahayman/vim-nodejs-complete"
+    Bundle "elzr/vim-json"
+    Bundle "maksimr/vim-jsbeautify"
+    Bundle 'einars/js-beautify'
     
     """ }}}
     """ Installing plugins the first time {{{
@@ -224,7 +226,8 @@ set nocompatible
         set encoding=utf-8                    " for character glyphs
         """ }}}
         """ Gvim {{{
-            set guifont="Consolas Regular 13"
+            "set guifont="Consolas Regular 11"
+            set guifont=Consolas\ 8
             if has("gui_mac") || has("gui_macvim") 
               set guifont=Consolas:h13
             endif
@@ -258,6 +261,7 @@ set nocompatible
     set splitright                                  " vsplits go right w/focus
     set ttyfast                                     " for faster redraws etc
     set ttymouse=xterm2                             " experimental
+    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
     """ Folding {{{
         set foldcolumn=0                            " hide folding column
         set foldmethod=indent                       " folds using indent
@@ -612,7 +616,7 @@ set nocompatible
 
         augroup AutoSyntastic
             autocmd!
-            autocmd BufWritePost *.c,*.cpp,*.perl,*py,*.scala call s:syntastic()
+            autocmd BufWritePost *.c, *.js,*.cpp,*.perl,*py,*.scala call s:syntastic()
         augroup END
         function! s:syntastic()
             SyntasticCheck
@@ -879,6 +883,14 @@ set nocompatible
     "let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
     
     let g:angular_find_ignore = ['build/', 'dist/']
+
+    " js beautify
+    autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+    autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+    autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+    autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+    autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+    autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
     
     iabbrev </ </<C-X><C-O>
     
