@@ -81,7 +81,7 @@ set nocompatible
 
     " Git wrapper inside Vim
     Bundle 'tpope/vim-fugitive'
-    Bundle "airblade/vim-gitgutter"
+    "Bundle "airblade/vim-gitgutter"
 
     " Align your = etc.
     Bundle 'vim-scripts/Align'
@@ -128,10 +128,17 @@ set nocompatible
 
     " Varnish cache support
     " Bundle "casualjim/vim-varnish"
+    
+    " TOML support
+    Bundle "cespare/vim-toml"
 
     " Go support
     Bundle "fatih/vim-go"
     Bundle 'benmills/vimux-golang'
+
+    " Rust support
+    Bundle "wting/rust.vim"
+    Bundle "ebfe/vim-racer"
 
     " JavaScript
     Bundle "mklabs/grunt.vim"
@@ -169,6 +176,7 @@ set nocompatible
         set background=dark                         " we're using a dark bg
         colors jellybeans                           " select colorscheme
         colors desertEx                             " select colorscheme
+        "colors desert256                             " select colorscheme
         "colors zenburn                             " select colorscheme
         au BufNewFile,BufRead *.txt se ft=sh tw=119  " opens .txt w/highlight
         au BufNewFile,BufRead *.tex se ft=tex tw=119 " we don't want plaintex
@@ -227,7 +235,7 @@ set nocompatible
         """ }}}
         """ Gvim {{{
             "set guifont="Consolas Regular 11"
-            set guifont=Consolas\ 8
+            set guifont=Liberation\ Mono\ 10
             if has("gui_mac") || has("gui_macvim") 
               set guifont=Consolas:h13
             endif
@@ -768,119 +776,6 @@ set nocompatible
     au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
     let g:UltiSnipsExpandTrigger="<s-tab>"
     let g:UltiSnipsListSnippets="<c-e>"
-    
-    " this mapping Enter key to <C-y> to chose the current highlight item 
-    " and close the selection list, same as other IDEs.
-    " CONFLICT with some plugins like tpope/Endwise
-    " inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-    "Note: This option must set it in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
-    
-    "" Disable AutoComplPop.
-    "let g:acp_enableAtStartup = 0
-    "" Use neocomplete.
-    "let g:neocomplete#enable_at_startup = 1
-    "" Use smartcase.
-    "let g:neocomplete#enable_smart_case = 1
-    "" Set minimum syntax keyword length.
-    "let g:neocomplete#sources#syntax#min_keyword_length = 3
-    "let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-    "" Define dictionary.
-    "let g:neocomplete#sources#dictionary#dictionaries = {
-        "\ 'default' : '',
-        "\ 'vimshell' : $HOME.'/.vimshell_hist',
-        "\ 'scheme' : $HOME.'/.gosh_completions'
-            "\ }
-
-    "" Define keyword.
-    "if !exists('g:neocomplete#keyword_patterns')
-        "let g:neocomplete#keyword_patterns = {}
-    "endif
-    "let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-    "" Plugin key-mappings.
-    "inoremap <expr><C-g>     neocomplete#undo_completion()
-    "inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-    "" Recommended key-mappings.
-    "" <CR>: close popup and save indent.
-    "inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    "function! s:my_cr_function()
-      "return neocomplete#close_popup() . "\<CR>"
-      "" For no inserting <CR> key.
-      ""return pumvisible() ? neocomplete#close_popup() : "\<CR>"
-    "endfunction
-    "" <TAB>: completion.
-    "inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    "" <C-h>, <BS>: close popup and delete backword char.
-    "inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    "inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-    "inoremap <expr><C-y>  neocomplete#close_popup()
-    "inoremap <expr><C-e>  neocomplete#cancel_popup()
-    "" Close popup by <Space>.
-    ""inoremap <expr><Space> pumvisible() ? neocomplete#close_popup() : "\<Space>"
-
-    "" For cursor moving in insert mode(Not recommended)
-    ""inoremap <expr><Left>  neocomplete#close_popup() . "\<Left>"
-    ""inoremap <expr><Right> neocomplete#close_popup() . "\<Right>"
-    ""inoremap <expr><Up>    neocomplete#close_popup() . "\<Up>"
-    ""inoremap <expr><Down>  neocomplete#close_popup() . "\<Down>"
-    "" Or set this.
-    ""let g:neocomplete#enable_cursor_hold_i = 1
-    "" Or set this.
-    ""let g:neocomplete#enable_insert_char_pre = 1
-
-    "" AutoComplPop like behavior.
-    ""let g:neocomplete#enable_auto_select = 1
-
-    "" Shell like behavior(not recommended).
-    ""set completeopt+=longest
-    ""let g:neocomplete#enable_auto_select = 1
-    ""let g:neocomplete#disable_auto_complete = 1
-    ""inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
-
-    "" Enable omni completion.
-    "autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-    "autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-    "autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    "autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-    "autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-
-    "" Enable heavy omni completion.
-    "if !exists('g:neocomplete#sources#omni#input_patterns')
-      "let g:neocomplete#sources#omni#input_patterns = {}
-    "endif
-    ""let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-    ""let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-    ""let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-    "" For perlomni.vim setting.
-    "" https://github.com/c9s/perlomni.vim
-    "let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-
-    "" Plugin key-mappings.
-    "imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-    "smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-    "xmap <C-k>     <Plug>(neosnippet_expand_target)
-
-    "" SuperTab like snippets behavior.
-    "imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    "\ "\<Plug>(neosnippet_expand_or_jump)"
-    "\: pumvisible() ? "\<C-n>" : "\<TAB>"
-    "smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    "\ "\<Plug>(neosnippet_expand_or_jump)"
-    "\: "\<TAB>"
-
-    "" For snippet_complete marker.
-    "if has('conceal')
-      "set conceallevel=2 concealcursor=i
-    "endif
-    "" Enable snipMate compatibility feature.
-    "let g:neosnippet#enable_snipmate_compatibility = 1
-
-    "" Tell Neosnippet about the other snippets
-    "let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
     
     let g:angular_find_ignore = ['build/', 'dist/']
 
