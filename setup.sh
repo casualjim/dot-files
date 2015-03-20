@@ -6,8 +6,10 @@ ln -sf ${curr_dir}/vimreboot/vimrc ~/.vimrc
 ln -sf ${curr_dir}/ctags ~/.ctags
 # ln -sf ${curr_dir}/vim-addons ~/.vim-addons
 # ln -sf ${curr_dir}/emacs.d ~/.emacs.d
-ln -sf ${curr_dir}/oh-my-zsh ~/.oh-my-zsh
-cp ${curr_dir}/oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+# ln -sf ${curr_dir}/oh-my-zsh ~/.oh-my-zsh
+ln -sf ${curr_dir}/antigen ~/antigen
+ln -sf ${curr_dir}/zshrc ~/.zshrc
+# cp ${curr_dir}/oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 

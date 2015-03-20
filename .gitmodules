@@ -4,3 +4,6 @@
 [submodule "vimreboot/bundle/vundle"]
 	path = vimreboot/bundle/vundle
 	url = https://github.com/gmarik/vundle
+[submodule "antigen"]
+	path = antigen
+	url = https://github.com/zsh-users/antigen.git
