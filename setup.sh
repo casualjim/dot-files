@@ -55,9 +55,12 @@ echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.sh --clang-completer
 
-echo "Installing node-tern for vim"
-cd ~/.vim/bundle/tern_for_vim
-npm install
+echo "Installing jshint"
+npm -g install jshint jslint
+
+echo "Installing jsbeautify"
+cd ~/.vim/bundle/js-beautify
+git submodule update --init --recursive
 cd ${curr_dir}
 
 echo "Environment has been configured."

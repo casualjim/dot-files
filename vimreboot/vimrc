@@ -84,7 +84,7 @@ set nocompatible
 
     " Git wrapper inside Vim
     Bundle 'tpope/vim-fugitive'
-    Bundle "airblade/vim-gitgutter"
+    "Bundle "airblade/vim-gitgutter"
 
     " Align your = etc.
     Bundle 'vim-scripts/Align'
@@ -131,6 +131,9 @@ set nocompatible
 
     " Varnish cache support
     " Bundle "casualjim/vim-varnish"
+    
+    " TOML support
+    Bundle "cespare/vim-toml"
 
     " Go support
     Bundle "fatih/vim-go"
@@ -139,16 +142,23 @@ set nocompatible
     " shorten urls
     Bundle "sethbaur/googurl.vim"
 
+    " Rust support
+    Bundle "wting/rust.vim"
+    Bundle "ebfe/vim-racer"
+
     " JavaScript
     Bundle "mklabs/grunt.vim"
-    "Bundle "moll/vim-node"
+    Bundle "moll/vim-node"
     Bundle "pangloss/vim-javascript"
-    "Bundle "othree/javascript-libraries-syntax.vim"
+    Bundle "othree/javascript-libraries-syntax.vim"
     Bundle "matthewsimo/angular-vim-snippets"
     Bundle "burnettk/vim-angular"
+
     Bundle "marijnh/tern_for_vim"
     "Bundle "myhere/vim-nodejs-complete"
     Bundle "elzr/vim-json"
+    Bundle "maksimr/vim-jsbeautify"
+    Bundle 'einars/js-beautify'
     
     """ }}}
     """ Installing plugins the first time {{{
@@ -173,6 +183,7 @@ set nocompatible
         set background=dark                         " we're using a dark bg
         colors jellybeans                           " select colorscheme
         colors desertEx                             " select colorscheme
+        "colors desert256                             " select colorscheme
         "colors zenburn                             " select colorscheme
         au BufNewFile,BufRead *.txt se ft=sh tw=119  " opens .txt w/highlight
         au BufNewFile,BufRead *.tex se ft=tex tw=119 " we don't want plaintex
@@ -264,6 +275,7 @@ set nocompatible
     set splitright                                  " vsplits go right w/focus
     set ttyfast                                     " for faster redraws etc
     set ttymouse=xterm2                             " experimental
+    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
     """ Folding {{{
         set foldcolumn=0                            " hide folding column
         set foldmethod=indent                       " folds using indent
@@ -618,7 +630,7 @@ set nocompatible
 
         augroup AutoSyntastic
             autocmd!
-            autocmd BufWritePost *.c,*.cpp,*.perl,*py,*.scala call s:syntastic()
+            autocmd BufWritePost *.c, *.js,*.cpp,*.perl,*py,*.scala call s:syntastic()
         augroup END
         function! s:syntastic()
             SyntasticCheck
@@ -776,6 +788,14 @@ set nocompatible
     
     let g:vim_json_syntax_conceal = 0 
     let g:angular_find_ignore = ['build/', 'dist/']
+
+    " js beautify
+    autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+    autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+    autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+    autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+    autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+    autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
     
     iabbrev </ </<C-X><C-O>
     

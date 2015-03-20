@@ -17,7 +17,7 @@ if version > 580
 endif
 let g:colors_name="desertEx"
 
-highlight Normal guifg=gray guibg=grey17 gui=NONE ctermfg=250 ctermbg=235 cterm=NONE
+highlight Normal guifg=gray80 guibg=grey17 gui=NONE ctermfg=250 ctermbg=235 cterm=NONE
 
 
 " highlight groups
