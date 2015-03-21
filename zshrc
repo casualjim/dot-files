@@ -128,3 +128,5 @@ export HADOOP_USER_NAME=hadoop
 eval "$(gh alias -s)"
 eval "$(direnv hook zsh)"
 eval "$(docker-machine env localdocker)"
+
+[ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local

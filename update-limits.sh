@@ -8,7 +8,7 @@ set -e
 syslog -s -l warn "Set environment variables with /etc/environment $(whoami) - start"
 
 launchctl set GOROOT /usr/local/opt/go/libexec
-launchctl set GOPATH /Users/ivan/go
+launchctl set GOPATH $HOME/go
 
 if [ -x /usr/libexec/path_helper ]; then
     export PATH=""

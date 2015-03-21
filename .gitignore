@@ -6,3 +6,4 @@ tags
 vimreboot/bundle
 vimreboot/undo
 vimreboot/bundle/vundle
+.zshrc

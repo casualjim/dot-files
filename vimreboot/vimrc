@@ -57,6 +57,13 @@ set nocompatible
     Bundle 'Shougo/vimproc.vim'
     Bundle 'Shougo/vimshell.vim'
 
+    " highlight trailing whitespace red
+    Bundle "bronson/vim-trailing-whitespace"
+    Bundle "terryma/vim-multiple-cursors"
+
+    " easymotion
+    Bundle 'Lokaltog/vim-easymotion'
+
     " tmux integration
     Bundle 'benmills/vimux'
     Bundle 'christoomey/vim-tmux-navigator'
@@ -125,13 +132,13 @@ set nocompatible
 
     " Vagrant support
     Bundle "markcornick/vim-vagrant"
-    
+
     " NGinX support
     Bundle 'evanmiller/nginx-vim-syntax'
 
     " Varnish cache support
     " Bundle "casualjim/vim-varnish"
-    
+
     " TOML support
     Bundle "cespare/vim-toml"
 
@@ -146,6 +153,13 @@ set nocompatible
     Bundle "wting/rust.vim"
     Bundle "ebfe/vim-racer"
 
+    " html5 support
+    Bundle 'othree/html5.vim'
+
+    " less, css etc support
+    Bundle 'vim-less'
+    Bundle 'hail2u/vim-css3-syntax'
+
     " JavaScript
     Bundle "mklabs/grunt.vim"
     Bundle "moll/vim-node"
@@ -158,8 +172,13 @@ set nocompatible
     "Bundle "myhere/vim-nodejs-complete"
     Bundle "elzr/vim-json"
     Bundle "maksimr/vim-jsbeautify"
-    Bundle 'einars/js-beautify'
-    
+    "Bundle 'einars/js-beautify'
+
+    " markdown support
+    Bundle "tpope/vim-markdown"
+    Bundle "jtratner/vim-flavored-markdown"
+    Bundle "shime/vim-livedown"
+
     """ }}}
     """ Installing plugins the first time {{{
         if has_vundle == 0
@@ -185,9 +204,12 @@ set nocompatible
         colors desertEx                             " select colorscheme
         "colors desert256                             " select colorscheme
         "colors zenburn                             " select colorscheme
-        au BufNewFile,BufRead *.txt se ft=sh tw=119  " opens .txt w/highlight
-        au BufNewFile,BufRead *.tex se ft=tex tw=119 " we don't want plaintex
-        au BufNewFile,BufRead *.md se ft=markdown tw=119 " markdown, not modula
+        au BufNewFile,BufRead *.txt set ft=sh tw=119  " opens .txt w/highlight
+        au BufNewFile,BufRead *.tex set ft=tex tw=119 " we don't want plaintex
+        augroup markdown
+          au!
+          au BufNewFile,BufRead *.md,*.markdown setlocal ft=ghmarkdown tw=119 " markdown, not modula
+        augroup END
         "au VimEnter * RainbowParenthesesToggle
         "au Syntax * RainbowParenthesesLoadRound
         "au Syntax * RainbowParenthesesLoadSquare
@@ -242,10 +264,10 @@ set nocompatible
         """ }}}
         """ Gvim {{{
             set guifont="Consolas Regular 14"
-            if has("gui_mac") || has("gui_macvim") 
+            if has("gui_mac") || has("gui_macvim")
               set guifont=Consolas:h14
             endif
-            if has("gui_win32") || has("gui_win32s") 
+            if has("gui_win32") || has("gui_win32s")
               set guifont=Consolas:h10
               set enc=utf-8
             endif
@@ -275,7 +297,7 @@ set nocompatible
     set splitright                                  " vsplits go right w/focus
     set ttyfast                                     " for faster redraws etc
     set ttymouse=xterm2                             " experimental
-    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
+"    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
     """ Folding {{{
         set foldcolumn=0                            " hide folding column
         set foldmethod=indent                       " folds using indent
@@ -335,7 +357,6 @@ set nocompatible
     "don't clutter my directories with swap files, bitch!
     set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
     set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
- 
 
     """ }}}
 """ }}}
@@ -349,7 +370,7 @@ set nocompatible
         noremap <leader>vs :source $HOME/.vimrc<CR>
 
         " Yank(copy) to system clipboard
-        noremap <leader>y "+y
+        "noremap <leader>y "+y
 
         " Toggle text wrapping
         nmap <silent> <leader>w :set invwrap<CR>:set wrap?<CR>
@@ -630,7 +651,7 @@ set nocompatible
 
         augroup AutoSyntastic
             autocmd!
-            autocmd BufWritePost *.c, *.js,*.cpp,*.perl,*py,*.scala call s:syntastic()
+            autocmd BufWritePost *.c, *.js,*.cpp,*.perl,*py,*.scala,*.go,*.json,*.rb call s:syntastic()
         augroup END
         function! s:syntastic()
             SyntasticCheck
@@ -640,7 +661,7 @@ set nocompatible
 
     " CtrlP - don't recalculate files on start (slow)
     let g:ctrlp_clear_cache_on_exit = 1
-    let g:ctrlp_working_path_mode = 'ra' 
+    let g:ctrlp_working_path_mode = 'ra'
     let g:ctrlp_user_command = {
         \ 'types': {
             \ 1: ['.git', 'cd %s && git ls-files'],
@@ -676,7 +697,7 @@ set nocompatible
             \ 'm:methods'
         \ ],
         \ 'sro': '.',
-        \ 'kind2scope': {  
+        \ 'kind2scope': {
             \ 't' : 'trait',
             \ 'o' : 'object',
             \ 'C' : 'case class',
@@ -693,11 +714,11 @@ set nocompatible
     \ }
 
     " define the go language tags
-    " assumes you have 
+    " assumes you have
     " make use of the gotags tool: https://github.com/jstemmer/gotags
     " cd $GOPATH
     " go get -u github.com/jstemmer/gotags
-    " 
+    "
     let g:tagbar_type_go = {
         \ 'ctagstype' : 'go',
         \ 'kinds'     : [
@@ -728,25 +749,39 @@ set nocompatible
 
     " Syntastic - This is largely up to your own usage, and override these
     "             changes if be needed. This is merely an exemplification.
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+    let g:syntastic_enable_signs = 1
+    let g:syntastic_error_symbol = "✗"
+    let g:syntastic_warning_symbol = "⚠"
+    let g:syntastic_aggregate_errors = 1
+    let g:syntastic_sort_aggregate_errors = 1
+    let g:syntastic_extra_filetypes = [ "make", "gitcommit" ]
     let g:syntastic_cpp_check_header = 1
     let g:syntastic_cpp_compiler_options = ' -std=c++0x'
+    let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint']
+    let g:syntastic_json_checkers = ['jsonlint']
     let g:syntastic_mode_map = {
-        \ 'mode': 'passive',
+        \ 'mode': 'active',
         \ 'active_filetypes':
-            \ ['c', 'cpp', 'perl', 'python', 'scala', 'go', 'js'] }
+            \ ['c', 'cpp', 'python', 'scala', 'go', 'js', 'json', 'yaml', 'zsh', 'ruby'],
+        \ 'passive_filetypes':
+            \ ['perl']}
 
     let g:go_bin_path = expand("$GOPATH/bin")
     let g:go_disable_autoinstall = 0
     let g:go_fmt_command = "goimports"
-    "let g:go_auto_type_info = 1
-    "let g:go_snippet_engine = "neosnippet"
-
+    let g:go_fmt_experimental = 1
+    let g:go_auto_type_info = 1
     let g:go_highlight_operators = 1
     let g:go_highlight_functions = 1
     let g:go_highlight_methods = 1
     let g:go_highlight_structs = 1
     let g:go_highlight_build_constraints = 1
     let g:go_oracle_include_tests = 1
+    let g:go_oracle_scope = 'github.com/casualjim/go-swagger/cmd/swagger github.com/reverb/agora/boatwright github.com/reverb/agora/shipwright github.com/reverb/analytics/daemons/analytics-api'
 
     function! g:UltiSnips_Complete()
       call UltiSnips_ExpandSnippet()
@@ -785,8 +820,8 @@ set nocompatible
     au BufEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
     let g:UltiSnipsExpandTrigger="<s-tab>"
     let g:UltiSnipsListSnippets="<c-e>"
-    
-    let g:vim_json_syntax_conceal = 0 
+
+    let g:vim_json_syntax_conceal = 0
     let g:angular_find_ignore = ['build/', 'dist/']
 
     " js beautify
@@ -796,16 +831,16 @@ set nocompatible
     autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
     autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
     autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
-    
+
     iabbrev </ </<C-X><C-O>
-    
+
     autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
     au FileType go nmap <Leader>s <Plug>(go-implements)
     au FileType go nmap <Leader>i <Plug>(go-info)
-    au FileType go nmap <Leader>gd <Plug>(go-doc)
     au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
     au FileType go nmap <Leader>gb <Plug>(go-doc-browser)
     au FileType go nmap <Leader>e <Plug>(go-rename)
+    au FileType go nmap <Leader>oc <Plug>(go-callers)
     au Filetype go nnoremap <leader>v :vsp <CR>:exe "GoDef" <CR>
     au Filetype go nnoremap <leader>s :sp <CR>:exe "GoDef"<CR>
     au Filetype go nnoremap <leader>t :tab split <CR>:exe "GoDef"<CR>
@@ -815,7 +850,7 @@ set nocompatible
     au FileType go map <leader>ra :wa<CR> :GolangTestCurrentPackage<CR>
     au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
 
-    "let googurl_api_key = 'AIzaSyARvfSoMQYyohsgk3kkVwHAKHFDoMQV-ec'
+    let googurl_api_key = 'AIzaSyARvfSoMQYyohsgk3kkVwHAKHFDoMQV-ec'
 
 """ }}}
 """ Local ending config, will overwrite anything above. Generally use this. {{{{
