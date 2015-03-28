@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-rm -rf ~/.vimrc ~/.vim ~/.emacs.d ~/.oh-my-zsh ~/.zshrc
+rm -rf ~/.vimrc ~/.vim ~/.antigen ~/.emacs.d ~/.oh-my-zsh ~/.zshrc
 curr_dir=$(cd `dirname $0` && pwd)
 ln -sf ${curr_dir}/vimreboot ~/.vim
 ln -sf ${curr_dir}/vimreboot/vimrc ~/.vimrc
 ln -sf ${curr_dir}/ctags ~/.ctags
-ln -sf ${curr_dir}/antigen ~/antigen
+ln -sf ${curr_dir}/antigen ~/.antigen
 ln -sf ${curr_dir}/zshrc ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
@@ -15,14 +15,27 @@ vim -e -c 'BundleInstall' -c 'qall' > /dev/null
 echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
   brew install cmake nodejs
+  echo "Installing jshint"
+  npm -g install jshint jslint
+
+  echo "installing jsonlint"
+  npm -g install jsonlint
+
+  echo "installing markdown lint"
+  gem install mdl
+
+  echo "installing jsyaml"
+  npm -g install js-yaml
+
+  echo "Installing jsbeautify"
+  cd ~/.vim/bundle/js-beautify
+  git submodule update --init --recursive
 fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE}" = "debian" ]; then
-    # sudo aptitude install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term
-    sudo aptitude install -y python-dev tmux exuberant-ctags ncurses-term nodejs npm
-    curl -Ls https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | sudo tar -zx -C /usr/bin
-    sudo godeb install
+    sudo apt-get install -y cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm
+    sudo ln -sf /usr/bin/nodejs /usr/bin/node
   fi
 fi
 if [ -f /etc/redhat-release ]; then
@@ -49,21 +62,5 @@ echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.sh --clang-completer
 
-echo "Installing jshint"
-npm -g install jshint jslint
-
-echo "installing jsonlint"
-npm -g install jsonlint
-
-echo "installing markdown lint"
-gem install mdl
-
-echo "installing jsyaml"
-npm -g install js-yaml
-
-echo "Installing jsbeautify"
-cd ~/.vim/bundle/js-beautify
-git submodule update --init --recursive
 cd ${curr_dir}
-
 echo "Environment has been configured."

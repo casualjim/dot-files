@@ -263,7 +263,7 @@ set nocompatible
         set encoding=utf-8                    " for character glyphs
         """ }}}
         """ Gvim {{{
-            set guifont="Consolas Regular 14"
+            set guifont=Consolas\ 11
             if has("gui_mac") || has("gui_macvim")
               set guifont=Consolas:h14
             endif
@@ -354,7 +354,7 @@ set nocompatible
 
     " http://stackoverflow.com/questions/16743112/open-item-from-quickfix-window-in-vertical-split
     autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
-    "don't clutter my directories with swap files, bitch!
+    "don't clutter my directories with swap files
     set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
     set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 
@@ -403,12 +403,6 @@ set nocompatible
 
         " Disable annoying ex mode (Q)
         map Q <nop>
-
-        " Buffers, preferred over tabs now with bufferline. Buggy?
-        nnoremap gn :bNext<CR>
-        nnoremap gN :bprevious<CR>
-        nnoremap gd :bdelete<CR>
-        nnoremap gf <C-^>
 
         nmap <silent> <F2> :NERDTreeToggle<CR>
         nnoremap <silent> <C-L> :noh<CR><C-L>
