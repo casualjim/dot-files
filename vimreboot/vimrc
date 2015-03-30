@@ -65,8 +65,8 @@ set nocompatible
     Bundle 'Lokaltog/vim-easymotion'
 
     " tmux integration
-    Bundle 'benmills/vimux'
-    Bundle 'christoomey/vim-tmux-navigator'
+    Bundle 'tmux-plugins/vim-tmux'
+    Bundle 'tmux-plugins/vim-tmux-focus-events'
 
     " Glorious colorschemes
     Bundle 'nanotech/jellybeans.vim'
@@ -91,7 +91,7 @@ set nocompatible
 
     " Git wrapper inside Vim
     Bundle 'tpope/vim-fugitive'
-    "Bundle "airblade/vim-gitgutter"
+    Bundle "airblade/vim-gitgutter"
 
     " Align your = etc.
     Bundle 'vim-scripts/Align'
@@ -129,6 +129,9 @@ set nocompatible
 
     " Docker support
     Bundle "ekalinin/Dockerfile.vim"
+
+    " SystemD support
+    Bundle 'Matt-Deacalion/vim-systemd-syntax'
 
     " Vagrant support
     Bundle "markcornick/vim-vagrant"
@@ -168,8 +171,8 @@ set nocompatible
     Bundle "matthewsimo/angular-vim-snippets"
     Bundle "burnettk/vim-angular"
 
-    Bundle "marijnh/tern_for_vim"
-    "Bundle "myhere/vim-nodejs-complete"
+    "Bundle "marijnh/tern_for_vim"
+    Bundle "myhere/vim-nodejs-complete"
     Bundle "elzr/vim-json"
     Bundle "maksimr/vim-jsbeautify"
     "Bundle 'einars/js-beautify'
@@ -263,7 +266,7 @@ set nocompatible
         set encoding=utf-8                    " for character glyphs
         """ }}}
         """ Gvim {{{
-            set guifont=Consolas\ 11
+            set guifont=Consolas\ 12
             if has("gui_mac") || has("gui_macvim")
               set guifont=Consolas:h14
             endif
@@ -384,10 +387,6 @@ set nocompatible
         nmap <C-down> ]e
         vmap <C-up> [egv
         vmap <C-down> ]egv
-
-        " Move faster
-        map <C-j> <C-d>
-        map <C-k> <C-u>
 
         " Treat wrapped lines as normal lines
         nnoremap j gj
@@ -817,6 +816,10 @@ set nocompatible
 
     let g:vim_json_syntax_conceal = 0
     let g:angular_find_ignore = ['build/', 'dist/']
+
+    let g:gitgutter = 1
+    let g:gitgutter_signs = 1
+    let g:gitgutter_highlight_lines = 0
 
     " js beautify
     autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
