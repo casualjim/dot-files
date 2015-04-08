@@ -147,6 +147,7 @@ set nocompatible
 
     " Go support
     Bundle "fatih/vim-go"
+    Bundle 'cespare/vim-go-templates'
     Bundle 'benmills/vimux-golang'
 
     " shorten urls
@@ -177,6 +178,8 @@ set nocompatible
     Bundle "maksimr/vim-jsbeautify"
     "Bundle 'einars/js-beautify'
 
+    " ascii diagrams
+    Bundle 'vim-scripts/DrawIt'
     " markdown support
     Bundle "tpope/vim-markdown"
     Bundle "jtratner/vim-flavored-markdown"
@@ -754,7 +757,7 @@ set nocompatible
     let g:syntastic_extra_filetypes = [ "make", "gitcommit" ]
     let g:syntastic_cpp_check_header = 1
     let g:syntastic_cpp_compiler_options = ' -std=c++0x'
-    let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint']
+    let g:syntastic_go_checkers = ['gofmt', 'govet', 'golint'] ", 'gotype', 'golint']
     let g:syntastic_json_checkers = ['jsonlint']
     let g:syntastic_mode_map = {
         \ 'mode': 'active',
@@ -846,6 +849,11 @@ set nocompatible
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go map <leader>ra :wa<CR> :GolangTestCurrentPackage<CR>
     au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
+    
+
+    " go template support
+    au BufRead,BufNewFile *.gotmpl set filetype=gotpl
+    au BufRead,BufNewFile *.gohtml set filetype=gotplhtml
 
     let googurl_api_key = 'AIzaSyARvfSoMQYyohsgk3kkVwHAKHFDoMQV-ec'
 

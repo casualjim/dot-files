@@ -108,7 +108,7 @@ extract
 zsh-users/zsh-history-substring-search
 
 # pretty prompt
-nojhan/liquidprompt
+#nojhan/liquidprompt
 
 # Autoupdate Antigen every 7 days.
 unixorn/autoupdate-antigen.zshplugin
@@ -135,7 +135,7 @@ export JAVA_OPTS="-Dfile.encoding=UTF-8"
 #export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
 #export VIM_PREFIX='TERM=xterm-256color'
 export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
-export GOROOT=/usr/local/go
+export GOROOT=$HOME/tools/go/gonative/go
 export GOPATH=$HOME/go
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 export HIVE_HOME=/usr/local/opt/hive/libexec
@@ -170,7 +170,7 @@ else
   alias vim='$VIM_PREFIX vim'
 fi
 
-export PATH="$GOPATH/bin:$GOROOT/bin:/usr/local/gonative/go/bin:$HOME/.rbenv/bin:$PATH"
+export PATH="$GOPATH/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
 
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
