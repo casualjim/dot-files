@@ -135,7 +135,7 @@ export JAVA_OPTS="-Dfile.encoding=UTF-8"
 #export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
 #export VIM_PREFIX='TERM=xterm-256color'
 export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
-export GOROOT=$HOME/tools/go/gonative/go
+export GOROOT=$HOME/tools/go
 export GOPATH=$HOME/go
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 export HIVE_HOME=/usr/local/opt/hive/libexec
