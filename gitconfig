@@ -45,4 +45,10 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = gnome-keyring
+	helper = /usr/share/git/credential/gnome-keyring/git-credential-gnome-keyring
+[diff]
+	tool = vimdiff3
+[merge]
+	tool = vimdiff3
+[help]
+	autocorrect = 1

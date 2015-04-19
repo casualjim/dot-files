@@ -34,7 +34,7 @@ set nocompatible
     """ }}}
     """ Github repos, uncomment to disable a plugin {{{
     " Recursive vundle, omg!
-    Bundle 'gmarik/vundle'
+    Plugin 'gmarik/vundle'
 
     """ Local bundles (and only bundles in this file!) {{{{
     if filereadable($HOME."/.vimrc.bundles")
@@ -43,147 +43,151 @@ set nocompatible
     """ }}}
 
     " Edit files using sudo/su
-    Bundle 'chrisbra/SudoEdit.vim'
+    Plugin 'chrisbra/SudoEdit.vim'
 
     " Fuzzy finder (files, mru, etc)
-    Bundle 'kien/ctrlp.vim'
+    Plugin 'kien/ctrlp.vim'
 
     " A pretty statusline, bufferline integration
-    Bundle 'itchyny/lightline.vim'
-    Bundle 'bling/vim-bufferline'
+    Plugin 'itchyny/lightline.vim'
+    Plugin 'bling/vim-bufferline'
 
     " Close all other buffers but this one
-    Bundle 'Shougo/unite.vim'
-    Bundle 'Shougo/vimproc.vim'
-    Bundle 'Shougo/vimshell.vim'
+    Plugin 'Shougo/unite.vim'
+    Plugin 'Shougo/vimproc.vim'
+    Plugin 'Shougo/vimshell.vim'
 
     " highlight trailing whitespace red
-    Bundle "bronson/vim-trailing-whitespace"
-    Bundle "terryma/vim-multiple-cursors"
+    Plugin 'bronson/vim-trailing-whitespace'
+    Plugin 'terryma/vim-multiple-cursors'
 
     " easymotion
-    Bundle 'Lokaltog/vim-easymotion'
+    Plugin 'Lokaltog/vim-easymotion'
 
     " tmux integration
-    Bundle 'tmux-plugins/vim-tmux'
-    Bundle 'tmux-plugins/vim-tmux-focus-events'
+    Plugin 'tmux-plugins/vim-tmux'
+    Plugin 'tmux-plugins/vim-tmux-focus-events'
+    Plugin 'christoomey/vim-tmux-navigator'
 
     " Glorious colorschemes
-    Bundle 'nanotech/jellybeans.vim'
-    Bundle 'jnurmine/Zenburn'
-    "Bundle 'jaromero/vim-monokai-refined'
+    Plugin 'nanotech/jellybeans.vim'
+    Plugin 'jnurmine/Zenburn'
+    "Plugin 'jaromero/vim-monokai-refined'
 
     " editorconfig integration
-    Bundle 'editorconfig/editorconfig-vim'
+    Plugin 'editorconfig/editorconfig-vim'
 
     " Work with colors
-    Bundle 'guns/xterm-color-table.vim'
-    Bundle 'lilydjwg/colorizer'
+    Plugin 'guns/xterm-color-table.vim'
+    Plugin 'lilydjwg/colorizer'
 
     " Super easy commenting, toggle comments etc
-    Bundle 'scrooloose/nerdcommenter'
+    Plugin 'scrooloose/nerdcommenter'
 
     " Autoclose (, " etc
-    Bundle 'tpope/vim-unimpaired'
-    Bundle 'tpope/vim-surround'
-    Bundle 'tpope/vim-repeat'
-    "Bundle 'Townk/vim-autoclose'
+    Plugin 'tpope/vim-unimpaired'
+    Plugin 'tpope/vim-surround'
+    Plugin 'tpope/vim-repeat'
+    "Plugin 'Townk/vim-autoclose'
 
     " Git wrapper inside Vim
-    Bundle 'tpope/vim-fugitive'
-    Bundle "airblade/vim-gitgutter"
+    Plugin 'tpope/vim-fugitive'
+    Plugin 'airblade/vim-gitgutter'
 
     " Align your = etc.
-    Bundle 'vim-scripts/Align'
+    Plugin 'vim-scripts/Align'
 
     " Snippets like textmate
-    "Bundle 'Shougo/neocomplete'
-    "Bundle 'Shougo/neosnippet'
-    "Bundle 'Shougo/neosnippet-snippets'
-    Bundle 'sjl/gundo.vim'
-    Bundle "Valloric/YouCompleteMe"
-    Bundle 'SirVer/ultisnips'
-    Bundle 'honza/vim-snippets'
+    "Plugin 'Shougo/neocomplete'
+    "Plugin 'Shougo/neosnippet'
+    "Plugin 'Shougo/neosnippet-snippets'
+    Plugin 'sjl/gundo.vim'
+    Plugin 'Valloric/YouCompleteMe'
+    Plugin 'SirVer/ultisnips'
+    Plugin 'honza/vim-snippets'
 
-    Bundle "scrooloose/nerdtree"
-    "Bundle "bufexplorer.zip"
+    Plugin 'scrooloose/nerdtree'
+    "Plugin 'bufexplorer.zip'
 
     " Awesome syntax checker.
     " REQUIREMENTS: See :h syntastic-intro
-    Bundle 'scrooloose/syntastic'
+    Plugin 'scrooloose/syntastic'
 
     " Functions, class data etc.
     " REQUIREMENTS: (exuberant)-ctags
-    Bundle 'majutsushi/tagbar'
-    Bundle 'mtth/scratch.vim'
+    Plugin 'majutsushi/tagbar'
+    Plugin 'mtth/scratch.vim'
 
     " Scala support
-    Bundle 'derekwyatt/vim-scala'
-    Bundle 'derekwyatt/vim-sbt'
-    Bundle 'ktvoelker/sbt-vim'
-    Bundle "tpope/vim-classpath"
-    Bundle "GEverding/vim-hocon"
+    Plugin 'derekwyatt/vim-scala'
+    Plugin 'derekwyatt/vim-sbt'
+    Plugin 'ktvoelker/sbt-vim'
+    Plugin 'tpope/vim-classpath'
+    Plugin 'GEverding/vim-hocon'
 
     " Ansible support
-    Bundle 'chase/vim-ansible-yaml'
+    Plugin 'chase/vim-ansible-yaml'
 
     " Docker support
-    Bundle "ekalinin/Dockerfile.vim"
+    Plugin 'ekalinin/Dockerfile.vim'
 
     " SystemD support
-    Bundle 'Matt-Deacalion/vim-systemd-syntax'
+    Plugin 'Matt-Deacalion/vim-systemd-syntax'
 
     " Vagrant support
-    Bundle "markcornick/vim-vagrant"
+    Plugin 'markcornick/vim-vagrant'
 
     " NGinX support
-    Bundle 'evanmiller/nginx-vim-syntax'
+    Plugin 'evanmiller/nginx-vim-syntax'
 
     " Varnish cache support
-    " Bundle "casualjim/vim-varnish"
+    " Plugin 'casualjim/vim-varnish'
 
     " TOML support
-    Bundle "cespare/vim-toml"
+    Plugin 'cespare/vim-toml'
 
     " Go support
-    Bundle "fatih/vim-go"
-    Bundle 'cespare/vim-go-templates'
-    Bundle 'benmills/vimux-golang'
+    Plugin 'fatih/vim-go'
+    Plugin 'cespare/vim-go-templates'
+    "Plugin 'benmills/vimux-golang'
 
     " shorten urls
-    Bundle "sethbaur/googurl.vim"
+    Plugin 'sethbaur/googurl.vim'
 
     " Rust support
-    Bundle "wting/rust.vim"
-    Bundle "ebfe/vim-racer"
+    Plugin 'wting/rust.vim'
+    Plugin 'ebfe/vim-racer'
 
     " html5 support
-    Bundle 'othree/html5.vim'
+    Plugin 'othree/html5.vim'
 
     " less, css etc support
-    Bundle 'vim-less'
-    Bundle 'hail2u/vim-css3-syntax'
+    Plugin 'vim-less'
+    Plugin 'hail2u/vim-css3-syntax'
 
     " JavaScript
-    Bundle "mklabs/grunt.vim"
-    Bundle "moll/vim-node"
-    Bundle "pangloss/vim-javascript"
-    Bundle "othree/javascript-libraries-syntax.vim"
-    Bundle "matthewsimo/angular-vim-snippets"
-    Bundle "burnettk/vim-angular"
+    Plugin 'mklabs/grunt.vim'
+    Plugin 'moll/vim-node'
+    Plugin 'pangloss/vim-javascript'
+    Plugin 'othree/javascript-libraries-syntax.vim'
+    Plugin 'matthewsimo/angular-vim-snippets'
+    Plugin 'burnettk/vim-angular'
 
-    "Bundle "marijnh/tern_for_vim"
-    Bundle "myhere/vim-nodejs-complete"
-    Bundle "elzr/vim-json"
-    Bundle "maksimr/vim-jsbeautify"
-    "Bundle 'einars/js-beautify'
+    " React.js
+    Plugin 'mxw/vim-jsx'
+
+    "Plugin 'marijnh/tern_for_vim'
+    Plugin 'myhere/vim-nodejs-complete'
+    Plugin 'elzr/vim-json'
+    Plugin 'maksimr/vim-jsbeautify'
+    "Plugin 'einars/js-beautify'
 
     " ascii diagrams
-    Bundle 'vim-scripts/DrawIt'
+    Plugin 'vim-scripts/DrawIt'
     " markdown support
-    Bundle "tpope/vim-markdown"
-    Bundle "jtratner/vim-flavored-markdown"
-    Bundle "shime/vim-livedown"
+    Plugin 'tpope/vim-markdown'
+    Plugin 'jtratner/vim-flavored-markdown'
+    Plugin 'shime/vim-livedown'
 
     """ }}}
     """ Installing plugins the first time {{{
@@ -269,7 +273,7 @@ set nocompatible
         set encoding=utf-8                    " for character glyphs
         """ }}}
         """ Gvim {{{
-            set guifont=Consolas\ 12
+            set guifont=Consolas\ 11
             if has("gui_mac") || has("gui_macvim")
               set guifont=Consolas:h14
             endif
@@ -757,14 +761,18 @@ set nocompatible
     let g:syntastic_extra_filetypes = [ "make", "gitcommit" ]
     let g:syntastic_cpp_check_header = 1
     let g:syntastic_cpp_compiler_options = ' -std=c++0x'
-    let g:syntastic_go_checkers = ['gofmt', 'govet', 'golint'] ", 'gotype', 'golint']
+    let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint']
+    let g:syntastic_go_govet_args = '-printf=false -structtags=false'
     let g:syntastic_json_checkers = ['jsonlint']
+    let g:syntastic_javascript_checkers = ['eslint']
     let g:syntastic_mode_map = {
         \ 'mode': 'active',
         \ 'active_filetypes':
             \ ['c', 'cpp', 'python', 'scala', 'go', 'js', 'json', 'yaml', 'zsh', 'ruby'],
         \ 'passive_filetypes':
             \ ['perl']}
+
+    let g:jsx_ext_required = 0 " Allow JSX in normal JS files
 
     let g:go_bin_path = expand("$GOPATH/bin")
     let g:go_disable_autoinstall = 0

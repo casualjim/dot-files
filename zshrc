@@ -29,7 +29,7 @@ zsh-users/zsh-syntax-highlighting
 command-not-found
 
 # better history
-history
+# history
 
 # nicoulaj's moar completion files for zsh
 zsh-users/zsh-completions src
@@ -39,6 +39,12 @@ git
 git-extras
 git-flow
 voronkovich/gitignore.plugin.zsh
+
+# archlinux completion
+archlinux
+
+# systemd completion
+systemd
 
 # gem completion
 gem
@@ -91,6 +97,9 @@ docker
 # vagrant completion
 vagrant
 
+# httpie completion
+httpie
+
 # Go command completion
 golang
 
@@ -100,9 +109,17 @@ aws
 # cp completion
 cp
 
+# colorize
+# use pygments to highlight files by extenstion
+# also colorize man pages
+colorize
+colored-man
+
 # extraction helpers
 extract
 
+# nail in my coffin
+jira
 
 # fish like history search
 zsh-users/zsh-history-substring-search
@@ -120,6 +137,18 @@ antigen apply
 
 export LP_MARK_PREFIX='
 '
+# bind UP and DOWN arrow keys
+zmodload zsh/terminfo
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+
+# bind P and N for EMACS mode
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down
+
+# bind k and j for VI mode
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
 
 setopt nocorrectall
 # Customize to your needs...
@@ -154,6 +183,8 @@ sbt_sub() { mkdir -p src/{main,test}/scala/$1 src/{main,test}/resources }
 alias clean_sbt='rm -rf "$HOME/.sbt/staging" "$HOME/.sbt/plugins/project/target" "*/target"'
 
 export CLICOLOR=1
+export VISUAL=vim
+export EDITOR=$VISUAL
 if [[ $OS = 'Darwin' ]]; then
   # Mac specific settings
   # since certain things (such as BSD ls)
