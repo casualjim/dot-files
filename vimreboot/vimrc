@@ -10,377 +10,423 @@ set nocompatible
 
 """ Automatically make needed files and folders on first run
 """ If you don't run *nix you're on your own (as in remove this) {{{
-    call system("mkdir -p $HOME/.vim/{plugin,undo}")
-    if !filereadable($HOME . "/.vimrc.bundles") | call system("touch $HOME/.vimrc.bundles") | endif
-    if !filereadable($HOME . "/.vimrc.first") | call system("touch $HOME/.vimrc.first") | endif
-    if !filereadable($HOME . "/.vimrc.last") | call system("touch $HOME/.vimrc.last") | endif
+call system("mkdir -p $HOME/.vim/{plugin,undo}")
+if !filereadable($HOME . "/.vimrc.bundles") | call system("touch $HOME/.vimrc.bundles") | endif
+if !filereadable($HOME . "/.vimrc.first") | call system("touch $HOME/.vimrc.first") | endif
+if !filereadable($HOME . "/.vimrc.last") | call system("touch $HOME/.vimrc.last") | endif
 """ }}}
 """ Vundle plugin manager {{{
-    """ Automatically setting up Vundle, taken from
-    """ http://www.erikzaadi.com/2012/03/19/auto-installing-vundle-from-your-vimrc/ {{{
-        let has_vundle=1
-        if !filereadable($HOME."/.vim/bundle/vundle/README.md")
-            echo "Installing Vundle..."
-            echo ""
-            silent !mkdir -p $HOME/.vim/bundle
-            silent !git clone https://github.com/gmarik/vundle $HOME/.vim/bundle/vundle
-            let has_vundle=0
-        endif
-    """ }}}
-    """ Initialize Vundle {{{
-        filetype off                                " required to init
-        set rtp+=$HOME/.vim/bundle/vundle/          " include vundle
-        call vundle#rc()                            " init vundle
-    """ }}}
-    """ Github repos, uncomment to disable a plugin {{{
-    " Recursive vundle, omg!
-    Plugin 'gmarik/vundle'
+""" Automatically setting up Vundle, taken from
+""" http://www.erikzaadi.com/2012/03/19/auto-installing-vundle-from-your-vimrc/ {{{
+let has_vundle=1
+if !filereadable($HOME."/.vim/bundle/vundle/README.md")
+  echo "Installing Vundle..."
+  echo ""
+  silent !mkdir -p $HOME/.vim/bundle
+  silent !git clone https://github.com/gmarik/vundle $HOME/.vim/bundle/vundle
+  let has_vundle=0
+endif
+""" }}}
+""" Initialize Vundle {{{
+filetype off                                " required to init
+set rtp+=$HOME/.vim/bundle/vundle/          " include vundle
+call vundle#rc()                            " init vundle
+""" }}}
+""" Github repos, uncomment to disable a plugin {{{
+" Recursive vundle, omg!
+Plugin 'gmarik/vundle'
 
-    """ Local bundles (and only bundles in this file!) {{{{
-    if filereadable($HOME."/.vimrc.bundles")
-        source $HOME/.vimrc.bundles
-    endif
-    """ }}}
+""" Local bundles (and only bundles in this file!) {{{{
+if filereadable($HOME."/.vimrc.bundles")
+  source $HOME/.vimrc.bundles
+endif
+""" }}}
 
-    " Edit files using sudo/su
-    Plugin 'chrisbra/SudoEdit.vim'
+" Edit files using sudo/su
+Plugin 'chrisbra/SudoEdit.vim'
 
-    " Fuzzy finder (files, mru, etc)
-    Plugin 'kien/ctrlp.vim'
+" Fuzzy finder (files, mru, etc)
+Plugin 'kien/ctrlp.vim'
 
-    " A pretty statusline, bufferline integration
-    Plugin 'itchyny/lightline.vim'
-    Plugin 'bling/vim-bufferline'
+" A pretty statusline, bufferline integration
+Plugin 'itchyny/lightline.vim'
+Plugin 'bling/vim-bufferline'
 
-    " Close all other buffers but this one
-    Plugin 'Shougo/unite.vim'
-    Plugin 'Shougo/vimproc.vim'
-    Plugin 'Shougo/vimshell.vim'
+" Close all other buffers but this one
+Plugin 'Shougo/unite.vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Shougo/vimshell.vim'
 
-    " highlight trailing whitespace red
-    Plugin 'bronson/vim-trailing-whitespace'
-    Plugin 'terryma/vim-multiple-cursors'
+" highlight trailing whitespace red
+Plugin 'bronson/vim-trailing-whitespace'
+Plugin 'terryma/vim-multiple-cursors'
 
-    " easymotion
-    Plugin 'Lokaltog/vim-easymotion'
+" easymotion
+Plugin 'Lokaltog/vim-easymotion'
 
-    " tmux integration
-    Plugin 'tmux-plugins/vim-tmux'
-    Plugin 'tmux-plugins/vim-tmux-focus-events'
-    Plugin 'christoomey/vim-tmux-navigator'
+" tmux integration
+Plugin 'tmux-plugins/vim-tmux'
+Plugin 'tmux-plugins/vim-tmux-focus-events'
+Plugin 'christoomey/vim-tmux-navigator'
 
-    " Glorious colorschemes
-    Plugin 'nanotech/jellybeans.vim'
-    Plugin 'jnurmine/Zenburn'
-    "Plugin 'jaromero/vim-monokai-refined'
+" Glorious colorschemes
+Plugin 'nanotech/jellybeans.vim'
+Plugin 'jnurmine/Zenburn'
+"Plugin 'jaromero/vim-monokai-refined'
 
-    " editorconfig integration
-    Plugin 'editorconfig/editorconfig-vim'
+" editorconfig integration
+Plugin 'editorconfig/editorconfig-vim'
 
-    " Work with colors
-    Plugin 'guns/xterm-color-table.vim'
-    Plugin 'lilydjwg/colorizer'
+" Work with colors
+Plugin 'guns/xterm-color-table.vim'
+Plugin 'lilydjwg/colorizer'
 
-    " Super easy commenting, toggle comments etc
-    Plugin 'scrooloose/nerdcommenter'
+" Super easy commenting, toggle comments etc
+Plugin 'scrooloose/nerdcommenter'
 
-    " Autoclose (, " etc
-    Plugin 'tpope/vim-unimpaired'
-    Plugin 'tpope/vim-surround'
-    Plugin 'tpope/vim-repeat'
-    "Plugin 'Townk/vim-autoclose'
+" Autoclose (, " etc
+Plugin 'tpope/vim-unimpaired'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-repeat'
+"Plugin 'Townk/vim-autoclose'
 
-    " Git wrapper inside Vim
-    Plugin 'tpope/vim-fugitive'
-    Plugin 'airblade/vim-gitgutter'
+" Git wrapper inside Vim
+Plugin 'tpope/vim-fugitive'
+Plugin 'airblade/vim-gitgutter'
 
-    " Align your = etc.
-    Plugin 'vim-scripts/Align'
+" Align your = etc.
+Plugin 'vim-scripts/Align'
 
-    " Snippets like textmate
-    "Plugin 'Shougo/neocomplete'
-    "Plugin 'Shougo/neosnippet'
-    "Plugin 'Shougo/neosnippet-snippets'
-    Plugin 'sjl/gundo.vim'
-    Plugin 'Valloric/YouCompleteMe'
-    Plugin 'SirVer/ultisnips'
-    Plugin 'honza/vim-snippets'
+" Snippets like textmate
+"Plugin 'Shougo/neocomplete'
+"Plugin 'Shougo/neosnippet'
+"Plugin 'Shougo/neosnippet-snippets'
+Plugin 'sjl/gundo.vim'
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
 
-    Plugin 'scrooloose/nerdtree'
-    "Plugin 'bufexplorer.zip'
+Plugin 'scrooloose/nerdtree'
+"Plugin 'bufexplorer.zip'
 
-    " Awesome syntax checker.
-    " REQUIREMENTS: See :h syntastic-intro
-    Plugin 'scrooloose/syntastic'
+" Awesome syntax checker.
+" REQUIREMENTS: See :h syntastic-intro
+Plugin 'scrooloose/syntastic'
 
-    " Functions, class data etc.
-    " REQUIREMENTS: (exuberant)-ctags
-    Plugin 'majutsushi/tagbar'
-    Plugin 'mtth/scratch.vim'
+" Functions, class data etc.
+" REQUIREMENTS: (exuberant)-ctags
+Plugin 'majutsushi/tagbar'
+Plugin 'mtth/scratch.vim'
 
-    " Scala support
-    Plugin 'derekwyatt/vim-scala'
-    Plugin 'derekwyatt/vim-sbt'
-    Plugin 'ktvoelker/sbt-vim'
-    Plugin 'tpope/vim-classpath'
-    Plugin 'GEverding/vim-hocon'
+" Scala support
+Plugin 'derekwyatt/vim-scala'
+Plugin 'derekwyatt/vim-sbt'
+Plugin 'ktvoelker/sbt-vim'
+Plugin 'tpope/vim-classpath'
+Plugin 'GEverding/vim-hocon'
 
-    " Ansible support
-    Plugin 'chase/vim-ansible-yaml'
+" Ansible support
+Plugin 'chase/vim-ansible-yaml'
 
-    " Docker support
-    Plugin 'ekalinin/Dockerfile.vim'
+" Docker support
+Plugin 'ekalinin/Dockerfile.vim'
 
-    " SystemD support
-    Plugin 'Matt-Deacalion/vim-systemd-syntax'
+" SystemD support
+Plugin 'Matt-Deacalion/vim-systemd-syntax'
 
-    " Vagrant support
-    Plugin 'markcornick/vim-vagrant'
+" Vagrant support
+Plugin 'markcornick/vim-vagrant'
 
-    " NGinX support
-    Plugin 'evanmiller/nginx-vim-syntax'
+" NGinX support
+Plugin 'evanmiller/nginx-vim-syntax'
 
-    " Varnish cache support
-    " Plugin 'casualjim/vim-varnish'
+" Varnish cache support
+" Plugin 'casualjim/vim-varnish'
 
-    " TOML support
-    Plugin 'cespare/vim-toml'
+" TOML support
+Plugin 'cespare/vim-toml'
 
-    " Go support
-    Plugin 'fatih/vim-go'
-    Plugin 'cespare/vim-go-templates'
-    "Plugin 'benmills/vimux-golang'
+" Go support
+Plugin 'fatih/vim-go'
+"Plugin 'cespare/vim-go-templates'
+"Plugin 'benmills/vimux-golang'
 
-    " shorten urls
-    Plugin 'sethbaur/googurl.vim'
+" shorten urls
+Plugin 'sethbaur/googurl.vim'
 
-    " Rust support
-    Plugin 'wting/rust.vim'
-    Plugin 'ebfe/vim-racer'
+" Rust support
+Plugin 'wting/rust.vim'
+Plugin 'ebfe/vim-racer'
 
-    " html5 support
-    Plugin 'othree/html5.vim'
+" html5 support
+Plugin 'othree/html5.vim'
 
-    " less, css etc support
-    Plugin 'vim-less'
-    Plugin 'hail2u/vim-css3-syntax'
+" less, css etc support
+Plugin 'vim-less'
+Plugin 'hail2u/vim-css3-syntax'
 
-    " JavaScript
-    Plugin 'mklabs/grunt.vim'
-    Plugin 'moll/vim-node'
-    Plugin 'pangloss/vim-javascript'
-    Plugin 'othree/javascript-libraries-syntax.vim'
-    Plugin 'matthewsimo/angular-vim-snippets'
-    Plugin 'burnettk/vim-angular'
+" JavaScript
+Plugin 'mklabs/grunt.vim'
+Plugin 'moll/vim-node'
+Plugin 'pangloss/vim-javascript'
+Plugin 'othree/javascript-libraries-syntax.vim'
+Plugin 'matthewsimo/angular-vim-snippets'
+Plugin 'burnettk/vim-angular'
 
-    " React.js
-    Plugin 'mxw/vim-jsx'
+" React.js
+Plugin 'mxw/vim-jsx'
 
-    "Plugin 'marijnh/tern_for_vim'
-    Plugin 'myhere/vim-nodejs-complete'
-    Plugin 'elzr/vim-json'
-    Plugin 'maksimr/vim-jsbeautify'
-    "Plugin 'einars/js-beautify'
+"Plugin 'marijnh/tern_for_vim'
+Plugin 'myhere/vim-nodejs-complete'
+Plugin 'elzr/vim-json'
+Plugin 'maksimr/vim-jsbeautify'
+"Plugin 'einars/js-beautify'
 
-    " ascii diagrams
-    Plugin 'vim-scripts/DrawIt'
-    " markdown support
-    Plugin 'tpope/vim-markdown'
-    Plugin 'jtratner/vim-flavored-markdown'
-    Plugin 'shime/vim-livedown'
+" ascii diagrams
+Plugin 'vim-scripts/DrawIt'
+" markdown support
+Plugin 'tpope/vim-markdown'
+Plugin 'jtratner/vim-flavored-markdown'
+Plugin 'shime/vim-livedown'
 
-    """ }}}
-    """ Installing plugins the first time {{{
-        if has_vundle == 0
-            echo "Installing Bundles, please ignore key map error messages"
-            echo ""
-            :BundleInstall
-        endif
-    """ }}}
+""" }}}
+""" Installing plugins the first time {{{
+if has_vundle == 0
+  echo "Installing Bundles, please ignore key map error messages"
+  echo ""
+  :BundleInstall
+endif
+""" }}}
 """ }}}
 """ Local leading config, only use for prerequisites as it will be
 """ overwritten by anything below {{{{
-    if filereadable($HOME."/.vimrc.first")
-        source $HOME/.vimrc.first
-    endif
+if filereadable($HOME."/.vimrc.first")
+  source $HOME/.vimrc.first
+endif
 """ }}}
 """ User interface {{{
-    """ Syntax highlighting {{{
-        filetype plugin indent on                   " detect file plugin+indent
-        syntax on                                   " syntax highlighting
-        set t_Co=256                                " 256-colors
-        set background=dark                         " we're using a dark bg
-        colors jellybeans                           " select colorscheme
-        colors desertEx                             " select colorscheme
-        "colors desert256                             " select colorscheme
-        "colors zenburn                             " select colorscheme
-        au BufNewFile,BufRead *.txt set ft=sh tw=119  " opens .txt w/highlight
-        au BufNewFile,BufRead *.tex set ft=tex tw=119 " we don't want plaintex
-        augroup markdown
-          au!
-          au BufNewFile,BufRead *.md,*.markdown setlocal ft=ghmarkdown tw=119 " markdown, not modula
-        augroup END
-        "au VimEnter * RainbowParenthesesToggle
-        "au Syntax * RainbowParenthesesLoadRound
-        "au Syntax * RainbowParenthesesLoadSquare
-        "au Syntax * RainbowParenthesesLoadBraces
-        """ Tab colors, overwritten by lightline(?) {{{
-            "hi TabLineFill ctermfg=NONE ctermbg=233
-            "hi TabLine ctermfg=241 ctermbg=233
-            "hi TabLineSel ctermfg=250 ctermbg=233
-        """ }}}
-        """ Custom highlighting, where NONE uses terminal background {{{
-            function! CustomHighlighting()
-                highlight Normal ctermbg=NONE
-                highlight nonText ctermbg=NONE
-                highlight LineNr ctermbg=NONE
-                highlight SignColumn ctermbg=NONE
-                highlight CursorLine ctermbg=235
-            endfunction
+""" Syntax highlighting {{{
+filetype plugin indent on                   " detect file plugin+indent
+syntax on                                   " syntax highlighting
+set t_Co=256                                " 256-colors
+set background=dark                         " we're using a dark bg
+colors jellybeans                           " select colorscheme
+colors desertEx                             " select colorscheme
+"colors desert256                             " select colorscheme
+"colors zenburn                             " select colorscheme
+au BufNewFile,BufRead *.txt set ft=sh tw=119  " opens .txt w/highlight
+au BufNewFile,BufRead *.tex set ft=tex tw=119 " we don't want plaintex
+augroup markdown
+  au!
+  au BufNewFile,BufRead *.md,*.markdown setlocal ft=ghmarkdown tw=119 " markdown, not modula
+augroup END
+"au VimEnter * RainbowParenthesesToggle
+"au Syntax * RainbowParenthesesLoadRound
+"au Syntax * RainbowParenthesesLoadSquare
+"au Syntax * RainbowParenthesesLoadBraces
+""" Tab colors, overwritten by lightline(?) {{{
+"hi TabLineFill ctermfg=NONE ctermbg=233
+"hi TabLine ctermfg=241 ctermbg=233
+"hi TabLineSel ctermfg=250 ctermbg=233
+""" }}}
+""" Custom highlighting, where NONE uses terminal background {{{
+function! CustomHighlighting()
+  highlight Normal ctermbg=NONE
+  highlight nonText ctermbg=NONE
+  highlight LineNr ctermbg=NONE
+  highlight SignColumn ctermbg=NONE
+  highlight CursorLine ctermbg=235
+endfunction
 
-            call CustomHighlighting()
-        """ }}}
-    """ }}}
-    """ Interface general {{{
-        set cursorline                              " hilight cursor line
-        set more                                    " ---more--- like less
-        set number                                  " line numbers
-        set scrolloff=3                             " lines above/below cursor
-        set showcmd                                 " show cmds being typed
-        set title                                   " window title
-        set vb t_vb=                                " disable beep and flashing
-        set wildignore+=.hg,.git,.svn " Version Controls"
-        set wildignore+=*.aux,*.out,*.toc "Latex Indermediate files"
-        set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg "Binary Imgs"
-        set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a,*.so,*.dylib "Compiled Object files"
-        set wildignore+=*.spl "Compiled speolling world list"
-        set wildignore+=*.sw? "Vim swap files"
-        set wildignore+=*.DS_Store "OSX SHIT"
-        set wildignore+=*.luac "Lua byte code"
-        set wildignore+=migrations "Django migrations"
-        set wildignore+=*.pyc "Python Object codes"
-        set wildignore+=*.orig "Merge resolution files"
-        set wildignore+=*.pdf,*.mkv "No video files
-        set wildignore+=*.class "java/scala class files"
-        set wildignore+=*.bak " Backup files
-        set wildmenu                                " better auto complete
-        set wildmode=longest,list                   " bash-like auto complete
-        """ Encoding {{{
-            " If you're having problems with some characters you can force
-            " UTF-8 if your locale is something else.
-            " WARNING: this will affect encoding used when editing files!
-            "
-        set encoding=utf-8                    " for character glyphs
-        """ }}}
-        """ Gvim {{{
-            set guifont=Consolas\ 11
-            if has("gui_mac") || has("gui_macvim")
-              set guifont=Consolas:h14
-            endif
-            if has("gui_win32") || has("gui_win32s")
-              set guifont=Consolas:h10
-              set enc=utf-8
-            endif
-            "set guioptions-=m                       " remove menubar
-            set guioptions-=T                       " remove toolbar
-            set guioptions-=r                       " remove right scrollbar
-        """ }}}
-    """ }}}
+call CustomHighlighting()
+""" }}}
+""" }}}
+""" Interface general {{{
+set cursorline                              " hilight cursor line
+set more                                    " ---more--- like less
+set number                                  " line numbers
+set scrolloff=3                             " lines above/below cursor
+set showcmd                                 " show cmds being typed
+set title                                   " window title
+set vb t_vb=                                " disable beep and flashing
+set wildignore+=.hg,.git,.svn " Version Controls"
+set wildignore+=*.aux,*.out,*.toc "Latex Indermediate files"
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg "Binary Imgs"
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a,*.so,*.dylib "Compiled Object files"
+set wildignore+=*.spl "Compiled speolling world list"
+set wildignore+=*.sw? "Vim swap files"
+set wildignore+=*.DS_Store "OSX SHIT"
+set wildignore+=*.luac "Lua byte code"
+set wildignore+=migrations "Django migrations"
+set wildignore+=*.pyc "Python Object codes"
+set wildignore+=*.orig "Merge resolution files"
+set wildignore+=*.pdf,*.mkv "No video files
+set wildignore+=*.class "java/scala class files"
+set wildignore+=*.bak " Backup files
+set wildmenu                                " better auto complete
+set wildmode=longest,list                   " bash-like auto complete
+""" Encoding {{{
+" If you're having problems with some characters you can force
+" UTF-8 if your locale is something else.
+" WARNING: this will affect encoding used when editing files!
+"
+set encoding=utf-8                    " for character glyphs
+""" }}}
+""" Gvim {{{
+set guifont=Consolas\ 11
+if has("unix") 
+  set guioptions-=a
+endif
+if has("gui_mac") || has("gui_macvim")
+  set guifont=Consolas:h14
+endif
+if has("gui_win32") || has("gui_win32s")
+  set guifont=Consolas:h10
+  set enc=utf-8
+endif
+set guioptions-=m                       " remove menubar
+set guioptions-=T                       " remove toolbar
+set guioptions-=r                       " remove right scrollbar
+""" }}}
+""" }}}
 """ }}}
 """ General settings {{{
-    set hidden                                      " buffer change, more undo
-    set history=1000                                " default 20
-    set iskeyword+=_,$,@,%,#                        " not word dividers
-    set laststatus=2                                " always show statusline
-    set linebreak                                   " don't cut words on wrap
-    set listchars=tab:>\                            " > to highlight <tab>
-    set list                                        " displaying listchars
-    set mouse=a                                     " disable mouse
-    set nolist                                      " wraps to whole words
-    set noshowmode                                  " hide mode cmd line
-    set noexrc                                      " don't use other .*rc(s)
-    set nostartofline                               " keep cursor column pos
-    set nowrap                                      " don't wrap lines
-    set numberwidth=5                               " 99999 lines
-    set shortmess+=I                                " disable startup message
-    set splitbelow                                  " splits go below w/focus
-    set splitright                                  " vsplits go right w/focus
-    set ttyfast                                     " for faster redraws etc
-    set ttymouse=xterm2                             " experimental
+set hidden                                      " buffer change, more undo
+set history=1000                                " default 20
+set iskeyword+=_,$,@,%,#                        " not word dividers
+set laststatus=2                                " always show statusline
+set linebreak                                   " don't cut words on wrap
+set listchars=tab:>\                            " > to highlight <tab>
+set list                                        " displaying listchars
+set mouse=a                                     " disable mouse
+set nolist                                      " wraps to whole words
+set noshowmode                                  " hide mode cmd line
+set noexrc                                      " don't use other .*rc(s)
+set nostartofline                               " keep cursor column pos
+set nowrap                                      " don't wrap lines
+set numberwidth=5                               " 99999 lines
+set shortmess+=I                                " disable startup message
+set splitbelow                                  " splits go below w/focus
+set splitright                                  " vsplits go right w/focus
+set ttyfast                                     " for faster redraws etc
+set ttymouse=xterm2                             " experimental
 "    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
-    """ Folding {{{
-        set foldcolumn=0                            " hide folding column
-        set foldmethod=indent                       " folds using indent
-        set foldnestmax=10                          " max 10 nested folds
-        set foldlevelstart=99                       " folds open by default
-    """ }}}
-    """ Search and replace {{{
-        set gdefault                                " default s//g (global)
-        set incsearch                               " "live"-search
-    """ }}}
-    """ Matching {{{
-        set matchtime=2                             " time to blink match {}
-        set matchpairs+=<:>                         " for ci< or ci>
-        set showmatch                               " tmpjump to match-bracket
-    """ }}}
-    """ Return to last edit position when opening files {{{
-        autocmd BufReadPost *
-            \ if line("'\"") > 0 && line("'\"") <= line("$") |
-            \     exe "normal! g`\"" |
-            \ endif
-    """ }}}
+""" Folding {{{
+set foldcolumn=0                            " hide folding column
+set foldmethod=indent                       " folds using indent
+set foldnestmax=10                          " max 10 nested folds
+set foldlevelstart=99                       " folds open by default
+""" }}}
+""" Search and replace {{{
+set gdefault                                " default s//g (global)
+set incsearch                               " "live"-search
+""" }}}
+""" Matching {{{
+set matchtime=2                             " time to blink match {}
+set matchpairs+=<:>                         " for ci< or ci>
+set showmatch                               " tmpjump to match-bracket
+""" }}}
+""" Return to last edit position when opening files {{{
+autocmd BufReadPost *
+      \ if line("'\"") > 0 && line("'\"") <= line("$") |
+      \     exe "normal! g`\"" |
+      \ endif
+""" }}}
 """ }}}
 """ Files {{{
-    " set autochdir                                   " always use curr. dir.
-    set autoread                                    " refresh if changed
-    set confirm                                     " confirm changed files
-    set noautowrite                                 " never autowrite
-    set nobackup                                    " disable backups
-    set updatecount=50                              " update swp after 50chars
-    """ Persistent undo. Requires Vim 7.3 {{{
-        if has('persistent_undo') && exists("&undodir")
-            set undodir=$HOME/.vim/undo/            " where to store undofiles
-            set undofile                            " enable undofile
-            set undolevels=500                      " max undos stored
-            set undoreload=10000                    " buffer stored undos
-        endif
-    """ }}}
+" set autochdir                                   " always use curr. dir.
+set autoread                                    " refresh if changed
+set confirm                                     " confirm changed files
+set noautowrite                                 " never autowrite
+set nobackup                                    " disable backups
+set updatecount=50                              " update swp after 50chars
+""" Persistent undo. Requires Vim 7.3 {{{
+if has('persistent_undo') && exists("&undodir")
+  set undodir=$HOME/.vim/undo/            " where to store undofiles
+  set undofile                            " enable undofile
+  set undolevels=500                      " max undos stored
+  set undoreload=10000                    " buffer stored undos
+endif
+""" }}}
 """ }}}
 """ Text formatting {{{
-    set autoindent                                  " preserve indentation
-    set backspace=indent,eol,start                  " smart backspace
-    set cinkeys-=0#                                 " don't force # indentation
-    set expandtab                                   " no real tabs
-    set ignorecase                                  " by default ignore case
-    set nrformats+=alpha                            " incr/decr letters C-a/-x
-    set shiftround                                  " be clever with tabs
-    set shiftwidth=2                                " default 8
-    set smartcase                                   " sensitive with uppercase
-    set smarttab                                    " tab to 0,4,8 etc.
-    set softtabstop=2                               " "tab" feels like <tab>
-    set tabstop=2                                   " replace <TAB> w/4 spaces
-    """ Only auto-comment newline for block comments {{{
-        au FileType c,cpp setlocal comments -=:// comments +=f://
+set autoindent                                  " preserve indentation
+set backspace=indent,eol,start                  " smart backspace
+set cinkeys-=0#                                 " don't force # indentation
+set expandtab                                   " no real tabs
+set ignorecase                                  " by default ignore case
+set nrformats+=alpha                            " incr/decr letters C-a/-x
+set shiftround                                  " be clever with tabs
+set shiftwidth=2                                " default 8
+set smartcase                                   " sensitive with uppercase
+set smarttab                                    " tab to 0,4,8 etc.
+set softtabstop=2                               " "tab" feels like <tab>
+set tabstop=2                                   " replace <TAB> w/4 spaces
+""" Only auto-comment newline for block comments {{{
+au FileType c,cpp setlocal comments -=:// comments +=f://
 
-    " http://stackoverflow.com/questions/16743112/open-item-from-quickfix-window-in-vertical-split
-    autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
-    "don't clutter my directories with swap files
-    set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-    set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+" http://stackoverflow.com/questions/16743112/open-item-from-quickfix-window-in-vertical-split
+autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
+"don't clutter my directories with swap files
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 
-    """ }}}
+""" }}}
 """ }}}
 """ Keybindings {{{
-    """ General {{{
-        " Remap <leader>
-        let mapleader=","
+""" General {{{
+" Remap <leader>
+let mapleader=","
 
-        " Quickly edit/source .vimrc
-        noremap <leader>ve :edit $HOME/.vimrc<CR>
-        noremap <leader>vs :source $HOME/.vimrc<CR>
+" Quickly edit/source .vimrc
+noremap <leader>ve :edit $HOME/.vimrc<CR>
+noremap <leader>vs :source $HOME/.vimrc<CR>
 
-        " Yank(copy) to system clipboard
-        "noremap <leader>y "+y
+" Yank(copy) to system clipboard
+"noremap <leader>y "+y
+"
+" CTRL-X and SHIFT-Del are Cut
+vnoremap <C-X> "+x
+vnoremap <S-Del> "+x
+
+" CTRL-C and CTRL-Insert are Copy
+vnoremap <C-C> "+y
+vnoremap <C-Insert> "+y
+
+" CTRL-V and SHIFT-Insert are Paste
+map <C-V>		"+gP
+map <S-Insert>		"+gP
+
+cmap <C-V>		<C-R>+
+cmap <S-Insert>		<C-R>+
+
+" CTRL-A is Select all
+noremap <C-A> gggH<C-O>G
+inoremap <C-A> <C-O>gg<C-O>gH<C-O>G
+cnoremap <C-A> <C-C>gggH<C-O>G
+onoremap <C-A> <C-C>gggH<C-O>G
+snoremap <C-A> <C-C>gggH<C-O>G
+xnoremap <C-A> <C-C>ggVG
+
+" Pasting blockwise and linewise selections is not possible in Insert and
+        " Visual mode without the +virtualedit feature.  They are pasted as if they
+        " were characterwise instead.
+        " Uses the paste.vim autoload script.
+        " Use CTRL-G u to have CTRL-Z only undo the paste.
+
+        exe 'inoremap <script> <C-V> <C-G>u' . paste#paste_cmd['i']
+        exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
+
+        imap <S-Insert>		<C-V>
+        vmap <S-Insert>		<C-V>
+
+        " Use CTRL-Q to do what CTRL-V used to do
+        noremap <C-Q>		<C-V>
+
+        " Use CTRL-S for saving, also in Insert mode
+        noremap <C-S>		:update<CR>
+        vnoremap <C-S>		<C-C>:update<CR>
+        inoremap <C-S>		<C-O>:update<CR>
 
         " Toggle text wrapping
         nmap <silent> <leader>w :set invwrap<CR>:set wrap?<CR>
@@ -772,6 +818,8 @@ set nocompatible
         \ 'passive_filetypes':
             \ ['perl']}
 
+    let g:NERDTreeShowHidden = 1
+    let g:NERDTreeShortHiddenFirst = 1
     let g:jsx_ext_required = 0 " Allow JSX in normal JS files
 
     let g:go_bin_path = expand("$GOPATH/bin")

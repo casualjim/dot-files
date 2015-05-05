@@ -52,3 +52,5 @@
 	tool = vimdiff3
 [help]
 	autocorrect = 1
+[http]
+	cookiefile = /home/ivan/.gitcookies

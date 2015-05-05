@@ -19,116 +19,116 @@ antigen use oh-my-zsh
 
 antigen bundles <<BUNDLES
 
-# ZSH plugin enhances the terminal environment with 256 colors.
-chrissicool/zsh-256color
+  # ZSH plugin enhances the terminal environment with 256 colors.
+  chrissicool/zsh-256color
 
-# Syntax highlighting bundle.
-zsh-users/zsh-syntax-highlighting
+  # Syntax highlighting bundle.
+  zsh-users/zsh-syntax-highlighting
 
-# Guess what to install when running an unknown command
-command-not-found
+  # Guess what to install when running an unknown command
+  command-not-found
 
-# better history
-# history
+  # better history
+  # history
 
-# nicoulaj's moar completion files for zsh
-zsh-users/zsh-completions src
+  # nicoulaj's moar completion files for zsh
+  zsh-users/zsh-completions src
 
-# git support
-git
-git-extras
-git-flow
-voronkovich/gitignore.plugin.zsh
+  # git support
+  git
+  git-extras
+  git-flow
+  voronkovich/gitignore.plugin.zsh
 
-# archlinux completion
-archlinux
+  # archlinux completion
+  archlinux
 
-# systemd completion
-systemd
+  # systemd completion
+  systemd
 
-# gem completion
-gem
+  # gem completion
+  gem
 
-# redis client completion
-redis-cli
+  # redis client completion
+  redis-cli
 
-# osx helpers
-osx
+  # osx helpers
+  osx
 
-# ruby completion
-ruby
+  # ruby completion
+  ruby
 
-# bundler completin
-bundler
+  # bundler completin
+  bundler
 
-# homebrew completion
-brew
+  # homebrew completion
+  brew
 
-# Maven completion
-mvn
+  # Maven completion
+  mvn
 
-# heroku completion
-heroku
+  # heroku completion
+  heroku
 
-# pip completion
-pip
+  # pip completion
+  pip
 
-# node completion
-node
+  # node completion
+  node
 
-# npm completion
-npm
+  # npm completion
+  npm
 
-# rbenv completion
-rbenv
+  # rbenv completion
+  rbenv
 
-# rsync completion
-rsync
+  # rsync completion
+  rsync
 
-# sbt completion
-sbt
+  # sbt completion
+  sbt
 
-# scala completion
-scala
+  # scala completion
+  scala
 
-# docker completion
-docker
+  # docker completion
+  docker
 
-# vagrant completion
-vagrant
+  # vagrant completion
+  vagrant
 
-# httpie completion
-httpie
+  # httpie completion
+  httpie
 
-# Go command completion
-golang
+  # Go command completion
+  golang
 
-# AWS command completion
-aws
+  # AWS command completion
+  aws
 
-# cp completion
-cp
+  # cp completion
+  cp
 
-# colorize
-# use pygments to highlight files by extenstion
-# also colorize man pages
-colorize
-colored-man
+  # colorize
+  # use pygments to highlight files by extenstion
+  # also colorize man pages
+  colorize
+  colored-man
 
-# extraction helpers
-extract
+  # extraction helpers
+  extract
 
-# nail in my coffin
-jira
+  # nail in my coffin
+  jira
 
-# fish like history search
-zsh-users/zsh-history-substring-search
+  # fish like history search
+  zsh-users/zsh-history-substring-search
 
-# pretty prompt
-#nojhan/liquidprompt
+  # pretty prompt
+  #nojhan/liquidprompt
 
-# Autoupdate Antigen every 7 days.
-unixorn/autoupdate-antigen.zshplugin
+  # Autoupdate Antigen every 7 days.
+  unixorn/autoupdate-antigen.zshplugin
 BUNDLES
 
 antigen theme https://gist.github.com/7585b6aa8d4770866af4.git backchat
@@ -158,7 +158,6 @@ export AWS_IAM_HOME="/usr/local/opt/aws-iam-tools/libexec"
 export AWS_ELB_HOME="/usr/local/opt/elb-tools/jars"
 
 export LANG="en_US.utf-8"
-export LC_ALL="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
 #export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
 #export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
@@ -214,10 +213,10 @@ alias sbt-debug='SBT_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspen
 alias sbt-yourkit='SBT_OPTS="-agentpath:/Applications/YourKit.app/bin/mac/libyjpagent.jnilib $SBT_OPTS" sbt'
 alias ccat="pygmentize -g -O 'tabsize=2'"
 alias knife="nocorrect knife"
-alias prodenv=". $HOME/.config/boatwright/production-env"
-alias devenv=". $HOME/.config/boatwright/dev-env"
-
-. $HOME/.config/boatwright/production-env
+# alias prodenv=". $HOME/.config/boatwright/production-env"
+# alias devenv=". $HOME/.config/boatwright/dev-env"
+#
+# . $HOME/.config/boatwright/production-env
 
 #export PATH="${GOPATH//://bin:}/bin:$PATH"
 export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
@@ -230,6 +229,7 @@ export HADOOP_USER_NAME=hadoop
 
 eval "$(hub alias -s)"
 eval "$(direnv hook zsh)"
-eval "$(shipwright init)"
+# eval "$(shipwright init)"
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
+export DOCKER_HOST=unix:///var/run/docker.sock
