@@ -180,7 +180,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'myhere/vim-nodejs-complete'
 Plugin 'elzr/vim-json'
 Plugin 'maksimr/vim-jsbeautify'
-"Plugin 'einars/js-beautify'
+Plugin 'einars/js-beautify'
 
 " ascii diagrams
 Plugin 'vim-scripts/DrawIt'
