@@ -16,6 +16,9 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 # Load the oh-my-zsh's library.
 antigen use oh-my-zsh
 
+# Load the prezto library
+antigen use prezto
+
 
 antigen bundles <<BUNDLES
 
@@ -36,21 +39,22 @@ antigen bundles <<BUNDLES
 
   # git support
   git
-  git-extras
-  git-flow
   voronkovich/gitignore.plugin.zsh
 
-  # archlinux completion
+  # archlinux completion (does not exist in prezto)
   archlinux
+
+  # homebrew/linuxbrew completion
+  #homebrew
 
   # systemd completion
   systemd
 
   # gem completion
-  gem
+  #gem
 
   # redis client completion
-  redis-cli
+  #redis-cli
 
   # osx helpers
   osx
@@ -59,18 +63,19 @@ antigen bundles <<BUNDLES
   ruby
 
   # bundler completin
-  bundler
+  #bundler
 
   # homebrew completion
-  brew
+  #homebrew
 
   # Maven completion
-  mvn
+  #mvn
 
   # heroku completion
-  heroku
+  #heroku
 
   # pip completion
+  python
   pip
 
   # node completion
@@ -80,7 +85,7 @@ antigen bundles <<BUNDLES
   npm
 
   # rbenv completion
-  rbenv
+  #rbenv
 
   # rsync completion
   rsync
@@ -96,6 +101,8 @@ antigen bundles <<BUNDLES
 
   # vagrant completion
   vagrant
+  # packer.io completion
+  gunzy83/packer-zsh-completion
 
   # httpie completion
   httpie
@@ -118,14 +125,8 @@ antigen bundles <<BUNDLES
   # extraction helpers
   extract
 
-  # nail in my coffin
-  jira
-
   # fish like history search
   zsh-users/zsh-history-substring-search
-
-  # pretty prompt
-  #nojhan/liquidprompt
 
   # Autoupdate Antigen every 7 days.
   unixorn/autoupdate-antigen.zshplugin
@@ -135,8 +136,6 @@ antigen theme https://gist.github.com/7585b6aa8d4770866af4.git backchat
 
 antigen apply
 
-export LP_MARK_PREFIX='
-'
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
 bindkey "$terminfo[kcuu1]" history-substring-search-up
@@ -159,9 +158,6 @@ export AWS_ELB_HOME="/usr/local/opt/elb-tools/jars"
 
 export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
-#export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
-#export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
-#export VIM_PREFIX='TERM=xterm-256color'
 export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
 export GOROOT=$HOME/tools/go
 export GOPATH=$HOME/go
@@ -181,26 +177,34 @@ sbt_sub() { mkdir -p src/{main,test}/scala/$1 src/{main,test}/resources }
 
 alias clean_sbt='rm -rf "$HOME/.sbt/staging" "$HOME/.sbt/plugins/project/target" "*/target"'
 
+export DOCKER_HOST=unix:///var/run/docker.sock
 export CLICOLOR=1
 export VISUAL=vim
 export EDITOR=$VISUAL
+
 if [[ $OS = 'Darwin' ]]; then
   # Mac specific settings
   # since certain things (such as BSD ls)
   # differ from Linux
-  alias vi="$VIM_PREFIX mvim -v"
-  alias vim="$VIM_PREFIX mvim -v"
+  alias vi="mvim -v"
+  alias vim="mvim -v"
   alias gvim='mvim -g'
   export VISUAL='atom -w'
   export EDITOR=$VISUAL
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
+  export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
+  export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
   eval "$(docker-machine env localdocker)"
-else
-  alias vi='$VIM_PREFIX vim'
-  alias vim='$VIM_PREFIX vim'
+fi
+
+if [ -d $HOME/.linuxbrew ]; then
+  export PATH="$HOME/.linuxbrew/bin:$PATH"
+  export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
+  export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
 fi
 
 export PATH="$GOPATH/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
+
 
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
@@ -232,4 +236,3 @@ eval "$(direnv hook zsh)"
 # eval "$(shipwright init)"
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
-export DOCKER_HOST=unix:///var/run/docker.sock
