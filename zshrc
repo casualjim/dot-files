@@ -7,134 +7,106 @@ export OS=`uname`
 zmodload zsh/terminfo
 fpath+=("/usr/local/share/zsh/site-functions")
 
-source $HOME/.antigen/antigen.zsh
+. /usr/share/zsh/scripts/zgen/zgen.zsh
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
-# Load the oh-my-zsh's library.
-antigen use oh-my-zsh
+if ! zgen saved; then 
+  echo "Creating zgen init"
 
-# Load the prezto library
-antigen use prezto
-
-
-antigen bundles <<BUNDLES
+  zgen oh-my-zsh
 
   # ZSH plugin enhances the terminal environment with 256 colors.
-  chrissicool/zsh-256color
+  zgen load chrissicool/zsh-256color
 
   # Syntax highlighting bundle.
-  zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-syntax-highlighting
 
   # Guess what to install when running an unknown command
-  command-not-found
+  zgen oh-my-zsh plugins/command-not-found
 
-  # better history
-  # history
+  # alias tips
+  zgen load djui/alias-tips
 
   # nicoulaj's moar completion files for zsh
-  zsh-users/zsh-completions src
+  zgen zsh-users/zsh-completions src
 
   # git support
-  git
-  voronkovich/gitignore.plugin.zsh
+  zgen oh-my-zsh plugins/git
+  zgen load voronkovich/gitignore.plugin.zsh
+  zgen load supercrabtree/k
 
   # archlinux completion (does not exist in prezto)
-  archlinux
-
-  # homebrew/linuxbrew completion
-  #homebrew
+  zgen oh-my-zsh plugins/archlinux
 
   # systemd completion
-  systemd
+  zgen oh-my-zsh plugins/systemd
 
   # gem completion
-  #gem
-
-  # redis client completion
-  #redis-cli
-
-  # osx helpers
-  osx
+  zgen oh-my-zsh plugins/gem
 
   # ruby completion
-  ruby
+  zgen oh-my-zsh plugins/ruby
 
   # bundler completin
-  #bundler
-
-  # homebrew completion
-  #homebrew
+  zgen oh-my-zsh plugins/bundler
 
   # Maven completion
-  #mvn
-
-  # heroku completion
-  #heroku
+  zgen oh-my-zsh plugins/mvn
 
   # pip completion
-  python
-  pip
+  zgen oh-my-zsh plugins/python
+  zgen oh-my-zsh plugins/pip
 
   # node completion
-  node
+  zgen oh-my-zsh plugins/node
 
   # npm completion
-  npm
+  zgen oh-my-zsh plugins/npm
 
   # rbenv completion
-  #rbenv
+  zgen oh-my-zsh plugins/rbenv
 
   # rsync completion
-  rsync
-
-  # sbt completion
-  sbt
-
-  # scala completion
-  scala
+  zgen oh-my-zsh plugins/rsync
 
   # docker completion
-  docker
+  zgen oh-my-zsh plugins/docker
 
   # vagrant completion
-  vagrant
+  zgen oh-my-zsh plugins/vagrant
   # packer.io completion
-  gunzy83/packer-zsh-completion
+  zgen load gunzy83/packer-zsh-completion
 
   # httpie completion
-  httpie
+  zgen oh-my-zsh plugins/httpie
 
   # Go command completion
-  golang
+  zgen oh-my-zsh plugins/golang
 
   # AWS command completion
-  aws
+  zgen oh-my-zsh plugins/aws
 
   # cp completion
-  cp
+  zgen oh-my-zsh plugins/cp
 
   # colorize
   # use pygments to highlight files by extenstion
   # also colorize man pages
-  colorize
-  colored-man
+  zgen oh-my-zsh plugins/colorize
+  zgen oh-my-zsh plugins/colored-man
 
   # extraction helpers
-  extract
+  zgen oh-my-zsh plugins/extract
 
   # fish like history search
-  zsh-users/zsh-history-substring-search
+  zgen load zsh-users/zsh-history-substring-search
 
-  # Autoupdate Antigen every 7 days.
-  unixorn/autoupdate-antigen.zshplugin
-BUNDLES
-
-antigen theme https://gist.github.com/7585b6aa8d4770866af4.git backchat
-
-antigen apply
+  zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
+  zgen save
+fi
 
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
@@ -229,7 +201,7 @@ export HADOOP_USER_NAME=hadoop
 
 #
 # added by travis gem
-[ -f /Users/ivan/.travis/travis.sh ] && source /Users/ivan/.travis/travis.sh
+[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
 
 eval "$(hub alias -s)"
 eval "$(direnv hook zsh)"

@@ -88,6 +88,7 @@ Plugin 'scrooloose/nerdcommenter'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
+Plugin 'Raimondi/delimitMate'
 "Plugin 'Townk/vim-autoclose'
 
 " Git wrapper inside Vim
@@ -180,7 +181,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'myhere/vim-nodejs-complete'
 Plugin 'elzr/vim-json'
 Plugin 'maksimr/vim-jsbeautify'
-"Plugin 'einars/js-beautify'
+Plugin 'einars/js-beautify'
 
 " ascii diagrams
 Plugin 'vim-scripts/DrawIt'
@@ -254,7 +255,7 @@ set wildignore+=*.aux,*.out,*.toc "Latex Indermediate files"
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg "Binary Imgs"
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.a,*.so,*.dylib "Compiled Object files"
 set wildignore+=*.spl "Compiled speolling world list"
-set wildignore+=*.sw? "Vim swap files"
+set wildignore+=*.swp,*.swo "Vim swap files"
 set wildignore+=*.DS_Store "OSX SHIT"
 set wildignore+=*.luac "Lua byte code"
 set wildignore+=migrations "Django migrations"
@@ -273,7 +274,7 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-set guifont=Consolas\ 11
+set guifont=Consolas\ 9
 if has("unix") 
   set guioptions-=a
 endif
@@ -820,6 +821,7 @@ xnoremap <C-A> <C-C>ggVG
 
     let g:NERDTreeShowHidden = 1
     let g:NERDTreeShortHiddenFirst = 1
+    let g:NERDTreeShortIgnore = ['\.sw(o|p)$']
     let g:jsx_ext_required = 0 " Allow JSX in normal JS files
 
     let g:go_bin_path = expand("$GOPATH/bin")
@@ -890,9 +892,11 @@ xnoremap <C-A> <C-C>ggVG
     autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
     autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
 
+    " xml-like
     iabbrev </ </<C-X><C-O>
-
     autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+
+    " go things
     au FileType go nmap <Leader>s <Plug>(go-implements)
     au FileType go nmap <Leader>i <Plug>(go-info)
     au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
@@ -907,7 +911,6 @@ xnoremap <C-A> <C-C>ggVG
     au FileType go nmap <leader>b <Plug>(go-build)
     au FileType go map <leader>ra :wa<CR> :GolangTestCurrentPackage<CR>
     au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
-    
 
     " go template support
     au BufRead,BufNewFile *.gotmpl set filetype=gotpl
