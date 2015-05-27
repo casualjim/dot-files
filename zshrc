@@ -31,12 +31,15 @@ if ! zgen saved; then
   zgen load djui/alias-tips
 
   # nicoulaj's moar completion files for zsh
-  zgen zsh-users/zsh-completions src
+  zgen load zsh-users/zsh-completions src
 
   # git support
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
   zgen load supercrabtree/k
+
+  # jump to last working directory
+  zgen oh-my-zsh plugins/last-working-dir
 
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
@@ -145,9 +148,6 @@ alias ls='ls --color=auto'
 alias la='ls -A'
 alias ll='ls -alF'
 alias l='ls -CF'
-sbt_sub() { mkdir -p src/{main,test}/scala/$1 src/{main,test}/resources }
-
-alias clean_sbt='rm -rf "$HOME/.sbt/staging" "$HOME/.sbt/plugins/project/target" "*/target"'
 
 export DOCKER_HOST=unix:///var/run/docker.sock
 export CLICOLOR=1
@@ -182,19 +182,8 @@ export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeC
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
 alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
-alias update-sbt-script='curl -OLs https://raw.githubusercontent.com/paulp/sbt-extras/master/sbt && chmod +x sbt'
-
-alias sbt-jrebel='SBT_OPTS="-javaagent:$HOME/Applications/JRebel/jrebel.jar -Drebel.mustache_plugin=true $SBT_OPTS" sbt'
-alias sbt-debug='SBT_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 $SBT_OPTS" sbt'
-alias sbt-yourkit='SBT_OPTS="-agentpath:/Applications/YourKit.app/bin/mac/libyjpagent.jnilib $SBT_OPTS" sbt'
 alias ccat="pygmentize -g -O 'tabsize=2'"
-alias knife="nocorrect knife"
-# alias prodenv=". $HOME/.config/boatwright/production-env"
-# alias devenv=". $HOME/.config/boatwright/dev-env"
-#
-# . $HOME/.config/boatwright/production-env
 
-#export PATH="${GOPATH//://bin:}/bin:$PATH"
 export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
 alias zinc='zinc -nailed'
 export HADOOP_USER_NAME=hadoop

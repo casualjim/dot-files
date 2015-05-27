@@ -4,7 +4,6 @@ curr_dir=$(cd `dirname $0` && pwd)
 ln -sf ${curr_dir}/vimreboot ~/.vim
 ln -sf ${curr_dir}/vimreboot/vimrc ~/.vimrc
 ln -sf ${curr_dir}/ctags ~/.ctags
-ln -sf ${curr_dir}/antigen ~/.antigen
 ln -sf ${curr_dir}/zshrc ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
