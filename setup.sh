@@ -21,22 +21,25 @@ if [ -f /etc/os-release ]; then
     echo "Installing for debian"
     sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
-    curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
-    sudo godeb install
-    GH_HUB_VERSION=2.2.1
-    curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp && \
-    cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin && \
-    chmod +x "/usr/bin/hub" && \
-    cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1 && \
-    mandb && \
-    cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub && \
-    cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub.zsh_completion" /usr/share/zsh/vendor-completions/_hub
+    if [ -z `which go` ]; then
+      curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
+      sudo godeb install
+    fi
   fi
   if [ "${ID}" = "arch" ]; then
     echo "Installing for arch"
     sudo pacman -S cmake python clang go tmux ctags ncurses nodejs
   fi
 fi
+
+GH_HUB_VERSION=2.2.1
+curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp && \
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin && \
+chmod +x "/usr/bin/hub" && \
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1 && \
+mandb && \
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub && \
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub.zsh_completion" /usr/share/zsh/vendor-completions/_hub
 
 echo "Installing jshint"
 npm -g install jshint jslint
