@@ -108,6 +108,7 @@ Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 
 Plugin 'scrooloose/nerdtree'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 "Plugin 'bufexplorer.zip'
 
 " Awesome syntax checker.
@@ -274,8 +275,8 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-set guifont=Consolas\ 9
-if has("unix") 
+set guifont=Consolas\ 11
+if has("unix")
   set guioptions-=a
 endif
 if has("gui_mac") || has("gui_macvim")
@@ -913,8 +914,8 @@ xnoremap <C-A> <C-C>ggVG
     au FileType go map <leader>rf :wa<CR> :GolangTestFocussed<CR>
 
     " go template support
-    au BufRead,BufNewFile *.gotmpl set filetype=gotpl
-    au BufRead,BufNewFile *.gohtml set filetype=gotplhtml
+    au BufRead,BufNewFile *.gotmpl set filetype=gotexttmpl
+    au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 
     let googurl_api_key = 'AIzaSyARvfSoMQYyohsgk3kkVwHAKHFDoMQV-ec'
 

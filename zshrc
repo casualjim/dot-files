@@ -197,3 +197,6 @@ eval "$(direnv hook zsh)"
 # eval "$(shipwright init)"
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
+
+# added by travis gem
+[ -f /home/ivan/.travis/travis.sh ] && source /home/ivan/.travis/travis.sh
