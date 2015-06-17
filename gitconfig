@@ -1,6 +1,7 @@
 [user]
   name = Ivan Porto Carrero
   email = ivan@flanders.co.nz
+	signingkey = 4EB5FDB2
 [core]
   editor = vim
 [alias]

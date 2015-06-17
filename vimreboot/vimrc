@@ -836,7 +836,7 @@ xnoremap <C-A> <C-C>ggVG
     let g:go_highlight_structs = 1
     let g:go_highlight_build_constraints = 1
     let g:go_oracle_include_tests = 1
-    let g:go_oracle_scope = 'github.com/casualjim/go-swagger/cmd/swagger'
+    let g:go_oracle_scope = 'github.com/go-swagger/go-swagger/cmd/swagger'
 
     function! g:UltiSnips_Complete()
       call UltiSnips_ExpandSnippet()

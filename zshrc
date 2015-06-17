@@ -13,7 +13,7 @@ COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
-if ! zgen saved; then 
+if ! zgen saved; then
   echo "Creating zgen init"
 
   zgen oh-my-zsh
@@ -97,9 +97,7 @@ if ! zgen saved; then
 
   # colorize
   # use pygments to highlight files by extenstion
-  # also colorize man pages
   zgen oh-my-zsh plugins/colorize
-  zgen oh-my-zsh plugins/colored-man
 
   # extraction helpers
   zgen oh-my-zsh plugins/extract
@@ -195,6 +193,22 @@ export HADOOP_USER_NAME=hadoop
 eval "$(hub alias -s)"
 eval "$(direnv hook zsh)"
 # eval "$(shipwright init)"
+
+man() {
+      env \
+      	  LESS_TERMCAP_mb=$(printf "\e[1;34m") \
+	  LESS_TERMCAP_md=$(printf "\e[1;34m") \
+	  LESS_TERMCAP_me=$(printf "\e[0m") \
+	  LESS_TERMCAP_se=$(printf "\e[0m") \
+	  LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+	  LESS_TERMCAP_ue=$(printf "\e[0m") \
+	  LESS_TERMCAP_us=$(printf "\e[1;33m") \
+	  PAGER=/usr/bin/less \
+	  _NROFF_U=1 \
+	  PATH=${HOME}/bin:${PATH} \
+	  			   man "$@"
+}
+
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
 
