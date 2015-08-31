@@ -133,6 +133,7 @@ export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
 export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
 export GOROOT=$HOME/tools/go
+#export GOROOT=/usr/local/opt/go
 export GOPATH=$HOME/go
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 export HIVE_HOME=/usr/local/opt/hive/libexec
@@ -142,7 +143,7 @@ export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quo
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
-alias ls='ls --color=auto'
+#alias ls='ls --color=auto'
 alias la='ls -A'
 alias ll='ls -alF'
 alias l='ls -CF'

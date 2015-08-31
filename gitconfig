@@ -46,7 +46,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = /usr/lib/git-core/git-credential-gnome-keyring
+	helper = osxkeychain
 [diff]
 	tool = vimdiff3
 [merge]
@@ -57,3 +57,7 @@
 	cookiefile = /home/ivan/.gitcookies
 [fetch]
 	prune = true
+[filter "lfs"]
+	clean = git-lfs clean %f
+	smudge = git-lfs smudge %f
+	required = true
