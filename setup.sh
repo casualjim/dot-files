@@ -8,9 +8,9 @@ ln -sf ${curr_dir}/zshrc ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
 
-echo "Installing vim plugins"
-script -qfc "vim -e +qall" /dev/null > /dev/null
-
+NPM="npm"
+GEM="gem"
+GO=""
 echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
   brew install cmake nodejs direnv hub
@@ -30,28 +30,43 @@ if [ -f /etc/os-release ]; then
     echo "Installing for arch"
     sudo pacman -S cmake python clang go tmux ctags ncurses nodejs
   fi
+  if [ "${ID}" = "fedora" ]; then
+    NPM="sudo npm"
+    GEM="sudo gem"
+    echo "Installing for fedora"
+    sudo dnf install -y kernel-headers httpie cmake clang tmux ctags-etags ncurses nodejs npm vim python-devel ruby-devel
+    GO_VERSION=1.5.2
+    echo "==> installing go ${GO_VERSION}"
+    curl -L https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | pv | sudo tar -C /usr/local/go -zx
+    echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
+    echo 'export GOPATH="/usr/local/go"' | sudo tee -a /etc/profile.d/golang.sh
+  fi
 fi
 
-GH_HUB_VERSION=2.2.1
-curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp && \
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin && \
-chmod +x "/usr/bin/hub" && \
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1 && \
-mandb && \
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub && \
+GH_HUB_VERSION=2.2.2
+curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin
+chmod +x "/usr/bin/hub"
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1
+mandb
+mkdir -p /usr/share/bash-completion /usr/share/zsh/vendor-completions
+cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub
 cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub.zsh_completion" /usr/share/zsh/vendor-completions/_hub
 
+echo "Installing vim plugins"
+script -qfc "vim -e +qall" /dev/null > /dev/null
+
 echo "Installing jshint"
-npm -g install jshint jslint
+$NPM -g install jshint jslint
 
 echo "installing jsonlint"
-npm -g install jsonlint
+$NPM -g install jsonlint
 
 echo "installing markdown lint"
-gem install mdl
+$GEM install mdl
 
 echo "installing jsyaml"
-npm -g install js-yaml
+$NPM -g install js-yaml
 
 # echo "Installing jsbeautify"
 # cd ~/.vim/bundle/js-beautify
@@ -59,8 +74,9 @@ npm -g install js-yaml
 
 echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
-./install.sh --clang-completer --gocode-completer
+./install.py --clang-completer --gocode-completer
 
+go get -u -v github.com/direnv/direnv
 go get -u -v github.com/golang/lint/golint
 go get -u -v golang.org/x/tools/cmd/...
 go get -u -v github.com/tools/godep
