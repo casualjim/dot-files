@@ -35,11 +35,13 @@ if [ -f /etc/os-release ]; then
     GEM="sudo gem"
     echo "Installing for fedora"
     sudo dnf install -y kernel-headers httpie cmake clang tmux ctags-etags ncurses nodejs npm vim python-devel ruby-devel
-    GO_VERSION=1.5.2
-    echo "==> installing go ${GO_VERSION}"
-    curl -L https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | pv | sudo tar -C /usr/local/go -zx
-    echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
-    echo 'export GOPATH="/usr/local/go"' | sudo tee -a /etc/profile.d/golang.sh
+    if [ -z `which go` ]; then
+      GO_VERSION=1.5.2
+      echo "==> installing go ${GO_VERSION}"
+      curl -L https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | sudo tar -C /usr/local -zx
+      echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
+      echo 'export GOPATH="/usr/local/go"' | sudo tee -a /etc/profile.d/golang.sh
+    fi
   fi
 fi
 

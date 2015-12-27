@@ -184,6 +184,9 @@ Plugin 'elzr/vim-json'
 Plugin 'maksimr/vim-jsbeautify'
 Plugin 'einars/js-beautify'
 
+" fedora files
+Plugin 'tangledhelix/vim-kickstart'
+
 " ascii diagrams
 Plugin 'vim-scripts/DrawIt'
 " markdown support
