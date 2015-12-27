@@ -43,15 +43,17 @@ if [ -f /etc/os-release ]; then
   fi
 fi
 
-GH_HUB_VERSION=2.2.2
-curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin
-chmod +x "/usr/bin/hub"
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1
-mandb
-mkdir -p /usr/share/bash-completion /usr/share/zsh/vendor-completions
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub
-cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub.zsh_completion" /usr/share/zsh/vendor-completions/_hub
+if [ "${ID}" != "fedora" ]; then
+  GH_HUB_VERSION=2.2.2
+  curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp
+  cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin
+  chmod +x "/usr/bin/hub"
+  cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/man/hub.1" /usr/share/man/man1
+  mandb
+  mkdir -p /usr/share/bash-completion /usr/share/zsh/vendor-completions
+  cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub/hub.bash_completion.sh" /usr/share/bash-completion/completions/hub
+  cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/etc/hub.zsh_completion" /usr/share/zsh/vendor-completions/_hub
+fi
 
 echo "Installing vim plugins"
 script -qfc "vim -e +qall" /dev/null > /dev/null
