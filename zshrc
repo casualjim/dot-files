@@ -132,8 +132,6 @@ export AWS_ELB_HOME="/usr/local/opt/elb-tools/jars"
 export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
 export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
-export GOROOT=$HOME/tools/go
-#export GOROOT=/usr/local/opt/go
 export GOPATH=$HOME/go
 export GROOVY_HOME=/usr/local/opt/groovy/libexec
 export HIVE_HOME=/usr/local/opt/hive/libexec

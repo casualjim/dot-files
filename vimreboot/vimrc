@@ -278,7 +278,7 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-set guifont=Consolas\ 11
+set guifont=Consolas\ 10
 if has("unix")
   set guioptions-=a
 endif
@@ -292,6 +292,7 @@ endif
 set guioptions-=m                       " remove menubar
 set guioptions-=T                       " remove toolbar
 set guioptions-=r                       " remove right scrollbar
+set lsp=2
 """ }}}
 """ }}}
 """ }}}
@@ -314,7 +315,7 @@ set shortmess+=I                                " disable startup message
 set splitbelow                                  " splits go below w/focus
 set splitright                                  " vsplits go right w/focus
 set ttyfast                                     " for faster redraws etc
-set ttymouse=xterm2                             " experimental
+" set ttymouse=xterm2                             " experimental
 "    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
 """ Folding {{{
 set foldcolumn=0                            " hide folding column
