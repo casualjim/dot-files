@@ -25,10 +25,10 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-syntax-highlighting
 
   # Guess what to install when running an unknown command
-  zgen oh-my-zsh plugins/command-not-found
+  # zgen oh-my-zsh plugins/command-not-found
 
   # alias tips
-  zgen load djui/alias-tips
+  # zgen load djui/alias-tips
 
   # nicoulaj's moar completion files for zsh
   zgen load zsh-users/zsh-completions src
@@ -37,9 +37,6 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
   zgen load supercrabtree/k
-
-  # jump to last working directory
-  zgen oh-my-zsh plugins/last-working-dir
 
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
@@ -123,20 +120,12 @@ bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
 
 setopt nocorrectall
-# Customize to your needs...
-export EC2_HOME="/usr/local/opt/ec2-api-tools/libexec"
-export EC2_AMITOOL_HOME="/usr/local/opt/ec2-ami-tools/libexec"
-export AWS_IAM_HOME="/usr/local/opt/aws-iam-tools/libexec"
-export AWS_ELB_HOME="/usr/local/opt/elb-tools/jars"
 
+# Customize to your needs...
 export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
-export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules
-export GOPATH=$HOME/go
-export GROOVY_HOME=/usr/local/opt/groovy/libexec
-export HIVE_HOME=/usr/local/opt/hive/libexec
-export HCAT_HOME=/usr/local/opt/hive/libexec/hcatalog
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export GOPATH=$HOME/go
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -163,8 +152,10 @@ if [[ $OS = 'Darwin' ]]; then
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
   export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
   export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
-  eval "$(docker-machine env localdocker)"
+  #eval "$(docker-machine env localdocker)"
 fi
+
+
 
 if [ -d $HOME/.linuxbrew ]; then
   export PATH="$HOME/.linuxbrew/bin:$PATH"
@@ -172,16 +163,14 @@ if [ -d $HOME/.linuxbrew ]; then
   export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
 fi
 
-export PATH="$GOPATH/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
-
-
+export PATH="$HOME/bin:${GOPATH//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
 alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
 alias ccat="pygmentize -g -O 'tabsize=2'"
 
-export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
+#export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
 alias zinc='zinc -nailed'
 export HADOOP_USER_NAME=hadoop
 
@@ -211,5 +200,3 @@ man() {
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
 
-# added by travis gem
-[ -f /home/ivan/.travis/travis.sh ] && source /home/ivan/.travis/travis.sh

@@ -315,7 +315,6 @@ set shortmess+=I                                " disable startup message
 set splitbelow                                  " splits go below w/focus
 set splitright                                  " vsplits go right w/focus
 set ttyfast                                     " for faster redraws etc
-" set ttymouse=xterm2                             " experimental
 "    set clipboard=unnamedplus                       " enable clipboard, http://stackoverflow.com/a/14312911
 """ Folding {{{
 set foldcolumn=0                            " hide folding column
