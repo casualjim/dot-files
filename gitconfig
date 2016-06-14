@@ -1,7 +1,7 @@
 [user]
   name = Ivan Porto Carrero
-  email = ivan@flanders.co.nz
 	signingkey = 4EB5FDB2
+	useconfigonly = true
 [core]
   editor = vim
 [alias]
@@ -50,7 +50,7 @@
 [diff]
 	tool = vimdiff3
 [merge]
-	tool = vimdiff3
+	tool = p4mergetool
 [help]
 	autocorrect = 1
 [http]
@@ -61,3 +61,15 @@
 	clean = git-lfs clean %f
 	smudge = git-lfs smudge %f
 	required = true
+[pull]
+	rebase = true
+[pager]
+  diff = diff-so-fancy | less --tabs=2 -RFX
+  show = diff-so-fancy | less --tabs=2 -RFX
+[mergetool "p4mergetool"]
+	cmd = ~/Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
+	trustExitCode = false
+[mergetool]
+	keepBackup = false
+[commit]
+	gpgsign = true

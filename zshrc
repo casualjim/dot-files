@@ -152,7 +152,6 @@ if [[ $OS = 'Darwin' ]]; then
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
   export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
   export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
-  #eval "$(docker-machine env localdocker)"
 fi
 
 
@@ -200,3 +199,10 @@ man() {
 
 [ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
 
+NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
+
+function docker_url() {
+  echo $(docker-machine ip default):${$(docker port "$1" $2)/*:/}
+}
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

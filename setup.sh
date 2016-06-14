@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 rm -rf ~/.vimrc ~/.vim ~/.antigen ~/.emacs.d ~/.oh-my-zsh ~/.zshrc
 curr_dir=$(cd `dirname $0` && pwd)
 ln -sf ${curr_dir}/vimreboot ~/.vim
@@ -13,13 +13,13 @@ GEM="gem"
 GO=""
 echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
-  brew install cmake nodejs direnv hub
+  brew install cmake nodejs hub diff-so-fancy httpie tmux
 fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby
+    sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby diff-so-fancy
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
     if [ -z `which go` ]; then
       curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
@@ -28,7 +28,7 @@ if [ -f /etc/os-release ]; then
   fi
   if [ "${ID}" = "arch" ]; then
     echo "Installing for arch"
-    sudo pacman -S cmake python clang go tmux ctags ncurses nodejs
+    sudo pacman -S cmake python clang go tmux ctags ncurses nodejs diff-so-fancy
   fi
   if [ "${ID}" = "fedora" ]; then
     NPM="sudo npm"
@@ -36,7 +36,7 @@ if [ -f /etc/os-release ]; then
     echo "Installing for fedora"
     sudo dnf install -y kernel-headers httpie cmake clang tmux ctags-etags ncurses nodejs npm vim python-devel ruby-devel
     if [ -z `which go` ]; then
-      GO_VERSION=1.5.2
+      GO_VERSION=1.6
       echo "==> installing go ${GO_VERSION}"
       curl -L https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | sudo tar -C /usr/local -zx
       echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
@@ -60,11 +60,8 @@ fi
 echo "Installing vim plugins"
 script -qfc "vim -e +qall" /dev/null > /dev/null
 
-echo "Installing jshint"
-$NPM -g install jshint jslint
-
-echo "installing jsonlint"
-$NPM -g install jsonlint
+echo "Installing jshint jshint jslint jsonlint tidy-markdown"
+$NPM -g install jshint jslint jsonlint tidy-markdown
 
 echo "installing markdown lint"
 $GEM install mdl
@@ -80,26 +77,32 @@ echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.py --clang-completer --gocode-completer
 
-go get -u -v github.com/direnv/direnv
-go get -u -v github.com/golang/lint/golint
+go get -u -v github.com/alecthomas/gometalinter
 go get -u -v golang.org/x/tools/cmd/...
-go get -u -v github.com/tools/godep
+go get -u -v github.com/FiloSottile/gvt
 go get -u -v github.com/jteeuwen/go-bindata/...
 go get -u -v github.com/elazarl/go-bindata-assetfs/...
-go get -u -v github.com/redefiance/go-find-references
-go get -u -v github.com/sqs/goreturns
-go get -u -v code.google.com/p/gomock/gomock
-go get -u -v code.google.com/p/gomock/mockgen
+go get -u -v github.com/golang/mock/gomock
+go get -u -v github.com/golang/mock/mockgen
 go get -u -v github.com/axw/gocov/gocov
 go get -u -v gopkg.in/matm/v1/gocov-html
 go get -u -v github.com/AlekSi/gocov-xml
 go get -u -v github.com/nsf/gocode
-go get -u -v github.com/kisielk/errcheck
 go get -u -v github.com/jstemmer/gotags
 go get -u -v github.com/smartystreets/goconvey
 go get -u -v github.com/rogpeppe/godef
 go get -u -v github.com/pquerna/ffjson
-go get -u -v github.com/clipperhouse/gen
+go get -u -v github.com/nathany/looper
+go get -u -v github.com/kylelemons/godebug/...
+go get -u -v github.com/aktau/github-release
+go get -u -v github.com/spf13/hugo
+go get -u -v github.com/sqs/goreturns
+go get -u -v github.com/tpng/gopkgs
+go get -u -v github.com/lukehoban/go-outline
+go get -u -v github.com/newhook/go-symbols
+go get -u -v github.com/campoy/jsonenums
+
+gometalinter --install --update
 
 cd ${curr_dir}
 echo "Environment has been configured."

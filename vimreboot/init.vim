@@ -19,6 +19,7 @@ if !filereadable($HOME . "/.vimrc.last") | call system("touch $HOME/.vimrc.last"
 """ Automatically setting up Vundle, taken from
 """ http://www.erikzaadi.com/2012/03/19/auto-installing-vundle-from-your-vimrc/ {{{
 let has_vundle=1
+let g:python_host_prog = '/usr/local/bin/python'
 if !filereadable($HOME."/.vim/bundle/vundle/README.md")
   echo "Installing Vundle..."
   echo ""
@@ -94,6 +95,7 @@ Plugin 'Raimondi/delimitMate'
 " Git wrapper inside Vim
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'jaxbot/github-issues.vim'
 
 " Align your = etc.
 Plugin 'vim-scripts/Align'
@@ -138,6 +140,8 @@ Plugin 'Matt-Deacalion/vim-systemd-syntax'
 
 " Vagrant support
 Plugin 'markcornick/vim-vagrant'
+Plugin 'b4b4r07/vim-hcl'
+Plugin 'fatih/vim-hclfmt'
 
 " NGinX support
 Plugin 'evanmiller/nginx-vim-syntax'
@@ -539,7 +543,7 @@ xnoremap <C-A> <C-C>ggVG
                 call cursor(l, c)
             endfunction
 
-            autocmd FileType c,cpp,css,html,perl,python,sh autocmd 
+            autocmd FileType c,cpp,css,html,perl,python,sh autocmd
                         \BufWritePre <buffer> :call <SID>StripTrailingWhitespace()
         """ }}}
     """ }}}
@@ -814,6 +818,7 @@ xnoremap <C-A> <C-C>ggVG
     let g:syntastic_cpp_compiler_options = ' -std=c++0x'
     let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint']
     let g:syntastic_go_govet_args = '-printf=false -structtags=false'
+    let g:syntastic_go_gometalinter_args = '--vendor --fast'
     let g:syntastic_json_checkers = ['jsonlint']
     let g:syntastic_javascript_checkers = ['eslint']
     let g:syntastic_mode_map = {
@@ -839,7 +844,7 @@ xnoremap <C-A> <C-C>ggVG
     let g:go_highlight_structs = 1
     let g:go_highlight_build_constraints = 1
     let g:go_oracle_include_tests = 1
-    let g:go_oracle_scope = 'github.com/go-swagger/go-swagger/cmd/swagger'
+    let g:go_oracle_scope = 'github.com/go-swagger/go-swagger/cmd/swagger github.com/vmware/cello/cmd/cello'
 
     function! g:UltiSnips_Complete()
       call UltiSnips_ExpandSnippet()
