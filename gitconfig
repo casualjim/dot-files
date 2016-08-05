@@ -46,7 +46,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = osxkeychain
+  helper = /usr/lib/git-core/git-credential-gnome-keyring
 [diff]
 	tool = vimdiff3
 [merge]
