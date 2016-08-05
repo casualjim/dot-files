@@ -544,7 +544,7 @@ xnoremap <C-A> <C-C>ggVG
             endfunction
 
             autocmd FileType c,cpp,css,html,perl,python,sh autocmd
-                        \BufWritePre <buffer> :call <SID>StripTrailingWhitespace()
+                        \ BufWritePre <buffer> :call <SID>StripTrailingWhitespace()
         """ }}}
     """ }}}
     """ Plugins {{{

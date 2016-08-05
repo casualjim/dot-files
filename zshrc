@@ -77,8 +77,12 @@ if ! zgen saved; then
 
   # vagrant completion
   zgen oh-my-zsh plugins/vagrant
+  
   # packer.io completion
   zgen load gunzy83/packer-zsh-completion
+
+  # vault completion
+  zgen oh-my-zsh plugins/vault
 
   # httpie completion
   zgen oh-my-zsh plugins/httpie
@@ -101,6 +105,9 @@ if ! zgen saved; then
 
   # fish like history search
   zgen load zsh-users/zsh-history-substring-search
+
+  # gcloud completion
+  zgen load https://github.com/littleq0903/gcloud-zsh-completion
 
   zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
