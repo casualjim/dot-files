@@ -108,6 +108,7 @@ if ! zgen saved; then
 
   # gcloud completion
   zgen load https://github.com/littleq0903/gcloud-zsh-completion
+  zgen oh-my-zsh plugins/kubectl
 
   zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
@@ -213,3 +214,6 @@ function docker_url() {
 }
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# added by travis gem
+[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh

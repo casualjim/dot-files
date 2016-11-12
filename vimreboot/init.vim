@@ -816,7 +816,7 @@ xnoremap <C-A> <C-C>ggVG
     let g:syntastic_extra_filetypes = [ "make", "gitcommit" ]
     let g:syntastic_cpp_check_header = 1
     let g:syntastic_cpp_compiler_options = ' -std=c++0x'
-    let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint']
+    let g:syntastic_go_checkers = ['gofmt', 'govet', 'gotype', 'golint', 'errcheck']
     let g:syntastic_go_govet_args = '-printf=false -structtags=false'
     let g:syntastic_go_gometalinter_args = '--vendor --fast'
     let g:syntastic_json_checkers = ['jsonlint']
@@ -824,9 +824,9 @@ xnoremap <C-A> <C-C>ggVG
     let g:syntastic_mode_map = {
         \ 'mode': 'active',
         \ 'active_filetypes':
-            \ ['c', 'cpp', 'python', 'scala', 'go', 'js', 'json', 'yaml', 'zsh', 'ruby'],
+            \ ['c', 'cpp', 'python', 'scala', 'js', 'json', 'yaml', 'zsh', 'ruby'],
         \ 'passive_filetypes':
-            \ ['perl']}
+            \ ['perl', 'go']}
 
     let g:NERDTreeShowHidden = 1
     let g:NERDTreeShortHiddenFirst = 1
@@ -843,6 +843,7 @@ xnoremap <C-A> <C-C>ggVG
     let g:go_highlight_methods = 1
     let g:go_highlight_structs = 1
     let g:go_highlight_build_constraints = 1
+    let g:go_list_type = "quickfix"
     let g:go_oracle_include_tests = 1
     let g:go_oracle_scope = 'github.com/go-swagger/go-swagger/cmd/swagger github.com/vmware/cello/cmd/cello'
 
