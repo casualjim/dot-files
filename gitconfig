@@ -2,6 +2,7 @@
   name = Ivan Porto Carrero
 	signingkey = 4EB5FDB2
 	useconfigonly = true
+	email = ivan@flanders.co.nz
 [core]
   editor = vim
 [alias]
@@ -13,6 +14,7 @@
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
   smuir = submodule update --init --recursive
   clr = clone --recursive
+  patch = --no-pager diff --no-color
 	switch = !legit switch \"$@\"
 	branches = !legit branches
 	sprout = !legit sprout \"$@\"
@@ -64,8 +66,8 @@
 [pull]
 	rebase = true
 [pager]
-  diff = diff-so-fancy | less --tabs=2 -RFX
-  show = diff-so-fancy | less --tabs=2 -RFX
+  diff = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
+  show = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
 [mergetool "p4mergetool"]
 	cmd = ~/Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
 	trustExitCode = false
@@ -73,3 +75,8 @@
 	keepBackup = false
 [commit]
 	gpgsign = true
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22

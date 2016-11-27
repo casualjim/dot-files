@@ -7,7 +7,7 @@ export OS=`uname`
 zmodload zsh/terminfo
 fpath+=("/usr/local/share/zsh/site-functions")
 
-. /usr/share/zsh/scripts/zgen/zgen.zsh
+. /usr/share/zgen/zgen.zsh
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
@@ -40,6 +40,9 @@ if ! zgen saved; then
 
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
+
+  # ubuntu completion (does not exist in prezto)
+  # zgen oh-my-zsh plugins/ubuntu
 
   # systemd completion
   zgen oh-my-zsh plugins/systemd
@@ -77,7 +80,7 @@ if ! zgen saved; then
 
   # vagrant completion
   zgen oh-my-zsh plugins/vagrant
-  
+
   # packer.io completion
   zgen load gunzy83/packer-zsh-completion
 
@@ -162,30 +165,22 @@ if [[ $OS = 'Darwin' ]]; then
   export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
 fi
 
-
-
-if [ -d $HOME/.linuxbrew ]; then
-  export PATH="$HOME/.linuxbrew/bin:$PATH"
-  export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
-  export INFOPATH="$HOME/.linuxbrew/share/info:$INFOPATH"
-fi
-
 export PATH="$HOME/bin:${GOPATH//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
 alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
-alias ccat="pygmentize -g -O 'tabsize=2'"
+alias ccat=colorize
 
 #export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
-alias zinc='zinc -nailed'
 export HADOOP_USER_NAME=hadoop
 
 #
 # added by travis gem
 [ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
 
-eval "$(hub alias -s)"
+#eval "$(hub alias -s)"
+function git(){hub $@}
 eval "$(direnv hook zsh)"
 # eval "$(shipwright init)"
 
@@ -209,11 +204,5 @@ man() {
 
 NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
 
-function docker_url() {
-  echo $(docker-machine ip default):${$(docker port "$1" $2)/*:/}
-}
-
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# added by travis gem
-[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
