@@ -19,12 +19,15 @@ if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby diff-so-fancy jq
+    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
     if [ -z `which go` ]; then
       curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
       sudo godeb install
     fi
+    sudo npm install -g diff-so-fancy
+    NPM="sudo npm"
+    GEM="sudo gem"
   fi
   if [ "${ID}" = "arch" ]; then
     echo "Installing for arch"
