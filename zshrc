@@ -13,10 +13,19 @@ COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
+. ~/google-cloud-sdk/path.zsh.inc
+. <(grep -v compinit ~/google-cloud-sdk/completion.zsh.inc)
+. <(kubectl completion zsh  | grep -v '^autoload .*compinit$')
+
+
 if ! zgen saved; then
   echo "Creating zgen init"
 
   zgen oh-my-zsh
+  
+  # gcloud completion
+  zgen load https://github.com/littleq0903/gcloud-zsh-completion
+  zgen oh-my-zsh plugins/kubectl
 
   # ZSH plugin enhances the terminal environment with 256 colors.
   zgen load chrissicool/zsh-256color
@@ -109,9 +118,9 @@ if ! zgen saved; then
   # fish like history search
   zgen load zsh-users/zsh-history-substring-search
 
-  # gcloud completion
-  zgen load https://github.com/littleq0903/gcloud-zsh-completion
-  zgen oh-my-zsh plugins/kubectl
+
+  # bosh completion
+  zgen load frodenas/bosh-zsh-autocomplete-plugin
 
   zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
@@ -206,3 +215,4 @@ NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
+eval "$(zb complete)"

@@ -95,7 +95,7 @@ Plugin 'Raimondi/delimitMate'
 " Git wrapper inside Vim
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
-Plugin 'jaxbot/github-issues.vim'
+"Plugin 'jaxbot/github-issues.vim'
 
 " Align your = etc.
 Plugin 'vim-scripts/Align'
@@ -125,7 +125,7 @@ Plugin 'mtth/scratch.vim'
 " Scala support
 Plugin 'derekwyatt/vim-scala'
 Plugin 'derekwyatt/vim-sbt'
-Plugin 'ktvoelker/sbt-vim'
+"Plugin 'ktvoelker/sbt-vim'
 Plugin 'tpope/vim-classpath'
 Plugin 'GEverding/vim-hocon'
 
@@ -158,7 +158,7 @@ Plugin 'fatih/vim-go'
 "Plugin 'benmills/vimux-golang'
 
 " shorten urls
-Plugin 'sethbaur/googurl.vim'
+"Plugin 'sethbaur/googurl.vim'
 
 " Rust support
 Plugin 'wting/rust.vim'
@@ -217,27 +217,20 @@ endif
 """ Syntax highlighting {{{
 filetype plugin indent on                   " detect file plugin+indent
 syntax on                                   " syntax highlighting
+
 set t_Co=256                                " 256-colors
+set termguicolors
 set background=dark                         " we're using a dark bg
 colors jellybeans                           " select colorscheme
 colors desertEx                             " select colorscheme
-"colors desert256                             " select colorscheme
-"colors zenburn                             " select colorscheme
+
 au BufNewFile,BufRead *.txt set ft=sh tw=119  " opens .txt w/highlight
 au BufNewFile,BufRead *.tex set ft=tex tw=119 " we don't want plaintex
 augroup markdown
   au!
   au BufNewFile,BufRead *.md,*.markdown setlocal ft=ghmarkdown tw=119 " markdown, not modula
 augroup END
-"au VimEnter * RainbowParenthesesToggle
-"au Syntax * RainbowParenthesesLoadRound
-"au Syntax * RainbowParenthesesLoadSquare
-"au Syntax * RainbowParenthesesLoadBraces
-""" Tab colors, overwritten by lightline(?) {{{
-"hi TabLineFill ctermfg=NONE ctermbg=233
-"hi TabLine ctermfg=241 ctermbg=233
-"hi TabLineSel ctermfg=250 ctermbg=233
-""" }}}
+
 """ Custom highlighting, where NONE uses terminal background {{{
 function! CustomHighlighting()
   highlight Normal ctermbg=NONE
@@ -282,7 +275,7 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-set guifont=Consolas\ 10
+set guifont=Consolas\ 11
 if has("unix")
   set guioptions-=a
 endif

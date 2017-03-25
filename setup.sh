@@ -2,7 +2,7 @@
 rm -rf ~/.vimrc ~/.vim ~/.antigen ~/.emacs.d ~/.oh-my-zsh ~/.zshrc
 curr_dir=$(cd `dirname $0` && pwd)
 ln -sf ${curr_dir}/vimreboot ~/.vim
-ln -sf ${curr_dir}/vimreboot/vimrc ~/.vimrc
+ln -sf ${curr_dir}/vimreboot/init.vim ~/.vimrc
 ln -sf ${curr_dir}/ctags ~/.ctags
 ln -sf ${curr_dir}/zshrc ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
@@ -19,7 +19,7 @@ if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby diff-so-fancy
+    sudo apt-get install -y curl httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby diff-so-fancy jq
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
     if [ -z `which go` ]; then
       curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
