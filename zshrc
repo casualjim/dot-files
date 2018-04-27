@@ -1,7 +1,7 @@
 # Path to your oh-my-zsh configuration.
 #tabs -2
 # export ZSH=$HOME/.oh-my-zsh
-export SHELL=/bin/zsh
+export SHELL="${$SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
 
 zmodload zsh/terminfo
@@ -13,11 +13,12 @@ if [ "$OS" = 'Linux' ]; then
   fpath+=("/home/ivan/.local/share/zsh/site-functions")
 fi
 
-if [ ! -d /usr/share/zgen ]; then
-  sudo git clone https://github.com/tarjoilija/zgen /usr/share/zgen
+if [ ! -d "$HOME/.zgen" ]; then
+  mkdir -p "$HOME/.zgen"
+  git clone https://github.com/tarjoilija/zgen "$HOME/.zgen"
 fi
 
-source /usr/share/zgen/zgen.zsh
+source "$HOME/.zgen/zgen.zsh"
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
@@ -208,7 +209,7 @@ if [ $commands[rbenv] ]; then
   eval "$(rbenv init -)"
 fi
 if [ $commands[direnv] ]; then
-  source <(direnv completion zsh)
+  source <(direnv hook zsh)
 fi
 if [ $commands[minikube] ]; then
   source <(minikube completion zsh)
