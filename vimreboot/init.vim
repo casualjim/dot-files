@@ -80,7 +80,7 @@ Plugin 'editorconfig/editorconfig-vim'
 
 " Work with colors
 Plugin 'guns/xterm-color-table.vim'
-Plugin 'lilydjwg/colorizer'
+"Plugin 'lilydjwg/colorizer'
 
 " Super easy commenting, toggle comments etc
 Plugin 'scrooloose/nerdcommenter'
@@ -144,7 +144,7 @@ Plugin 'b4b4r07/vim-hcl'
 Plugin 'fatih/vim-hclfmt'
 
 " NGinX support
-Plugin 'evanmiller/nginx-vim-syntax'
+"Plugin 'evanmiller/nginx-vim-syntax'
 
 " Varnish cache support
 " Plugin 'casualjim/vim-varnish'
@@ -275,6 +275,7 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
+"set guifont=Fira\ Code\ 10
 set guifont=Consolas\ 11
 if has("unix")
   set guioptions-=a
@@ -285,6 +286,9 @@ endif
 if has("gui_win32") || has("gui_win32s")
   set guifont=Consolas:h10
   set enc=utf-8
+endif
+if has('nvim')
+  set guicursor=
 endif
 set guioptions-=m                       " remove menubar
 set guioptions-=T                       " remove toolbar
@@ -831,11 +835,17 @@ xnoremap <C-A> <C-C>ggVG
     let g:go_fmt_command = "goimports"
     let g:go_fmt_experimental = 1
     let g:go_auto_type_info = 1
+    let g:go_info_mode = 'guru'
     let g:go_highlight_operators = 1
     let g:go_highlight_functions = 1
-    let g:go_highlight_methods = 1
+    let g:go_highlight_function_arguments = 1
+    let g:go_highlight_function_calls = 1
+    let g:go_highlight_fields = 1
     let g:go_highlight_structs = 1
     let g:go_highlight_build_constraints = 1
+    let g:go_highlight_generate_tags = 1
+    let g:go_highlight_variable_declarations = 1
+    let g:go_highlight_variable_assignments = 1
     let g:go_list_type = "quickfix"
     let g:go_oracle_include_tests = 1
     let g:go_oracle_scope = 'github.com/go-swagger/go-swagger/cmd/swagger github.com/vmware/cello/cmd/cello'

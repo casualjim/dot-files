@@ -2,30 +2,35 @@
 #tabs -2
 # export ZSH=$HOME/.oh-my-zsh
 export SHELL=/bin/zsh
-export OS=`uname`
+export OS="${OS-$(uname)}"
 
 zmodload zsh/terminfo
-fpath+=("/usr/local/share/zsh/site-functions")
 
-. /usr/share/zgen/zgen.zsh
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+fpath+=("/usr/local/share/zsh/site-functions")
+if [ "$OS" = 'Linux' ]; then
+  fpath+=("/home/ivan/.local/share/zsh/site-functions")
+fi
+
+if [ ! -d /usr/share/zgen ]; then
+  sudo git clone https://github.com/tarjoilija/zgen /usr/share/zgen
+fi
+
+source /usr/share/zgen/zgen.zsh
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
-. ~/google-cloud-sdk/path.zsh.inc
-. <(grep -v compinit ~/google-cloud-sdk/completion.zsh.inc)
-. <(kubectl completion zsh  | grep -v '^autoload .*compinit$')
-
-
 if ! zgen saved; then
   echo "Creating zgen init"
 
   zgen oh-my-zsh
-  
+
   # gcloud completion
-  zgen load https://github.com/littleq0903/gcloud-zsh-completion
-  zgen oh-my-zsh plugins/kubectl
+  # zgen load https://github.com/littleq0903/gcloud-zsh-completion
+  # zgen oh-my-zsh plugins/kubectl
 
   # ZSH plugin enhances the terminal environment with 256 colors.
   zgen load chrissicool/zsh-256color
@@ -45,7 +50,6 @@ if ! zgen saved; then
   # git support
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
-  zgen load supercrabtree/k
 
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
@@ -96,6 +100,9 @@ if ! zgen saved; then
   # vault completion
   zgen oh-my-zsh plugins/vault
 
+  # terraform completion
+  zgen oh-my-zsh plugins/terraform
+
   # httpie completion
   zgen oh-my-zsh plugins/httpie
 
@@ -120,7 +127,10 @@ if ! zgen saved; then
 
 
   # bosh completion
-  zgen load frodenas/bosh-zsh-autocomplete-plugin
+  #zgen load frodenas/bosh-zsh-autocomplete-plugin
+
+  zgen oh-my-zsh plugins/cargo
+  zgen oh-my-zsh plugins/rust
 
   zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
@@ -145,17 +155,15 @@ setopt nocorrectall
 export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-export GOPATH=$HOME/go
 
 alias grep='grep --color=auto'
 alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 #alias ls='ls --color=auto'
-alias la='ls -A'
-alias ll='ls -alF'
-alias l='ls -CF'
+alias la='ls -Ah'
+alias ll='ls -alFh'
+alias l='ls -CFh'
 
-export DOCKER_HOST=unix:///var/run/docker.sock
 export CLICOLOR=1
 export VISUAL=vim
 export EDITOR=$VISUAL
@@ -167,11 +175,15 @@ if [[ $OS = 'Darwin' ]]; then
   alias vi="mvim -v"
   alias vim="mvim -v"
   alias gvim='mvim -g'
-  export VISUAL='atom -w'
+  export VISUAL='code -w'
   export EDITOR=$VISUAL
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
   export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
   export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
+else
+  alias ngvim='nvim-wrapper'
+  export VISUAL='code -w'
+  export EDITOR=$VISUAL
 fi
 
 export PATH="$HOME/bin:${GOPATH//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
@@ -179,7 +191,7 @@ export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeC
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
 alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
-alias ccat=colorize
+alias ccat=pygmentize
 
 #export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
 export HADOOP_USER_NAME=hadoop
@@ -188,10 +200,25 @@ export HADOOP_USER_NAME=hadoop
 # added by travis gem
 [ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
 
-#eval "$(hub alias -s)"
-function git(){hub $@}
-eval "$(direnv hook zsh)"
-# eval "$(shipwright init)"
+if [ $commands[hub] ]; then
+  eval "$(hub alias -s)"
+fi
+
+if [ $commands[rbenv] ]; then
+  eval "$(rbenv init -)"
+fi
+if [ $commands[direnv] ]; then
+  source <(direnv completion zsh)
+fi
+if [ $commands[minikube] ]; then
+  source <(minikube completion zsh)
+fi
+if [ $commands[kubectl] ]; then
+  source <(kubectl completion zsh)
+fi
+if [ $commands[helm] ]; then
+  source <(helm completion zsh)
+fi
 
 man() {
       env \
@@ -209,10 +236,17 @@ man() {
 }
 
 
-[ -f $HOME/.zshrc.local ] && . $HOME/.zshrc.local
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
 
-NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
+if [  $commands[nvim] ]; then
+  export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
+fi
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-eval "$(zb complete)"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export ONECONCERN_PATH=$HOME/github/oneconcern
+cdoc() { 
+  cd "$ONECONCERN_PATH/$1"  || exit 1
+}

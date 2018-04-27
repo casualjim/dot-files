@@ -1,8 +1,7 @@
 [user]
   name = Ivan Porto Carrero
 	signingkey = 4EB5FDB2
-	useconfigonly = true
-	email = ivan@flanders.co.nz
+	useConfigOnly = true
 [core]
   editor = vim
 [alias]
@@ -48,7 +47,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = /usr/lib/git-core/git-credential-gnome-keyring
+	helper = /usr/lib/git-core/git-credential-libsecret
 [diff]
 	tool = vimdiff3
 [merge]
@@ -81,3 +80,5 @@
 	oldHighlight = red bold 52
 	newNormal = green bold
 	newHighlight = green bold 22
+[http "https://pkg.re"]
+	followRedirects = true
