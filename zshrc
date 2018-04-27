@@ -1,7 +1,7 @@
 # Path to your oh-my-zsh configuration.
 #tabs -2
 # export ZSH=$HOME/.oh-my-zsh
-export SHELL="${$SHELL-/bin/zsh}"
+export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
 
 zmodload zsh/terminfo
