@@ -1,0 +1,8 @@
+tags
+*~
+*.swp
+.VimballRecord
+.DS_STORE
+vimreboot/bundle
+vimreboot/undo
+vimreboot/bundle/vundle
