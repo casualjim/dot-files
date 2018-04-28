@@ -24,8 +24,32 @@ COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
+SPACESHIP_TIME_SHOW=true
+SPACESHIP_KUBECONTEXT_SYMBOL="☸️  "
+[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL='' || PROMPT_SYMBOL=''
+TIME_FORMAT="%D{%H:%M}"
+GITHUB_ICON=''
+EXECUTION_TIME_ICON='' #    
+EXECUTION_TIME_THRESHOLD=0.1
+SPACESHIP_TIME_COLOR=yellow
+SPACESHIP_CHAR_SYMBOL="${PROMPT_SYMBOL} "
+SPACESHIP_CHAR_COLOR_SUCCESS=green
+SPACESHIP_EXEC_TIME_SUFFIX=" "
+SPACESHIP_RUST_COLOR=39
+SPACESHIP_GIT_BRANCH_COLOR=141
+SPACESHIP_GIT_STATUS_COLOR=165
+SPACESHIP_KUBECONTEXT_COLOR=33
+SPACESHIP_TIME_COLOR=193
+SPACESHIP_EXEC_TIME_SHOW=true
+SPACESHIP_EXEC_TIME_SUFFIX="$SPACESHIP_PROMPT_DEFAULT_SUFFIX"
+SPACESHIP_EXEC_TIME_PREFIX="took $EXECUTION_TIME_ICON "
+SPACESHIP_EXEC_TIME_COLOR="yellow"
+SPACESHIP_EXEC_TIME_THRESHOLD=2000
+
 if ! zgen saved; then
   echo "Creating zgen init"
+  # ZSH plugin enhances the terminal environment with 256 colors.
+  zgen load chrissicool/zsh-256color
 
   zgen oh-my-zsh
 
@@ -33,8 +57,6 @@ if ! zgen saved; then
   # zgen load https://github.com/littleq0903/gcloud-zsh-completion
   # zgen oh-my-zsh plugins/kubectl
 
-  # ZSH plugin enhances the terminal environment with 256 colors.
-  zgen load chrissicool/zsh-256color
 
   # Syntax highlighting bundle.
   zgen load zsh-users/zsh-syntax-highlighting
@@ -133,7 +155,8 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/cargo
   zgen oh-my-zsh plugins/rust
 
-  zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
+  zgen load denysdovhan/spaceship-prompt spaceship
+  #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
 fi
 
