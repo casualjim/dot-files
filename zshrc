@@ -187,7 +187,7 @@ else
   export EDITOR=$VISUAL
 fi
 
-export PATH="$HOME/bin:${GOPATH//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/bin:${${GOPATH-$HOME/go}//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
