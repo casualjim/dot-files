@@ -20,7 +20,7 @@ COPY --from=0 /usr/src/dumb-init/dumb-init /usr/bin/dumb-init
 
 RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update &&\
-  apt-get install -y apt-transport-https zsh git sudo gnupg curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term direnv ruby jq git-hub &&\
+  apt-get install -y apt-transport-https zsh git sudo gnupg curl pv httpie vim-nox zsh cmake python-dev python-pip clang libclang-dev tmux exuberant-ctags ncurses-term direnv ruby jq git-hub &&\
   curl -sL https://deb.nodesource.com/setup_8.x | bash - &&\
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - &&\
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - &&\
