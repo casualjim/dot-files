@@ -165,8 +165,12 @@ fi
 
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
+if [[ "${terminfo[kcuu1]}" != "" ]]; then
+  bindkey "$terminfo[kcuu1]" history-substring-search-up
+fi
+if [[ "${terminfo[kcud1]}" != "" ]]; then
+  bindkey "$terminfo[kcud1]" history-substring-search-down
+fi
 
 # bind P and N for EMACS mode
 bindkey -M emacs '^P' history-substring-search-up
@@ -277,3 +281,10 @@ export ONECONCERN_PATH=$HOME/github/oneconcern
 cdoc() { 
   cd "$ONECONCERN_PATH/$1"  || exit 1
 }
+
+# tabtab source for serverless package
+# uninstall by removing these lines or running `tabtab uninstall serverless`
+#[[ -f /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
+# tabtab source for sls package
+# uninstall by removing these lines or running `tabtab uninstall sls`
+#[[ -f /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
