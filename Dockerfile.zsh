@@ -19,7 +19,11 @@ RUN set -e &&\
   mkdir -p /etc/sudoers.d &&\
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
   echo 'wheel ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel &&\
-  chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel
+  chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel &&\
+  apt-get autoremove -yqq &&\
+  apt-get clean -y &&\
+  apt-get autoclean -yqq &&\
+  rm -rf  /tmp/* /var/tmp/* /var/lib/apt/lists/* /usr/share/doc/* /usr/share/locale/* /var/cache/debconf/*-old
 
 USER ivan
 ADD --chown=ivan zshrc /home/ivan/.zshrc
