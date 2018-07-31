@@ -78,7 +78,7 @@ if ! zgen saved; then
   zgen load voronkovich/gitignore.plugin.zsh
 
   # archlinux completion (does not exist in prezto)
-  zgen oh-my-zsh plugins/archlinux
+  # zgen oh-my-zsh plugins/archlinux
 
   # ubuntu completion (does not exist in prezto)
   # zgen oh-my-zsh plugins/ubuntu
@@ -122,9 +122,6 @@ if ! zgen saved; then
 
   # packer.io completion
   zgen load gunzy83/packer-zsh-completion
-
-  # vault completion
-  zgen oh-my-zsh plugins/vault
 
   # terraform completion
   zgen oh-my-zsh plugins/terraform
@@ -250,6 +247,9 @@ fi
 if [ $commands[helm] ]; then
   source <(helm completion zsh)
 fi
+if [ $commands[kops] ]; then
+  source <(kops completion zsh)
+fi
 
 man() {
       env \
@@ -282,9 +282,13 @@ cdoc() {
   cd "$ONECONCERN_PATH/$1"  || exit 1
 }
 
+
 # tabtab source for serverless package
 # uninstall by removing these lines or running `tabtab uninstall serverless`
-#[[ -f /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
+[[ -f /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
 # tabtab source for sls package
 # uninstall by removing these lines or running `tabtab uninstall sls`
-#[[ -f /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /tmp/yaourt-tmp-ivan/aur-nodejs-serverless/pkg/nodejs-serverless/usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
+[[ -f /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/vault vault

@@ -1,7 +1,8 @@
 [user]
-  name = Ivan Porto Carrero
+	name = Ivan Porto Carrero
 	signingkey = 4EB5FDB2
 	useConfigOnly = true
+	email = ivan@flanders.co.nz
 [core]
   editor = vim
 [alias]
@@ -64,7 +65,7 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 [pull]
-	rebase = true
+	rebase = false
 [pager]
   diff = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
   show = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
