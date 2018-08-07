@@ -26,15 +26,15 @@ ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 SPACESHIP_TIME_SHOW=true
 SPACESHIP_KUBECONTEXT_SYMBOL="☸️  "
-[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL='' || PROMPT_SYMBOL=''
+[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL='🌐 ' || PROMPT_SYMBOL='👁 '
 TIME_FORMAT="%D{%H:%M}"
-GITHUB_ICON=''
-EXECUTION_TIME_ICON="%F{yellow}%f" #    
+#GITHUB_ICON=''
+EXECUTION_TIME_ICON="%F{yellow}🔂%f" #    
 EXECUTION_TIME_THRESHOLD=0.1
 SPACESHIP_TIME_COLOR=yellow
 SPACESHIP_CHAR_SYMBOL="${PROMPT_SYMBOL} "
 SPACESHIP_CHAR_COLOR_SUCCESS=green
-SPACESHIP_TIME_SUFFIX=" %F{192}%f "
+SPACESHIP_TIME_SUFFIX=" %F{192}⌚️%f "
 SPACESHIP_DOCKER_PREFIX="%F{69}➜%f "
 SPACESHIP_DOCKER_COLOR=75
 SPACESHIP_RUST_COLOR=39
@@ -206,8 +206,8 @@ if [[ $OS = 'Darwin' ]]; then
   export VISUAL='code -w'
   export EDITOR=$VISUAL
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
-  export JDK_HOME="$(/usr/libexec/java_home -version 1.8)"
-  export JAVA_HOME="$(/usr/libexec/java_home -version 1.8)"
+  export JDK_HOME="$(/usr/libexec/java_home -version 10)"
+  export JAVA_HOME="$(/usr/libexec/java_home -version 10)"
 else
   alias ngvim='nvim-wrapper'
   export VISUAL='code -w'

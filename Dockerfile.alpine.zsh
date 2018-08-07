@@ -1,4 +1,4 @@
-FROM golang:1.10-alpine
+FROM golang:alpine
 
 RUN apk add --no-cache go musl-dev git bash upx &&\
   go get -d github.com/github/hub &&\
