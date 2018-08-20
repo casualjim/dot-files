@@ -18,21 +18,27 @@ if [ ! -d "$HOME/.zgen" ]; then
   git clone https://github.com/tarjoilija/zgen "$HOME/.zgen"
 fi
 
-source "$HOME/.zgen/zgen.zsh"
+
+
+[ -f "$HOME/.fonts/devicons-regular.sh" ] && . "$HOME/.fonts/devicons-regular.sh" 
+[ -f "$HOME/.fonts/fontawesome-regular.sh" ] && . "$HOME/.fonts/fontawesome-regular.sh" 
+[ -f "$HOME/.fonts/octicons-regular.sh" ] && . "$HOME/.fonts/octicons-regular.sh" 
+[ -f "$HOME/.fonts/pomicons-regular.sh" ] && . "$HOME/.fonts/pomicons-regular.sh" 
+. "$HOME/.zgen/zgen.zsh"
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 SPACESHIP_TIME_SHOW=true
-SPACESHIP_KUBECONTEXT_SYMBOL="☸️  "
-[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL='🌐 ' || PROMPT_SYMBOL='👁 '
+SPACESHIP_KUBECONTEXT_SYMBOL="☸️ "
+[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL=' ' || PROMPT_SYMBOL=' '
 TIME_FORMAT="%D{%H:%M}"
 #GITHUB_ICON=''
 EXECUTION_TIME_ICON="%F{yellow}🔂%f" #    
 EXECUTION_TIME_THRESHOLD=0.1
 SPACESHIP_TIME_COLOR=yellow
-SPACESHIP_CHAR_SYMBOL="${PROMPT_SYMBOL} "
+SPACESHIP_CHAR_SYMBOL="${PROMPT_SYMBOL}"
 SPACESHIP_CHAR_COLOR_SUCCESS=green
 SPACESHIP_TIME_SUFFIX=" %F{192}⌚️%f "
 SPACESHIP_DOCKER_PREFIX="%F{69}➜%f "

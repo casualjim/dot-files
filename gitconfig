@@ -2,9 +2,7 @@
 	name = Ivan Porto Carrero
 	signingkey = 09761548264E5EB0
 	useConfigOnly = true
-	email = ivan@flanders.co.nz
 [core]
-  editor = vim
 	excludesfile = /Users/ivan/.gitignore_global
 [alias]
   st = status
@@ -13,17 +11,7 @@
   br = branch
   up = push
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
-  smuir = submodule update --init --recursive
-  clr = clone --recursive
-  patch = --no-pager diff --no-color
-	switch = !legit switch \"$@\"
-	branches = !legit branches
-	sprout = !legit sprout \"$@\"
-	unpublish = !legit unpublish \"$@\"
-	harvest = !legit harvest \"$@\"
-	sync = !legit sync \"$@\"
-	publish = !legit publish \"$@\"
-	graft = !legit graft \"$@\"
+  patch = --no-pager diff --no-color	
 [color]
   diff = auto
   status = auto
