@@ -1,7 +1,9 @@
 [user]
 	name = Ivan Porto Carrero
-	signingkey = 09761548264E5EB0
+	;signingkey = 09761548264E5EB0
+  signingkey = DD913ED69953AC92
 	useConfigOnly = true
+	email = 
 [core]
 	excludesfile = /Users/ivan/.gitignore_global
 [alias]
@@ -65,6 +67,7 @@
 	keepBackup = false
 [commit]
 	gpgsign = true
+	template = /Users/ivan/.stCommitMsg
 [color "diff-highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
