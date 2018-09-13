@@ -24,7 +24,6 @@ fi
 [ -f "$HOME/.fonts/fontawesome-regular.sh" ] && . "$HOME/.fonts/fontawesome-regular.sh" 
 [ -f "$HOME/.fonts/octicons-regular.sh" ] && . "$HOME/.fonts/octicons-regular.sh" 
 [ -f "$HOME/.fonts/pomicons-regular.sh" ] && . "$HOME/.fonts/pomicons-regular.sh" 
-. "$HOME/.zgen/zgen.zsh"
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
@@ -158,6 +157,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status  time)
 HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
 
+. "$HOME/.zgen/zgen.zsh"
 if ! zgen saved; then
   echo "Creating zgen init"
   # ZSH plugin enhances the terminal environment with 256 colors.
@@ -402,3 +402,6 @@ cdoc() {
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
+export BAT_THEME="1337"
+alias cat="bat"
+alias ping='prettyping --nolegend'
