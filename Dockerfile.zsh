@@ -1,9 +1,10 @@
 FROM debian:9-slim
 
 RUN set -e &&\
-  apt-get update &&\
+  apt-get update -qq &&\
   apt-get install -yqq \
     curl \
+    gawk \
     vim-tiny \
     python-dev \
     ncurses-term \
@@ -15,12 +16,17 @@ RUN set -e &&\
     tar \
     gzip \
     gnupg \
+    iputils-ping \
     git-hub &&\
   useradd -m -s /bin/zsh ivan &&\
   mkdir -p /etc/sudoers.d &&\
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
   echo 'wheel ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel &&\
+  curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
+  chmod +x /usr/bin/prettyping &&\
+  curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
+  dpkg -i /tmp/bat.deb &&\
   apt-get autoremove -yqq &&\
   apt-get clean -y &&\
   apt-get autoclean -yqq &&\
