@@ -3,7 +3,6 @@
 	;signingkey = 09761548264E5EB0
   signingkey = DD913ED69953AC92
 	useConfigOnly = true
-	email = 
 [core]
 	excludesfile = /Users/ivan/.gitignore_global
 [alias]
@@ -13,7 +12,7 @@
   br = branch
   up = push
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
-  patch = --no-pager diff --no-color	
+  patch = --no-pager diff --no-color
 [color]
   diff = auto
   status = auto
