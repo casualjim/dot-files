@@ -229,8 +229,8 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/cargo
   zgen oh-my-zsh plugins/rust
 
-  zgen load bhilburn/powerlevel9k powerlevel9k
-  #zgen load denysdovhan/spaceship-prompt spaceship
+  #zgen load bhilburn/powerlevel9k powerlevel9k
+  zgen load denysdovhan/spaceship-prompt spaceship
   #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
 fi
