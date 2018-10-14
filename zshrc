@@ -3,6 +3,7 @@
 # export ZSH=$HOME/.oh-my-zsh
 export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
+export TERM="xterm-256color"
 
 zmodload zsh/terminfo
 
@@ -10,7 +11,7 @@ zmodload zsh/terminfo
 
 fpath+=("/usr/local/share/zsh/site-functions")
 if [ "$OS" = 'Linux' ]; then
-  fpath+=("/home/ivan/.local/share/zsh/site-functions")
+  fpath+=("$HOME/.local/share/zsh/site-functions")
 fi
 
 if [ ! -d "$HOME/.zgen" ]; then
@@ -78,7 +79,7 @@ prompt_my_kubecontext() {
       k8s_final_text="$cur_ctx/$cur_namespace"
     fi
 
-    "$1_prompt_segment" "$0" "$2" "25" "white" "$k8s_final_text" "KUBERNETES_ICON"
+    "$1_prompt_segment" "$0" "$2" "25" "15" "$k8s_final_text" "KUBERNETES_ICON"
   fi
 }
 
@@ -130,8 +131,8 @@ if ! zgen saved; then
   zgen oh-my-zsh
 
   # gcloud completion
-  # zgen load https://github.com/littleq0903/gcloud-zsh-completion
-  # zgen oh-my-zsh plugins/kubectl
+  #zgen load https://github.com/littleq0903/gcloud-zsh-completion
+  #zgen oh-my-zsh plugins/kubectl
 
 
   # Syntax highlighting bundle.
@@ -258,14 +259,6 @@ export LANG="en_US.utf-8"
 export JAVA_OPTS="-Dfile.encoding=UTF-8"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
-#alias ls='ls --color=auto'
-alias la='ls -Ah'
-alias ll='ls -alFh'
-alias l='ls -CFh'
-
 export CLICOLOR=1
 export VISUAL=vim
 export EDITOR=$VISUAL
@@ -293,10 +286,6 @@ export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeC
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
 alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
-alias ccat=pygmentize
-
-#export ANSIBLE_ROLES_PATH=/Users/ivan/projects/wordnik/ansible-playbooks/playbooks/roles:/etc/ansible/roles
-export HADOOP_USER_NAME=hadoop
 
 #
 # added by travis gem
@@ -323,6 +312,9 @@ if [ $commands[helm] ]; then
 fi
 if [ $commands[kops] ]; then
   source <(kops completion zsh)
+fi
+if [ $commands[richgo] ]; then
+  alias go=richgo
 fi
 
 man() {
@@ -352,7 +344,7 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export ONECONCERN_PATH=$HOME/github/oneconcern
-cdoc() { 
+cdoc() {
   cd "$ONECONCERN_PATH/$1"  || exit 1
 }
 
@@ -366,6 +358,7 @@ cdoc() {
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
+
 export BAT_THEME="1337"
 alias cat="bat"
 alias ping='prettyping --nolegend'
