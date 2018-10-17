@@ -1,7 +1,7 @@
 [user]
 	name = Ivan Porto Carrero
-  ;signingkey = 09761548264E5EB0
-  signingkey = 12180E044EB5FDB2
+  signingkey = 09761548264E5EB0
+  ;signingkey = 12180E044EB5FDB2
   ;signingkey = DD913ED69953AC92
 	useConfigOnly = true
 [core]
