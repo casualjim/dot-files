@@ -175,9 +175,6 @@ if ! zgen saved; then
   # rsync completion
   zgen oh-my-zsh plugins/rsync
 
-  # docker completion
-  # zgen oh-my-zsh plugins/docker
-
   # vagrant completion
   zgen oh-my-zsh plugins/vagrant
 
@@ -199,19 +196,11 @@ if ! zgen saved; then
   # cp completion
   zgen oh-my-zsh plugins/cp
 
-  # colorize
-  # use pygments to highlight files by extenstion
-  zgen oh-my-zsh plugins/colorize
-
   # extraction helpers
   zgen oh-my-zsh plugins/extract
 
   # fish like history search
   zgen load zsh-users/zsh-history-substring-search
-
-
-  # bosh completion
-  #zgen load frodenas/bosh-zsh-autocomplete-plugin
 
   zgen oh-my-zsh plugins/cargo
   zgen oh-my-zsh plugins/rust
