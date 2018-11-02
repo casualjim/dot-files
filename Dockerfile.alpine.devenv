@@ -65,7 +65,7 @@ USER ivan
 COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
 ADD --chown=ivan gitconfig /home/ivan/.gitconfig
 ADD --chown=ivan ctags /home/ivan/.ctags
-# ADD --chown=ivan vimreboot /home/ivan/.vim
+ADD --chown=ivan zshrc.docker /home/ivan/.zshrc.local
 WORKDIR /home/ivan
 
 RUN \
@@ -76,14 +76,7 @@ RUN \
   gcloud --version
 
 VOLUME ["/home/ivan/.config"]
-# RUN \
-  # zsh -c "source /home/ivan/.zshrc" &&\
-  # ln -sf /home/ivan/.vim/init.vim /home/ivan/.vimrc &&\
-  # echo "Installing Vim Plugins" &&\
-  # script -qfc "vim -e +qall" /dev/null > /dev/null &&\
-  # echo "Installing YouCompleteMe" &&\
-  # cd ~/.vim/bundle/YouCompleteMe &&\
-  # ./install.py --clang-completer --gocode-completer --js-completer
+
 
 ENV PATH "/home/ivan/go/bin:$PATH"
 SHELL [ "/bin/zsh", "-c" ]
