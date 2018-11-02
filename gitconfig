@@ -39,7 +39,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = /usr/lib/git-core/git-credential-libsecret
+	helper = osxkeychain
 [diff]
 	tool = vimdiff3
 [merge]
@@ -83,3 +83,5 @@
 	trustExitCode = true
 [gpg]
 	program = gpg
+[diff "sopsdiffer"]
+	textconv = sops -d

@@ -10,9 +10,14 @@ zmodload zsh/terminfo
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
 fpath+=("/usr/local/share/zsh/site-functions")
+
 if [ "$OS" = 'Linux' ]; then
   fpath+=("$HOME/.local/share/zsh/site-functions")
 fi
+if [ "$OS" = 'Darwin' ]; then
+  fpath+=("$HOME/.zsh/completions")
+fi
+
 
 if [ ! -d "$HOME/.zgen" ]; then
   mkdir -p "$HOME/.zgen"
@@ -189,7 +194,7 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/rsync
 
   # docker completion
-  zgen oh-my-zsh plugins/docker
+  # zgen oh-my-zsh plugins/docker
 
   # vagrant completion
   zgen oh-my-zsh plugins/vagrant
@@ -360,5 +365,9 @@ autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
 
 export BAT_THEME="1337"
-alias cat="bat"
+alias cat="bat --plain"
 alias ping='prettyping --nolegend'
+
+# infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
+# tic $TERM.ti
+alias tf=terraform

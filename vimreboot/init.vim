@@ -275,20 +275,17 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-"set guifont=Fira\ Code\ 10
-set guifont=Consolas\ 11
 if has("unix")
+  set guifont=Consolas\ 11
+  "set guifont=Fira\ Code\ 10
   set guioptions-=a
 endif
 if has("gui_mac") || has("gui_macvim")
-  set guifont=Consolas:h13
+  set guifont=Fira\ Code\ Retina:h13
 endif
 if has("gui_win32") || has("gui_win32s")
   set guifont=Consolas:h10
   set enc=utf-8
-endif
-if has('nvim')
-  set guicursor=
 endif
 set guioptions-=m                       " remove menubar
 set guioptions-=T                       " remove toolbar
