@@ -1,5 +1,16 @@
 FROM debian:9-slim
 
+ADD zshrc /extra/zshrc
+ADD zshrc.container.patch /extra/zshrc.patch
+WORKDIR /extra
+
+RUN set -e &&\
+  apt-get update -qq &&\
+  apt-get install -yqq git &&\
+  git apply zshrc.patch
+
+FROM debian:9-slim
+
 RUN set -e &&\
   apt-get update -qq &&\
   apt-get install -yqq \
@@ -49,7 +60,8 @@ RUN for key in \
     install -m 0755 /tmp/tini-static-amd64 /bin/tini
 
 USER ivan
-ADD --chown=ivan zshrc /home/ivan/.zshrc
+# ADD --chown=ivan zshrc /home/ivan/.zshrc
+COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
 WORKDIR /home/ivan
 
 RUN \

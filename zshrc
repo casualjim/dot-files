@@ -130,29 +130,11 @@ DISABLE_UPDATE_PROMPT=true
 . "$HOME/.zgen/zgen.zsh"
 if ! zgen saved; then
   echo "Creating zgen init"
-  # ZSH plugin enhances the terminal environment with 256 colors.
-  zgen load chrissicool/zsh-256color
-
   zgen oh-my-zsh
-
-  # gcloud completion
-  #zgen load https://github.com/littleq0903/gcloud-zsh-completion
-  #zgen oh-my-zsh plugins/kubectl
-
-
-  # Syntax highlighting bundle.
   zgen load zsh-users/zsh-syntax-highlighting
-
-  # Guess what to install when running an unknown command
-  # zgen oh-my-zsh plugins/command-not-found
-
   # alias tips
   # zgen load djui/alias-tips
-
-  # nicoulaj's moar completion files for zsh
   zgen load zsh-users/zsh-completions src
-
-  # git support
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
 
@@ -163,7 +145,7 @@ if ! zgen saved; then
   # zgen oh-my-zsh plugins/ubuntu
 
   # systemd completion
-  zgen oh-my-zsh plugins/systemd
+  # zgen oh-my-zsh plugins/systemd
 
   # gem completion
   zgen oh-my-zsh plugins/gem

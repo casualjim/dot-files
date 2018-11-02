@@ -1,11 +1,16 @@
 FROM golang:alpine
 
-RUN apk add --no-cache go musl-dev git bash upx &&\
+RUN apk add --no-cache musl-dev git bash upx &&\
   go get -d github.com/github/hub &&\
   cd /go/src/github.com/github/hub &&\
   script/build
 
 RUN upx /go/src/github.com/github/hub/bin/hub
+
+ADD zshrc /extra/zshrc
+ADD zshrc.container.patch /extra/zshrc.patch
+WORKDIR /extra
+RUN git apply zshrc.patch
 
 FROM alpine
 
@@ -25,7 +30,8 @@ RUN set -e &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel
 
 USER ivan
-ADD --chown=ivan zshrc /home/ivan/.zshrc
+# ADD --chown=ivan zshrc /home/ivan/.zshrc
+COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
 WORKDIR /home/ivan
 
 RUN \
