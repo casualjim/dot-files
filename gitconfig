@@ -85,3 +85,5 @@
 	program = gpg
 [diff "sopsdiffer"]
 	textconv = sops -d
+[protocol]
+	version = 2
