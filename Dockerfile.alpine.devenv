@@ -15,8 +15,9 @@ ENV PATH /google-cloud-sdk/bin:$PATH
 
 
 RUN set -e &&\
-  apk add --no-cache zsh zsh-vcs git gnupg sudo util-linux shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates python python-dev openssl less \
-  py2-pip py-crcmod docker tini nodejs nodejs-dev yarn npm ruby cmake redis hiredis-dev postgresql-client build-base terraform fzf fzf-zsh-completion libc6-compat openssh-client &&\
+  apk add --no-cache zsh zsh-vcs git gnupg sudo util-linux shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates \
+  python python-dev openssl less py2-pip py-crcmod docker tini nodejs nodejs-dev yarn npm ruby cmake redis hiredis-dev postgresql-client \
+  build-base terraform fzf fzf-zsh-completion libc6-compat openssh-client sed grep   &&\
   curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /usr/bin/direnv -L'#' $(curl -s https://api.github.com/repos/direnv/direnv/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url') &&\

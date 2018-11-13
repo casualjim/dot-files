@@ -16,7 +16,7 @@ FROM alpine
 
 COPY --from=0 /go/src/github.com/github/hub/bin/hub /usr/bin/hub
 RUN set -e &&\
-  apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates tar gzip postgresql-client redis &&\
+  apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates tar gzip postgresql-client redis sed grep &&\
   curl -o /usr/bin/direnv -L'#' https://github.com/direnv/direnv/releases/download/v2.15.2/direnv.linux-amd64 &&\
   chmod +x /usr/bin/direnv &&\
   mkdir -p /tmp/bat &&\
