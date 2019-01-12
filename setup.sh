@@ -80,10 +80,7 @@ echo "Installing YouCompleteMe"
 cd ~/.vim/bundle/YouCompleteMe
 ./install.py --clang-completer --gocode-completer
 
-go get -u -v github.com/alecthomas/gometalinter
 go get -u -v golang.org/x/tools/cmd/...
-
-gometalinter --install --update
 
 cd ${curr_dir}
 echo "Environment has been configured."
