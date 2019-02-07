@@ -1,3 +1,4 @@
+#!/bin/zsh
 # Path to your oh-my-zsh configuration.
 #tabs -2
 # export ZSH=$HOME/.oh-my-zsh
@@ -284,7 +285,7 @@ if [ $commands[kubectl] ]; then
   source <(kubectl completion zsh)
 fi
 if [ $commands[helm] ]; then
-  source <(helm completion zsh)
+  source <(helm completion zsh | sed -e "s/aliashash\\[\"\\(${LWORD}.*${RWORD}\\)\"\\]/aliashash[\\1]/g")
 fi
 if [ $commands[kops] ]; then
   source <(kops completion zsh)
@@ -335,7 +336,7 @@ cdoc() {
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
 
-export BAT_THEME="1337"
+export BAT_THEME="DarkNeon"
 alias cat="bat --plain"
 alias ping='prettyping --nolegend'
 
