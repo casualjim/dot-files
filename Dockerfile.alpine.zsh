@@ -17,7 +17,7 @@ FROM alpine
 COPY --from=0 /go/src/github.com/github/hub/bin/hub /usr/bin/hub
 RUN set -e &&\
   apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates tar gzip postgresql-client redis sed grep &&\
-  curl -o /usr/bin/direnv -L'#' https://github.com/direnv/direnv/releases/download/v2.15.2/direnv.linux-amd64 &&\
+  curl -o /usr/bin/direnv -L'#' $(curl -s https://api.github.com/repos/direnv/direnv/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url') &&\
   chmod +x /usr/bin/direnv &&\
   mkdir -p /tmp/bat &&\
   curl -sL $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("x86_64-unknown-linux-musl.tar.gz") and contains("bat-")) | .browser_download_url') | tar -C /tmp/bat --strip-components 1 -xz &&\

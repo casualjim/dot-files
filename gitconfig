@@ -39,7 +39,7 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = osxkeychain
+	helper = libsecret
 [diff]
 	tool = vimdiff3
 [merge]
