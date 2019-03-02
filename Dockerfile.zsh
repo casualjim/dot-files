@@ -1,4 +1,4 @@
-FROM debian:9-slim
+FROM debian:testing-slim
 
 ADD zshrc /extra/zshrc
 ADD zshrc.container.patch /extra/zshrc.patch
@@ -9,7 +9,7 @@ RUN set -e &&\
   apt-get install -yqq git &&\
   git apply zshrc.patch
 
-FROM debian:9-slim
+FROM debian:testing-slim
 
 RUN set -e &&\
   apt-get update -qq &&\

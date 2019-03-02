@@ -140,13 +140,13 @@ if ! zgen saved; then
   zgen load voronkovich/gitignore.plugin.zsh
 
   # archlinux completion (does not exist in prezto)
-  # zgen oh-my-zsh plugins/archlinux
+  zgen oh-my-zsh plugins/archlinux
 
   # ubuntu completion (does not exist in prezto)
   # zgen oh-my-zsh plugins/ubuntu
 
   # systemd completion
-  # zgen oh-my-zsh plugins/systemd
+  zgen oh-my-zsh plugins/systemd
 
   # gem completion
   zgen oh-my-zsh plugins/gem
@@ -336,7 +336,8 @@ cdoc() {
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
 
-export BAT_THEME="DarkNeon"
+#export BAT_THEME="DarkNeon"
+export BAT_THEME="1337"
 alias cat="bat --plain"
 alias ping='prettyping --nolegend'
 

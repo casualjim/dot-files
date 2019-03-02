@@ -40,7 +40,7 @@ RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
   echo 'wheel ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel &&\
-  curl -L --progress https://dl.google.com/go/go1.11.1.linux-amd64.tar.gz | tar -C /usr/local -zx &&\
+  curl -sL https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz | tar -C /usr/local -xz &&\
   echo 'Cleaning up' && \
   apt-get autoremove -yqq &&\
   apt-get clean -y &&\
