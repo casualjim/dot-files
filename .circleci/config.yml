@@ -74,4 +74,15 @@ workflows:
           filters:
             branches:
               only: master
-      
+      - zsh_alpine:
+          filters:
+            branches:
+              only: master
+      - devenv:
+          filters:
+            branches:
+              only: master
+      - devenv_alpine:
+          filters:
+            branches:
+              only: master
