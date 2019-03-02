@@ -19,9 +19,14 @@ ENV DEBIAN_FRONTEND noninteractive
 
 COPY --from=0 /usr/src/su-exec/su-exec-static /usr/bin/su-exec
 
+ARG CLOUD_SDK_VERSION=236.0.0
+ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
+ENV PATH /google-cloud-sdk/bin:$PATH
+
 RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update -qq &&\
-  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie vim-nox zsh cmake python-dev python-pip clang libclang-dev tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk &&\
+	apt-get full-upgrade -yqq &&\
+  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh  tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk &&\
   curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
@@ -32,9 +37,14 @@ RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc
   echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list &&\
   echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list &&\
   apt-get update -qq &&\
-  apt-get install -y nodejs build-essential yarn kubectl &&\
-  npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml &&\
+  apt-get install -yqq nodejs build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev &&\
+  npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml neovim &&\
+	gem install neovim &&\
+	pip install pynvim awscli &&\
+	pip3 install pynvim awscli &&\
   curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash &&\
+  curl -sL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz | tar -C / -xz && \
+  ln -s /lib /lib64 &&\
   useradd -m -s /bin/zsh ivan &&\
   mkdir -p /etc/sudoers.d &&\
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
@@ -70,16 +80,14 @@ COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
 ADD --chown=ivan gitconfig /home/ivan/.gitconfig
 ADD --chown=ivan ctags /home/ivan/.ctags
 ADD --chown=ivan vimreboot /home/ivan/.vim
+ADD --chown=ivan nvim /home/ivan/.config/nvim
 WORKDIR /home/ivan
 
 RUN \
   zsh -c "source /home/ivan/.zshrc" &&\
   ln -sf /home/ivan/.vim/init.vim /home/ivan/.vimrc &&\
   echo "Installing Vim Plugins" &&\
-  script -qfc "vim -e +qall" /dev/null > /dev/null &&\
-  echo "Installing YouCompleteMe" &&\
-  cd ~/.vim/bundle/YouCompleteMe &&\
-  ./install.py --clang-completer --gocode-completer --js-completer
+	nvim +'PlugInstall --sync' +qall >/dev/null
 
 ENV PATH "/home/ivan/go/bin:$PATH"
 

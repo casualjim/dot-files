@@ -91,7 +91,7 @@ syntax on                                   " syntax highlighting
 set t_Co=256                                " 256-colors
 set termguicolors
 set background=dark                         " we're using a dark bg
-colors jellybeans                           " select colorscheme
+" colors jellybeans                           " select colorscheme
 colors desertEx                             " select colorscheme
 
 au BufNewFile,BufRead *.txt set ft=sh tw=119  " opens .txt w/highlight

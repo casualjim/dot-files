@@ -1,5 +1,6 @@
 #!/bin/bash
-rm -rf ~/.vimrc ~/.vim ~/.antigen ~/.emacs.d ~/.oh-my-zsh ~/.zshrc
+mkdir -p ~/.config
+rm -rf ~/.vimrc ~/.vim ~/.antigen ~/.emacs.d ~/.oh-my-zsh ~/.zshrc ~/.config/nvim
 curr_dir=$(cd `dirname $0` && pwd)
 ln -sf ${curr_dir}/vimreboot ~/.vim
 ln -sf ${curr_dir}/vimreboot/init.vim ~/.vimrc
@@ -7,6 +8,7 @@ ln -sf ${curr_dir}/ctags ~/.ctags
 ln -sf ${curr_dir}/zshrc ~/.zshrc
 ln -sf ${curr_dir}/.tmux.conf ~/.tmux.conf
 ln -sf ${curr_dir}/gitconfig ~/.gitconfig
+ln -sf ${curr_dir}/nvim ~/.config/nvim
 
 NPM="npm"
 GEM="gem"
@@ -19,11 +21,11 @@ if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq
+    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq git-hub
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
     if [ -z `which go` ]; then
-      curl -L'#' https://godeb.s3.amazonaws.com/godeb-amd64.tar.gz | pv | sudo tar -C /usr/local/bin -zx
-      sudo godeb install
+      curl -sL https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz | sudo tar -C /usr/local -xz
+      echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
     fi
     sudo npm install -g diff-so-fancy
     NPM="sudo npm"
@@ -39,17 +41,15 @@ if [ -f /etc/os-release ]; then
     echo "Installing for fedora"
     sudo dnf install -y kernel-headers httpie cmake clang tmux ctags-etags ncurses nodejs npm vim python-devel ruby-devel
     if [ -z `which go` ]; then
-      GO_VERSION=1.6
-      echo "==> installing go ${GO_VERSION}"
-      curl -L https://storage.googleapis.com/golang/go${GO_VERSION}.linux-amd64.tar.gz | sudo tar -C /usr/local -zx
+      echo "==> installing go"
+      curl -sL https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz | sudo tar -C /usr/local -xz
       echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
-      echo 'export GOPATH="/usr/local/go"' | sudo tee -a /etc/profile.d/golang.sh
     fi
   fi
 fi
 
 if [ "${ID}" != "fedora" ]; then
-  GH_HUB_VERSION=2.2.2
+  GH_HUB_VERSION=2.10.0
   curl -L'#' "https://github.com/github/hub/releases/download/v$GH_HUB_VERSION/hub-linux-amd64-$GH_HUB_VERSION.tar.gz" | tar -C /tmp
   cp "/tmp/linux-hub-amd64-$GH_HUB_VERSION/hub" /usr/bin
   chmod +x "/usr/bin/hub"
