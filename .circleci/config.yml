@@ -1,0 +1,77 @@
+version: 2
+jobs:
+  zsh:
+    working_directory: ~/project
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            docker build --pull -t casualjim/zsh:latest -f Dockerfile.zsh .
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push casualjim/zsh:latest
+
+  devenv:
+    working_directory: ~/project
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            docker build --pull -t casualjim/devenv:latest -f Dockerfile.devenv .
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push casualjim/devenv:latest
+
+  zsh_alpine:
+    working_directory: ~/project
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            docker build --pull -t casualjim/zsh:alpine -f Dockerfile.alpine.zsh .
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push casualjim/zsh:alpine
+
+
+  devenv_alpine:
+    working_directory: ~/project
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          command: |
+            docker build --pull -t casualjim/devenv:latest -f Dockerfile.apline.devenv .
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            docker push casualjim/devenv:alpine
+workflows:
+  version: 2
+  weekly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 6"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - zsh
+      - zsh_alpine
+      - devenv
+      - devenv_alpine
+  
+  builds:
+    jobs:
+      - zsh:
+          filters:
+            branches:
+              only: master
+      
