@@ -49,7 +49,7 @@ jobs:
       - setup_remote_docker
       - run:
           command: |
-            docker build --pull -t casualjim/devenv:latest -f Dockerfile.apline.devenv .
+            docker build --pull -t casualjim/devenv:latest -f Dockerfile.alpine.devenv .
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
             docker push casualjim/devenv:alpine
 workflows:
