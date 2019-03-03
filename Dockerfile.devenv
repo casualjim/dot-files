@@ -19,10 +19,6 @@ ENV DEBIAN_FRONTEND noninteractive
 
 COPY --from=0 /usr/src/su-exec/su-exec-static /usr/bin/su-exec
 
-ARG CLOUD_SDK_VERSION=236.0.0
-ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
-ENV PATH /google-cloud-sdk/bin:$PATH
-
 RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update -qq &&\
 	apt-get full-upgrade -yqq &&\
@@ -31,19 +27,19 @@ RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
+  echo "deb http://packages.cloud.google.com/apt cloud-sdk-stretch main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - &&\
   curl -sL https://deb.nodesource.com/setup_10.x | bash - &&\
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - &&\
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - &&\
   echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list &&\
-  echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list &&\
+  echo "deb http://apt.kubernetes.io/ kubernetes-stretch main" > /etc/apt/sources.list.d/kubernetes.list &&\
   apt-get update -qq &&\
-  apt-get install -yqq nodejs build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev &&\
+  apt-get install -yqq nodejs build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev google-cloud-sdk &&\
   npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml neovim &&\
 	gem install neovim &&\
 	pip install pynvim awscli &&\
 	pip3 install pynvim awscli &&\
-  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash &&\
-  curl -sL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz | tar -C / -xz && \
+  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash &&\  
   ln -s /lib /lib64 &&\
   useradd -m -s /bin/zsh ivan &&\
   mkdir -p /etc/sudoers.d &&\
