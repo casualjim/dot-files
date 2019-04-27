@@ -21,13 +21,26 @@ if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq git-hub
+    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq git-hub iputils-ping gawk
     sudo ln -sf /usr/bin/nodejs /usr/bin/node
     if [ -z `which go` ]; then
       curl -sL https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz | sudo tar -C /usr/local -xz
       echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
+      echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/zsh/zshrc
+      source /etc/profile.d/golang.sh
     fi
+    sudo curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
+    sudo chmod +x /usr/bin/prettyping
+    curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url')
+    sudo dpkg -i /tmp/bat.deb
+    echo "deb http://packages.cloud.google.com/apt cloud-sdk-cosmic main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     sudo npm install -g diff-so-fancy
+    sudo apt-get update 
+    sudo apt-get install -y build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev google-cloud-sdk
+    sudo gem install neovim
+    sudo pip install pynvim
+    sudo pip3 install pynvim
     NPM="sudo npm"
     GEM="sudo gem"
   fi
