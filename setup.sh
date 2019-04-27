@@ -26,7 +26,6 @@ if [ -f /etc/os-release ]; then
     if [ -z `which go` ]; then
       curl -sL https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz | sudo tar -C /usr/local -xz
       echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
-      echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/zsh/zshrc
       source /etc/profile.d/golang.sh
     fi
     sudo curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
@@ -74,7 +73,7 @@ if [ "${ID}" != "fedora" ]; then
 fi
 
 echo "Installing vim plugins"
-script -qfc "vim -e +qall" /dev/null > /dev/null
+nvim +'PlugInstall --sync' +qall >/dev/null
 
 echo "Installing jshint jshint jslint jsonlint tidy-markdown"
 $NPM -g install jshint jslint jsonlint tidy-markdown
@@ -89,9 +88,9 @@ $NPM -g install js-yaml
 # cd ~/.vim/bundle/js-beautify
 # git submodule update --init --recursive
 
-echo "Installing YouCompleteMe"
-cd ~/.vim/bundle/YouCompleteMe
-./install.py --clang-completer --gocode-completer
+# echo "Installing YouCompleteMe"
+# cd ~/.vim/bundle/YouCompleteMe
+# ./install.py --clang-completer --gocode-completer
 
 go get -u -v golang.org/x/tools/cmd/...
 
