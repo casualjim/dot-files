@@ -37,7 +37,7 @@ DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
 
 SPACESHIP_TIME_SHOW=true
-SPACESHIP_KUBECONTEXT_SYMBOL="☸️ "
+SPACESHIP_KUBECONTEXT_SYMBOL="☸️  "
 [[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL=' ' || PROMPT_SYMBOL='%(?.%F{012}❯%f.%F{009}❯%f)  '
 #[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL=' ' || PROMPT_SYMBOL=' '
 TIME_FORMAT="%D{%H:%M}"
@@ -413,3 +413,5 @@ alias ping='prettyping --nolegend'
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
 # tic $TERM.ti
 alias tf=terraform
+
+complete -o nospace -C /usr/local/bin/mc mc
