@@ -26,6 +26,13 @@ RUN set -e &&\
   curl -sL $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("x86_64-unknown-linux-musl.tar.gz") and contains("bat-")) | .browser_download_url') | tar -C /tmp/bat --strip-components 1 -xz &&\
   mv /tmp/bat/bat /usr/bin/bat &&\
   rm -rf /tmp/bat &&\
+  mkdir -p /tmp/exa &&\
+  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  pushd /tmp/exa &&\
+  unzip -d . exa.zip &&\
+  mv exa-linux-x86_64 /usr/bin/exa &&\
+  popd &&\
+  rm -rf /tmp/exa &&\
   curl -LO --progress https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &&\
   chmod +x ./kubectl &&\
   mv kubectl /usr/bin/ &&\

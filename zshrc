@@ -85,71 +85,6 @@ my_kubecontext() {
 }
 
 POWERLEVEL9K_MODE=nerdfont-complete
-# POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT=my_kubecontext
-# POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_BACKGROUND=none
-# POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_FOREGROUND=039
-# POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$' \u2388'
-# POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable vcs custom_my_kubecontext)
-# POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status)
-# POWERLEVEL9K_LEFT_SEGMENT_SEPARATOR=""
-# POWERLEVEL9K_LEFT_SUBSEGMENT_SEPARATOR=" "
-# POWERLEVEL9K_WHITESPACE_BETWEEN_LEFT_SEGMENTS=""
-# POWERLEVEL9K_RIGHT_SEGMENT_SEPARATOR=""
-# POWERLEVEL9K_RIGHT_SUBSEGMENT_SEPARATOR=" "
-# POWERLEVEL9K_WHITESPACE_BETWEEN_RIGHT_SEGMENTS=""
-# POWERLEVEL9K_USER_DEFAULT_BACKGROUND=none
-# POWERLEVEL9K_USER_SUDO_BACKGROUND=none
-# POWERLEVEL9K_USER_ROOT_BACKGROUND=none
-# # POWERLEVEL9K_SHORTEN_DELIMITER=?  # I do not know what icon you use here
-# POWERLEVEL9K_SHORTEN_DIR_LENGTH=7
-# POWERLEVEL9K_SHORTEN_STRATEGY=truncate_to_first_and_last
-# POWERLEVEL9K_ETC_ICON=""
-# POWERLEVEL9K_FOLDER_ICON=""
-# POWERLEVEL9K_HOME_ICON=""
-# POWERLEVEL9K_HOME_SUB_ICON=""
-# POWERLEVEL9K_DIR_ETC_BACKGROUND=none
-# POWERLEVEL9K_DIR_ETC_FOREGROUND=005
-# POWERLEVEL9K_DIR_HOME_BACKGROUND=none
-# POWERLEVEL9K_DIR_HOME_FOREGROUND=004
-# POWERLEVEL9K_DIR_DEFAULT_BACKGROUND=none
-# POWERLEVEL9K_DIR_DEFAULT_FOREGROUND=005
-# POWERLEVEL9K_DIR_HOME_SUBFOLDER_BACKGROUND=none
-# POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND=004
-# POWERLEVEL9K_CONTEXT_DEFAULT_BACKGROUND=none
-# POWERLEVEL9K_OS_ICON_BACKGROUND=none
-# POWERLEVEL9K_VCS_GIT_ICON=""
-# POWERLEVEL9K_VCS_GIT_GITHUB_ICON=""
-# POWERLEVEL9K_VCS_GIT_BITBUCKET_ICON=""
-# POWERLEVEL9K_VCS_GIT_GITLAB_ICON=""
-# POWERLEVEL9K_VCS_BRANCH_ICON=""
-# POWERLEVEL9K_VCS_UNTRACKED_ICON="%F{009}%B?%b%f"
-# POWERLEVEL9K_VCS_UNSTAGED_ICON="%F{011}%B!%b%f"
-# POWERLEVEL9K_VCS_STAGED_ICON="%F{010}%B+%b%f"
-# POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON="%F{011}%B>%b%f"
-# POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON="%F{011}%B<%b%f"
-# POWERLEVEL9K_VCS_STASH_ICON="%F{011}%B*%b%f"
-# POWERLEVEL9K_SHOW_CHANGESET=true
-# POWERLEVEL9K_CHANGESET_HASH_LENGTH=6
-# POWERLEVEL9K_VCS_CLEAN_BACKGROUND=none
-# POWERLEVEL9K_VCS_CLEAN_FOREGROUND=076
-# POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND=none
-# POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND=005
-# POWERLEVEL9K_VCS_MODIFIED_BACKGROUND=none
-# POWERLEVEL9K_VCS_MODIFIED_FOREGROUND=003
-# POWERLEVEL9K_PYTHON_ICON=""
-# POWERLEVEL9K_VIRTUALENV_BACKGROUND=none
-# POWERLEVEL9K_VIRTUALENV_FOREGROUND=green
-# POWERLEVEL9K_CARRIAGE_RETURN_ICON=""
-# POWERLEVEL9K_STATUS_OK=false
-# POWERLEVEL9K_STATUS_OK_BACKGROUND=none
-# POWERLEVEL9K_STATUS_ERROR_BACKGROUND=none
-# POWERLEVEL9K_STATUS_OK_FOREGROUND=green
-# POWERLEVEL9K_STATUS_ERROR_FOREGROUND=red
-# POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-# POWERLEVEL9K_RPROMPT_ON_NEWLINE=false
-# POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
-# POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%(?.%F{012}❯%f.%F{009}❯%f) "
-
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 POWERLEVEL9K_RPROMPT_ON_NEWLINE=false
@@ -188,7 +123,7 @@ POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT=my_kubecontext
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_BACKGROUND=025
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_FOREGROUND=015
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$'\u2388'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable vcs custom_my_kubecontext)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable virtualenv vcs) # custom_my_kubecontext)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status)
 HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
@@ -204,6 +139,10 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
 
+  if [[ "$OS" = "Darwin" ]]; then
+    zgen oh-my-zsh plugins/osx
+  fi
+  
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
 
@@ -239,16 +178,16 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/rbenv
 
   # rsync completion
-  zgen oh-my-zsh plugins/rsync
+  # zgen oh-my-zsh plugins/rsync
 
   # vagrant completion
-  zgen oh-my-zsh plugins/vagrant
+  # zgen oh-my-zsh plugins/vagrant
 
   # packer.io completion
-  zgen load gunzy83/packer-zsh-completion
+  # zgen load gunzy83/packer-zsh-completion
 
   # terraform completion
-  zgen oh-my-zsh plugins/terraform
+  # zgen oh-my-zsh plugins/terraform
 
   # httpie completion
   zgen oh-my-zsh plugins/httpie
@@ -316,8 +255,8 @@ if [[ $OS = 'Darwin' ]]; then
   export VISUAL='code -w'
   export EDITOR=$VISUAL
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
-  export JDK_HOME="$(/usr/libexec/java_home -version 10)"
-  export JAVA_HOME="$(/usr/libexec/java_home -version 10)"
+  export JDK_HOME="$(/usr/libexec/java_home -version 11)"
+  export JAVA_HOME="$(/usr/libexec/java_home -version 11)"
 else
   alias ngvim='nvim-wrapper'
   export VISUAL='code -w'
@@ -359,9 +298,6 @@ fi
 if [ $commands[kops] ]; then
   source <(kops completion zsh)
 fi
-if [ $commands[richgo] ]; then
-  alias go=richgo
-fi
 
 man() {
       env \
@@ -378,9 +314,6 @@ man() {
 	  			   man "$@"
 }
 
-
-[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
-
 if [  $commands[nvim] ]; then
   export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
 fi
@@ -388,12 +321,6 @@ fi
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export ONECONCERN_PATH=$HOME/github/oneconcern
-cdoc() {
-  cd "$ONECONCERN_PATH/$1"  || exit 1
-}
-
 
 # tabtab source for serverless package
 # uninstall by removing these lines or running `tabtab uninstall serverless`
@@ -406,12 +333,30 @@ autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
 
 #export BAT_THEME="DarkNeon"
-export BAT_THEME="1337"
-alias cat="bat --plain"
-alias ping='prettyping --nolegend'
+if [ $commands[bat] ]; then
+  export BAT_THEME="1337"
+  alias cat="bat --plain"
+fi
+
+if [ $commands[prettyping] ]; then
+  alias ping='prettyping --nolegend'
+fi
+
+if [ $commands[exa] ]; then
+  alias l='exa -lah --git'
+  alias la='exa -lAh --git'
+  alias ll='exa -lh --git'
+  alias ls='exa -G'
+  alias lsa='exa -lah --git'
+  alias tree='exa --tree'
+fi
 
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
 # tic $TERM.ti
 alias tf=terraform
 
 complete -o nospace -C /usr/local/bin/mc mc
+
+function dcl(){ git clone "${PWD##*/}/$@" }
+
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"

@@ -15,7 +15,7 @@ GEM="gem"
 GO=""
 echo "Installing YouCompleteMe dependencies"
 if [ `uname` = 'Darwin' ]; then
-  brew install cmake nodejs hub diff-so-fancy httpie tmux
+  brew install cmake nodejs hub diff-so-fancy httpie tmux ripgrep exa prettyping bat
 fi
 if [ -f /etc/os-release ]; then
   . /etc/os-release
@@ -32,6 +32,13 @@ if [ -f /etc/os-release ]; then
     sudo chmod +x /usr/bin/prettyping
     curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url')
     sudo dpkg -i /tmp/bat.deb
+    mkdir -p /tmp/exa
+    curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url')
+    pushd /tmp/exa
+    unzip -d . exa.zip
+    mv exa-linux-x86_64 /usr/bin/exa
+    popd
+    rm -rf /tmp/exa
     echo "deb http://packages.cloud.google.com/apt cloud-sdk-cosmic main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
     curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
     sudo npm install -g diff-so-fancy
@@ -45,7 +52,7 @@ if [ -f /etc/os-release ]; then
   fi
   if [ "${ID}" = "arch" ]; then
     echo "Installing for arch"
-    sudo pacman -S cmake python clang go tmux ctags ncurses nodejs diff-so-fancy
+    sudo pacman -S cmake python clang go tmux ctags ncurses nodejs diff-so-fancy exa ripgrep bat prettyping
   fi
   if [ "${ID}" = "fedora" ]; then
     NPM="sudo npm"

@@ -20,6 +20,7 @@ RUN set -e &&\
     python-dev \
     ncurses-term \
     direnv \
+    unzip \
     jq \
     zsh \
     git \
@@ -38,6 +39,13 @@ RUN set -e &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
+  mkdir -p /tmp/exa &&\
+  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  pushd /tmp/exa &&\
+  unzip -d . exa.zip &&\
+  mv exa-linux-x86_64 /usr/bin/exa &&\
+  popd &&\
+  rm -rf /tmp/exa &&\
   apt-get autoremove -yqq &&\
   apt-get clean -y &&\
   apt-get autoclean -yqq &&\

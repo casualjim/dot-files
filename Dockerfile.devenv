@@ -22,11 +22,18 @@ COPY --from=0 /usr/src/su-exec/su-exec-static /usr/bin/su-exec
 RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update -qq &&\
 	apt-get full-upgrade -yqq &&\
-  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh  tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk &&\
+  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh unzip tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk &&\
   curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
+  mkdir -p /tmp/exa &&\
+  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  pushd /tmp/exa &&\
+  unzip -d . exa.zip &&\
+  mv exa-linux-x86_64 /usr/bin/exa &&\
+  popd &&\
+  rm -rf /tmp/exa &&\
   echo "deb http://packages.cloud.google.com/apt cloud-sdk-stretch main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - &&\
   curl -sL https://deb.nodesource.com/setup_10.x | bash - &&\
