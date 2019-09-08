@@ -150,7 +150,7 @@ if ! zgen saved; then
   # zgen oh-my-zsh plugins/ubuntu
 
   # systemd completion
-  zgen oh-my-zsh plugins/systemd
+  # zgen oh-my-zsh plugins/systemd
 
   # gem completion
   zgen oh-my-zsh plugins/gem
@@ -351,6 +351,10 @@ if [ $commands[exa] ]; then
   alias tree='exa --tree'
 fi
 
+if [ $commands[newt] ]; then
+  eval "$(NEWT_OFFLINE=1 NEWT_QUIET=1 newt --completion-script-zsh)"
+fi
+
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
 # tic $TERM.ti
 alias tf=terraform
@@ -359,4 +363,7 @@ complete -o nospace -C /usr/local/bin/mc mc
 
 function dcl(){ git clone "${PWD##*/}/$@" }
 
+export nflx_registries=( us-east-1.streamingtest eu-west-1.streamingtest us-west-2.streamingtest )
+
 [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
+export DOCKER_BUILDKIT=1
