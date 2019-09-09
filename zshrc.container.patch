@@ -14,23 +14,3 @@ index 989ac49..3ab2a88 100644
    #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
    zgen save
  fi
-diff --git a/zshrc.container.patch b/zshrc.container.patch
-index 399a10e..e69de29 100644
---- a/zshrc.container.patch
-+++ b/zshrc.container.patch
-@@ -1,15 +0,0 @@
--diff --git a/zshrc b/zshrc
--index 14e89e1..7df20b6 100644
----- a/zshrc
--+++ b/zshrc
--@@ -206,8 +206,8 @@ if ! zgen saved; then
--   zgen oh-my-zsh plugins/cargo
--   zgen oh-my-zsh plugins/rust
-- 
---  zgen load bhilburn/powerlevel9k powerlevel9k
---  # zgen load denysdovhan/spaceship-prompt spaceship
--+  # zgen load bhilburn/powerlevel9k powerlevel9k
--+  zgen load denysdovhan/spaceship-prompt spaceship
--   #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
--   zgen save
-- fi
