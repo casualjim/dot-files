@@ -1,4 +1,4 @@
-FROM debian:testing-slim
+FROM debian:stable
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -13,26 +13,29 @@ ADD zshrc.container.patch /extra/zshrc.patch
 WORKDIR /extra
 RUN git apply zshrc.patch
   
-FROM debian:testing-slim
+FROM debian:stable
 
 ENV DEBIAN_FRONTEND noninteractive
 
 COPY --from=0 /usr/src/su-exec/su-exec-static /usr/bin/su-exec
 
-RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc/apt/sources.list &&\ 
+RUN echo "deb http://deb.debian.org/debian stable main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update -qq &&\
 	apt-get full-upgrade -yqq &&\
-  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh unzip tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk &&\
+  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh unzip tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk locales fonts-powerline &&\
+  echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen &&\
+  locale-gen &&\
+  export LANG='en_US.UTF-8' &&\
   curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
   mkdir -p /tmp/exa &&\
   curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
-  pushd /tmp/exa &&\
+  cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
-  popd &&\
+  cd / &&\
   rm -rf /tmp/exa &&\
   echo "deb http://packages.cloud.google.com/apt cloud-sdk-stretch main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
   curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - &&\
@@ -60,6 +63,7 @@ RUN echo "deb http://deb.debian.org/debian testing main contrib non-free" > /etc
   apt-get autoclean -yqq &&\
   rm -rf  /tmp/* /var/tmp/* /var/lib/apt/lists/* /usr/share/doc/* /usr/share/locale/* /var/cache/debconf/*-old
 
+ENV LANG en_US.UTF-8
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64 /tmp/tini-static-amd64
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64.asc /tmp/tini-static-amd64.asc

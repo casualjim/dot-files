@@ -1,16 +1,16 @@
-FROM debian:testing-slim
-
-ADD zshrc /extra/zshrc
-ADD zshrc.container.patch /extra/zshrc.patch
-WORKDIR /extra
+FROM debian:testing
 
 RUN set -e &&\
   apt-get update -qq &&\
   apt-get install -yqq git
 
+ADD zshrc /extra/zshrc
+ADD zshrc.container.patch /extra/zshrc.patch
+WORKDIR /extra
+
 RUN git apply zshrc.patch
 
-FROM debian:testing-slim
+FROM debian:testing
 
 RUN set -e &&\
   apt-get update -qq &&\
@@ -21,6 +21,8 @@ RUN set -e &&\
     python-dev \
     ncurses-term \
     direnv \
+    locales \
+    fonts-powerline \
     unzip \
     jq \
     zsh \
@@ -31,6 +33,8 @@ RUN set -e &&\
     gnupg \
     iputils-ping \
     git-hub &&\
+  echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen &&\
+  locale-gen &&\
   useradd -m -s /bin/zsh ivan &&\
   mkdir -p /etc/sudoers.d &&\
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
@@ -52,6 +56,7 @@ RUN set -e &&\
   apt-get autoclean -yqq &&\
   rm -rf  /tmp/* /var/tmp/* /var/lib/apt/lists/* /usr/share/doc/* /usr/share/locale/* /var/cache/debconf/*-old
 
+ENV LANG en_US.UTF-8
 ENV TINI_VERSION v0.18.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64 /tmp/tini-static-amd64
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64.asc /tmp/tini-static-amd64.asc

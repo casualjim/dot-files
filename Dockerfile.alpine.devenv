@@ -28,10 +28,10 @@ RUN set -e &&\
   rm -rf /tmp/bat &&\
   mkdir -p /tmp/exa &&\
   curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
-  pushd /tmp/exa &&\
+  cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
-  popd &&\
+  cd / &&\
   rm -rf /tmp/exa &&\
   curl -LO --progress https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &&\
   chmod +x ./kubectl &&\
