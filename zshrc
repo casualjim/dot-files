@@ -343,8 +343,8 @@ if [ $commands[prettyping] ]; then
 fi
 
 if [ $commands[exa] ]; then
-  alias l='exa -lah --git'
-  alias la='exa -lAh --git'
+  alias l='exa -lh --git'
+  alias la='exa -lah --git'
   alias ll='exa -lh --git'
   alias ls='exa -G'
   alias lsa='exa -lah --git'
@@ -353,6 +353,10 @@ fi
 
 if [ $commands[newt] ]; then
   eval "$(NEWT_OFFLINE=1 NEWT_QUIET=1 newt --completion-script-zsh)"
+fi
+
+if [ $commands[gotop] ]; then
+  alias gotop='gotop -c monokai -p'
 fi
 
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti

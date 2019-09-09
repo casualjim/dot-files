@@ -6,8 +6,9 @@ WORKDIR /extra
 
 RUN set -e &&\
   apt-get update -qq &&\
-  apt-get install -yqq git &&\
-  git apply zshrc.patch
+  apt-get install -yqq git
+
+RUN git apply zshrc.patch
 
 FROM debian:testing-slim
 
@@ -41,10 +42,10 @@ RUN set -e &&\
   dpkg -i /tmp/bat.deb &&\
   mkdir -p /tmp/exa &&\
   curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
-  pushd /tmp/exa &&\
+  cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
-  popd &&\
+  cd / &&\
   rm -rf /tmp/exa &&\
   apt-get autoremove -yqq &&\
   apt-get clean -y &&\

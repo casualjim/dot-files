@@ -90,7 +90,5 @@
 	version = 2
 [includeIf "gitdir:~/nflx/"]
     path = ~/nflx/.gitconfig
-[url "ssh://git@stash.corp.netflix.com:7006"]
-	insteadOf = https://stash.corp.netflix.com
 [url "ssh://git@stash.corp.netflix.com:7999/"]
 	insteadOf = https://stash.corp.netflix.com/scm/
