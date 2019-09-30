@@ -36,7 +36,7 @@ if [ -f /etc/os-release ]; then
     curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url')
     pushd /tmp/exa
     unzip -d . exa.zip
-    mv exa-linux-x86_64 /usr/bin/exa
+    sudo mv exa-linux-x86_64 /usr/bin/exa
     popd
     rm -rf /tmp/exa
     echo "deb http://packages.cloud.google.com/apt cloud-sdk-cosmic main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list

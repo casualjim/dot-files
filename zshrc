@@ -4,6 +4,7 @@
 # export ZSH=$HOME/.oh-my-zsh
 export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
+export COLORTERM=truecolor
 export TERM="xterm-256color"
 
 zmodload zsh/terminfo
@@ -150,7 +151,7 @@ if ! zgen saved; then
   # zgen oh-my-zsh plugins/ubuntu
 
   # systemd completion
-  # zgen oh-my-zsh plugins/systemd
+  zgen oh-my-zsh plugins/systemd
 
   # gem completion
   zgen oh-my-zsh plugins/gem
