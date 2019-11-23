@@ -196,9 +196,6 @@ if ! zgen saved; then
   # Go command completion
   zgen oh-my-zsh plugins/golang
 
-  # AWS command completion
-  zgen oh-my-zsh plugins/aws
-
   # cp completion
   zgen oh-my-zsh plugins/cp
 
@@ -210,6 +207,7 @@ if ! zgen saved; then
 
   zgen oh-my-zsh plugins/cargo
   zgen oh-my-zsh plugins/rust
+  zgen oh-my-zsh plugins/aws
 
   zgen load romkatv/powerlevel10k powerlevel9k
   # zgen load bhilburn/powerlevel9k powerlevel9k
@@ -372,3 +370,19 @@ export nflx_registries=( us-east-1.streamingtest eu-west-1.streamingtest us-west
 
 [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
 export DOCKER_BUILDKIT=1
+
+function awscreds {
+    if [[ $# -ne 1 ]]; then
+        echo "usage: awscreds [list|ROLENAME]"
+    else
+        if [[ "$1" == "list" ]]; then
+            newt --app-type awscreds roles
+        else
+            newt --app-type awscreds refresh -r $1 $1
+        fi
+    fi
+}
+
+alias roles="newt --app-type awscreds roles"
+alias assume="newt --app-type awscreds refresh -r"
+export METATRON_USER="iportocarrero@netflix.com"
