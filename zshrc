@@ -366,6 +366,10 @@ complete -o nospace -C /usr/local/bin/mc mc
 
 function dcl(){ git clone "${PWD##*/}/$@" }
 
+export PATH="$HOME/.cargo/bin:$PATH"
+export FZF_DEFAULT_COMMAND="fd --type file --color=always"
+export FZF_DEFAULT_OPTS="--ansi"
+
 export nflx_registries=( us-east-1.streamingtest eu-west-1.streamingtest us-west-2.streamingtest )
 
 [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
