@@ -1,16 +1,16 @@
 diff --git a/zshrc b/zshrc
-index 989ac49..3ab2a88 100644
+index ba382c4..b3d1516 100644
 --- a/zshrc
 +++ b/zshrc
-@@ -210,9 +210,9 @@ if ! zgen saved; then
-   zgen oh-my-zsh plugins/cargo
+@@ -211,9 +211,9 @@ if ! zgen saved; then
    zgen oh-my-zsh plugins/rust
+   zgen oh-my-zsh plugins/aws
  
 -  zgen load romkatv/powerlevel10k powerlevel9k
-+  # zgen load romkatv/powerlevel10k powerlevel9k
++  #zgen load romkatv/powerlevel10k powerlevel9k
    # zgen load bhilburn/powerlevel9k powerlevel9k
 -  # zgen load denysdovhan/spaceship-prompt spaceship
-+  zgen load denysdovhan/spaceship-prompt spaceship
++  load denysdovhan/spaceship-prompt spaceship
    #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
    zgen save
  fi
