@@ -145,7 +145,7 @@ set wildmode=longest,list                   " bash-like auto complete
 set encoding=utf-8                    " for character glyphs
 """ }}}
 """ Gvim {{{
-set guifont=Fira\ Code\ Retina:h11
+set guifont=FuraCode\ Nerd\ Font\ Mono:h11
 if has("unix")
   set guioptions-=a
 endif

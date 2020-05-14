@@ -144,6 +144,8 @@ if ! zgen saved; then
     zgen oh-my-zsh plugins/osx
   fi
   
+  #zgen load 'wfxr/forgit'
+  zgen load 'wfxr/emoji-cli'
   # archlinux completion (does not exist in prezto)
   zgen oh-my-zsh plugins/archlinux
 
@@ -262,7 +264,7 @@ else
   export EDITOR=$VISUAL
 fi
 
-export PATH="$HOME/bin:${${GOPATH-$HOME/go}//://bin:}/bin:$GOROOT/bin:$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/bin:${${GOPATH-$HOME/go}//://bin:}/bin:$(go env GOROOT)/bin:$HOME/.rbenv/bin:$PATH"
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
@@ -331,9 +333,9 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
 
-#export BAT_THEME="DarkNeon"
 if [ $commands[bat] ]; then
-  export BAT_THEME="1337"
+  #export BAT_THEME="1337"
+  export BAT_THEME="DarkNeon"
   alias cat="bat --plain"
 fi
 
@@ -390,3 +392,14 @@ function awscreds {
 alias roles="newt --app-type awscreds roles"
 alias assume="newt --app-type awscreds refresh -r"
 export METATRON_USER="iportocarrero@netflix.com"
+
+ghcl() {
+  lpath="$HOME/github/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+  git clone "$1" "$lpath"
+  cd $lpath
+}
+
+goheapprof() { go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap }
+gocpuprof() { go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile }
+
+source /home/ivan/.config/broot/launcher/bash/br
