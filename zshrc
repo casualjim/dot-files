@@ -26,43 +26,13 @@ if [ ! -d "$HOME/.zgen" ]; then
   git clone https://github.com/tarjoilija/zgen "$HOME/.zgen"
 fi
 
-
-
-[ -f "$HOME/.fonts/devicons-regular.sh" ] && . "$HOME/.fonts/devicons-regular.sh" 
-[ -f "$HOME/.fonts/fontawesome-regular.sh" ] && . "$HOME/.fonts/fontawesome-regular.sh" 
-[ -f "$HOME/.fonts/octicons-regular.sh" ] && . "$HOME/.fonts/octicons-regular.sh" 
-[ -f "$HOME/.fonts/pomicons-regular.sh" ] && . "$HOME/.fonts/pomicons-regular.sh" 
+if [ $commands[starship] ]; then
+  eval "$(starship init zsh)"
+fi
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
-
-SPACESHIP_TIME_SHOW=true
-SPACESHIP_KUBECONTEXT_SYMBOL="☸️  "
-[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL=' ' || PROMPT_SYMBOL='%(?.%F{012}❯%f.%F{009}❯%f)  '
-#[[ -n ${SSH_CLIENT} ]] && PROMPT_SYMBOL=' ' || PROMPT_SYMBOL=' '
-TIME_FORMAT="%D{%H:%M}"
-#GITHUB_ICON=''
-EXECUTION_TIME_ICON="%F{yellow}🔂%f" #    
-EXECUTION_TIME_THRESHOLD=0.1
-SPACESHIP_TIME_COLOR=yellow
-SPACESHIP_CHAR_SYMBOL="${PROMPT_SYMBOL}"
-SPACESHIP_CHAR_COLOR_SUCCESS=green
-SPACESHIP_TIME_SUFFIX=" %F{192}⌚️%f "
-SPACESHIP_DOCKER_PREFIX="%F{69}➜%f "
-SPACESHIP_DOCKER_COLOR=75
-SPACESHIP_RUST_COLOR=39
-SPACESHIP_GIT_BRANCH_COLOR=141
-SPACESHIP_GIT_STATUS_COLOR=165
-SPACESHIP_KUBECONTEXT_PREFIX="%F{27}➜%f "
-SPACESHIP_KUBECONTEXT_COLOR=33
-SPACESHIP_KUBECONTEXT_SYMBOL=$'\U2388 '
-SPACESHIP_TIME_COLOR=193
-SPACESHIP_EXEC_TIME_SHOW=true
-SPACESHIP_EXEC_TIME_SUFFIX="$SPACESHIP_PROMPT_DEFAULT_SUFFIX"
-SPACESHIP_EXEC_TIME_PREFIX="took $EXECUTION_TIME_ICON "
-SPACESHIP_EXEC_TIME_COLOR="yellow"
-SPACESHIP_EXEC_TIME_THRESHOLD=2000
 
 my_kubecontext() {
   local kubectl_version="$(kubectl version --client 2>/dev/null)"
@@ -126,6 +96,7 @@ POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_FOREGROUND=015
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$'\u2388'
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable virtualenv vcs) # custom_my_kubecontext)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status)
+
 HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
 
@@ -211,7 +182,7 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/rust
   zgen oh-my-zsh plugins/aws
 
-  zgen load romkatv/powerlevel10k powerlevel9k
+  # zgen load romkatv/powerlevel10k powerlevel9k
   # zgen load bhilburn/powerlevel9k powerlevel9k
   # zgen load denysdovhan/spaceship-prompt spaceship
   #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
@@ -402,4 +373,3 @@ ghcl() {
 goheapprof() { go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap }
 gocpuprof() { go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile }
 
-source /home/ivan/.config/broot/launcher/bash/br
