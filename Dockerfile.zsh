@@ -1,16 +1,20 @@
+FROM golang
+
+RUN apt-get update && apt-get install -yqq groff bsdmainutils
+RUN mkdir -p /hubfiles && git clone \
+  --config transfer.fsckobjects=false \
+  --config receive.fsckobjects=false \
+  --config fetch.fsckobjects=false \
+  https://github.com/github/hub.git /usr/src/hub
+
+WORKDIR /usr/src/hub
+
+RUN script/build -o /hubfiles/hub
+
 FROM debian:testing
 
-RUN set -e &&\
-  apt-get update -qq &&\
-  apt-get install -yqq git
-
-ADD zshrc /extra/zshrc
-ADD zshrc.container.patch /extra/zshrc.patch
-WORKDIR /extra
-
-RUN git apply zshrc.patch
-
-FROM debian:testing
+RUN mkdir -p /target
+COPY --from=0 /hubfiles/hub /usr/bin/hub
 
 RUN set -e &&\
   apt-get update -qq &&\
@@ -18,7 +22,7 @@ RUN set -e &&\
     curl \
     gawk \
     vim-tiny \
-    python-dev \
+    python3-dev \
     ncurses-term \
     direnv \
     locales \
@@ -31,8 +35,7 @@ RUN set -e &&\
     tar \
     gzip \
     gnupg \
-    iputils-ping \
-    git-hub &&\
+    iputils-ping &&\
   echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen &&\
   locale-gen &&\
   useradd -m -s /bin/zsh ivan &&\
@@ -40,12 +43,13 @@ RUN set -e &&\
   echo "ivan ALL = (ALL) NOPASSWD: ALL" > /etc/sudoers.d/ivan &&\
   echo 'wheel ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel &&\
-  curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
+  curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
+  curl -o /usr/bin/prettyping -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
-  curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
+  curl -o /tmp/bat.deb -L $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
   mkdir -p /tmp/exa &&\
-  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  curl -o /tmp/exa/exa.zip -L $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
   cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
@@ -57,30 +61,13 @@ RUN set -e &&\
   rm -rf  /tmp/* /var/tmp/* /var/lib/apt/lists/* /usr/share/doc/* /usr/share/locale/* /var/cache/debconf/*-old
 
 ENV LANG en_US.UTF-8
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64 /tmp/tini-static-amd64
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64.asc /tmp/tini-static-amd64.asc
-
-# try a few keyservers, sometimes they fail
-RUN for key in \
-      595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
-    ; do \
-      gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
-      gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-      gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" ; \
-    done \
-    &&\
-    gpg --verify /tmp/tini-static-amd64.asc &&\
-    install -m 0755 /tmp/tini-static-amd64 /bin/tini
 
 USER ivan
-# ADD --chown=ivan zshrc /home/ivan/.zshrc
-COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
+ADD --chown=ivan zshrc /home/ivan/.zshrc
 WORKDIR /home/ivan
 
 RUN \
   zsh -c "source /home/ivan/.zshrc"
 
 SHELL [ "/bin/zsh", "-c" ]
-ENTRYPOINT [ "/bin/tini", "--" ]
 CMD ["zsh"]

@@ -1,4 +1,7 @@
 #!/bin/zsh
+
+#shellcheck shell=bash
+
 # Path to your oh-my-zsh configuration.
 #tabs -2
 # export ZSH=$HOME/.oh-my-zsh
@@ -152,18 +155,6 @@ if ! zgen saved; then
   # rbenv completion
   zgen oh-my-zsh plugins/rbenv
 
-  # rsync completion
-  # zgen oh-my-zsh plugins/rsync
-
-  # vagrant completion
-  # zgen oh-my-zsh plugins/vagrant
-
-  # packer.io completion
-  # zgen load gunzy83/packer-zsh-completion
-
-  # terraform completion
-  # zgen oh-my-zsh plugins/terraform
-
   # httpie completion
   zgen oh-my-zsh plugins/httpie
 
@@ -184,9 +175,6 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/aws
 
   # zgen load romkatv/powerlevel10k powerlevel9k
-  # zgen load bhilburn/powerlevel9k powerlevel9k
-  # zgen load denysdovhan/spaceship-prompt spaceship
-  #zgen load https://gist.github.com/7585b6aa8d4770866af4.git backchat
   zgen save
 fi
 
@@ -236,7 +224,11 @@ else
   export EDITOR=$VISUAL
 fi
 
-export PATH="$HOME/bin:${${GOPATH-$HOME/go}//://bin:}/bin:$(go env GOROOT)/bin:$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/bin:$PATH"
+if [ $commands[go] ]; then
+  export PATH="${${GOPATH-$HOME/go}//://bin:}/bin:$(go env GOROOT)/bin:$PATH"
+fi
+export PATH="$HOME/bin:$PATH"
 export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
 
 alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
@@ -338,7 +330,9 @@ alias tf=terraform
 
 complete -o nospace -C /usr/local/bin/mc mc
 
-function dcl(){ git clone "${PWD##*/}/$@" }
+dcl(){ 
+  git clone "${PWD##*/}/$*" 
+}
 
 export PATH="$HOME/.cargo/bin:$PATH"
 export FZF_DEFAULT_COMMAND="fd --type file --color=always"
@@ -371,8 +365,13 @@ ghcl() {
   cd $lpath
 }
 
-goheapprof() { go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap }
-gocpuprof() { go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile }
+goheapprof() { 
+  go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap 
+}
+
+gocpuprof() { 
+  go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile 
+}
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"

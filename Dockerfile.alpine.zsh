@@ -7,16 +7,13 @@ RUN apk add --no-cache musl-dev git bash upx &&\
 
 RUN upx /go/src/github.com/github/hub/bin/hub
 
-ADD zshrc /extra/zshrc
-ADD zshrc.container.patch /extra/zshrc.patch
-WORKDIR /extra
-RUN git apply zshrc.patch
 
 FROM alpine
 
 COPY --from=0 /go/src/github.com/github/hub/bin/hub /usr/bin/hub
 RUN set -e &&\
-  apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar unzip gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates postgresql-client redis sed grep &&\
+  apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar unzip gzip ctags ncurses jq bash mailcap tzdata ca-certificates postgresql-client redis sed grep &&\
+  curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
   curl -o /usr/bin/direnv -L'#' $(curl -s https://api.github.com/repos/direnv/direnv/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url') &&\
   chmod +x /usr/bin/direnv &&\
   mkdir -p /tmp/bat &&\
@@ -24,7 +21,7 @@ RUN set -e &&\
   mv /tmp/bat/bat /usr/bin/bat &&\
   rm -rf /tmp/bat &&\
   mkdir -p /tmp/exa &&\
-  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  curl -o /tmp/exa/exa.zip -L $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
   cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
@@ -37,13 +34,11 @@ RUN set -e &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel
 
 USER ivan
-# ADD --chown=ivan zshrc /home/ivan/.zshrc
-COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
+ADD --chown=ivan zshrc /home/ivan/.zshrc
 WORKDIR /home/ivan
 
 RUN \
   zsh -c "source /home/ivan/.zshrc"
 
 SHELL [ "/bin/zsh", "-c" ]
-ENTRYPOINT [ "/sbin/tini", "--" ]
 CMD ["zsh"]

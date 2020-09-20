@@ -1,24 +1,15 @@
 FROM golang:alpine
 
-RUN apk add --no-cache git
-
-ADD zshrc /extra/zshrc
-ADD zshrc.container.patch /extra/zshrc.patch
-WORKDIR /extra
-RUN git apply zshrc.patch
-
-FROM golang:alpine
-
-ARG CLOUD_SDK_VERSION=236.0.0
+ARG CLOUD_SDK_VERSION=310.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
 ENV PATH /google-cloud-sdk/bin:$PATH
 
-
 RUN set -e &&\
-  apk add --no-cache zsh zsh-vcs git gnupg sudo util-linux shadow vim curl tar gzip ctags ncurses jq bash tini mailcap tzdata ca-certificates \
+  apk add --no-cache zsh zsh-vcs git gnupg sudo util-linux shadow vim curl tar gzip ctags ncurses jq bash mailcap tzdata ca-certificates \
   python python-dev openssl less py2-pip py-crcmod docker tini nodejs nodejs-dev yarn npm ruby cmake redis hiredis-dev postgresql-client \
   build-base terraform fzf fzf-zsh-completion libc6-compat openssh-client sed grep   &&\
-  curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
+  curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
+  curl -o /usr/bin/prettyping -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /usr/bin/direnv -L'#' $(curl -s https://api.github.com/repos/direnv/direnv/releases/latest | jq -r '.assets[] | select(.name | contains("linux-amd64")) | .browser_download_url') &&\
   chmod +x /usr/bin/direnv &&\
@@ -27,17 +18,17 @@ RUN set -e &&\
   mv /tmp/bat/bat /usr/bin/bat &&\
   rm -rf /tmp/bat &&\
   mkdir -p /tmp/exa &&\
-  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  curl -o /tmp/exa/exa.zip -L $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
   cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
   cd / &&\
   rm -rf /tmp/exa &&\
-  curl -LO --progress https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &&\
+  curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &&\
   chmod +x ./kubectl &&\
   mv kubectl /usr/bin/ &&\
   ln -sf /usr/bin/kubectl /usr/bin/k &&\
-  curl -L --progress https://raw.githubusercontent.com/helm/helm/master/scripts/get > /tmp/get_helm.sh &&\
+  curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get > /tmp/get_helm.sh &&\
   chmod +x /tmp/get_helm.sh &&\
   /tmp/get_helm.sh &&\
   rm /tmp/get_helm.sh &&\
@@ -54,7 +45,7 @@ RUN set -e &&\
   cd /go/src/github.com/github/hub &&\
   script/build &&\
   mv bin/hub /usr/bin/hub &&\
-  cd / &&\
+  cd / &&\  
   rm -rf /go/src/github.com/github &&\
   npm install -g npm@latest &&\
   npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml &&\
@@ -70,7 +61,7 @@ RUN set -e &&\
   rm -rf /tmp/*
 
 USER ivan
-COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
+ADD --chown=ivan zshrc /home/ivan/.zshrc
 ADD --chown=ivan gitconfig /home/ivan/.gitconfig
 ADD --chown=ivan ctags /home/ivan/.ctags
 ADD --chown=ivan zshrc.docker /home/ivan/.zshrc.local
@@ -88,5 +79,4 @@ VOLUME ["/home/ivan/.config"]
 
 ENV PATH "/home/ivan/go/bin:$PATH"
 SHELL [ "/bin/zsh", "-c" ]
-ENTRYPOINT [ "tini", "--" ]
 CMD ["zsh"]

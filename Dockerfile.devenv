@@ -8,30 +8,40 @@ RUN apt-get update -qq &&\
   cd /usr/src/su-exec &&\
   LDFLAGS="-s -w" make su-exec-static
 
-ADD zshrc /extra/zshrc
-ADD zshrc.container.patch /extra/zshrc.patch
-WORKDIR /extra
-RUN git apply zshrc.patch
-  
+FROM golang
+
+RUN apt-get update && apt-get install -yqq groff bsdmainutils
+RUN mkdir -p /hubfiles && git clone \
+  --config transfer.fsckobjects=false \
+  --config receive.fsckobjects=false \
+  --config fetch.fsckobjects=false \
+  https://github.com/github/hub.git /usr/src/hub
+
+WORKDIR /usr/src/hub
+
+RUN script/build -o /hubfiles/hub
+
 FROM debian:stable
 
 ENV DEBIAN_FRONTEND noninteractive
 
 COPY --from=0 /usr/src/su-exec/su-exec-static /usr/bin/su-exec
+COPY --from=1 /hubfiles/hub /usr/bin/hub
 
 RUN echo "deb http://deb.debian.org/debian stable main contrib non-free" > /etc/apt/sources.list &&\ 
   apt-get update -qq &&\
 	apt-get full-upgrade -yqq &&\
-  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh unzip tmux exuberant-ctags ncurses-term direnv ruby jq git-hub iputils-ping gawk locales fonts-powerline &&\
+  apt-get install -yqq curl apt-transport-https zsh git sudo gnupg curl pv httpie zsh unzip tmux exuberant-ctags ncurses-term direnv ruby jq iputils-ping gawk locales fonts-powerline &&\
   echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen &&\
   locale-gen &&\
   export LANG='en_US.UTF-8' &&\
-  curl -o /usr/bin/prettyping -L --progress https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
+  curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
+  curl -o /usr/bin/prettyping -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
-  curl -o /tmp/bat.deb -L --progress $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
+  curl -o /tmp/bat.deb -L $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\
   dpkg -i /tmp/bat.deb &&\
   mkdir -p /tmp/exa &&\
-  curl -o /tmp/exa/exa.zip -L --progress $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
+  curl -o /tmp/exa/exa.zip -L $(curl -s https://api.github.com/repos/ogham/exa/releases/latest | jq -r '.assets[] | select(.name | contains("exa-linux")) | .browser_download_url') &&\
   cd /tmp/exa &&\
   unzip -d . exa.zip &&\
   mv exa-linux-x86_64 /usr/bin/exa &&\
@@ -44,7 +54,7 @@ RUN echo "deb http://deb.debian.org/debian stable main contrib non-free" > /etc/
   echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list &&\
   echo "deb http://apt.kubernetes.io/ kubernetes-stretch main" > /etc/apt/sources.list.d/kubernetes.list &&\
   apt-get update -qq &&\
-  apt-get install -yqq nodejs build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev google-cloud-sdk &&\
+  apt-get install -yqq nodejs build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python2-dev python-pip clang libclang-dev google-cloud-sdk &&\
   npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml neovim &&\
 	gem install neovim &&\
 	pip install pynvim awscli &&\
@@ -64,26 +74,11 @@ RUN echo "deb http://deb.debian.org/debian stable main contrib non-free" > /etc/
   rm -rf  /tmp/* /var/tmp/* /var/lib/apt/lists/* /usr/share/doc/* /usr/share/locale/* /var/cache/debconf/*-old
 
 ENV LANG en_US.UTF-8
-ENV TINI_VERSION v0.18.0
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64 /tmp/tini-static-amd64
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static-amd64.asc /tmp/tini-static-amd64.asc
-
-# try a few keyservers, sometimes they fail
-RUN for key in \
-      595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 \
-    ; do \
-      gpg --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" || \
-      gpg --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-      gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" ; \
-    done \
-    &&\
-    gpg --verify /tmp/tini-static-amd64.asc &&\
-    install -m 0755 /tmp/tini-static-amd64 /bin/tini
 
 ENV PATH "/usr/local/go/bin:$PATH"
 
 USER ivan
-COPY --from=0 --chown=ivan /extra/zshrc /home/ivan/.zshrc
+ADD --chown=ivan zshrc /home/ivan/.zshrc
 ADD --chown=ivan gitconfig /home/ivan/.gitconfig
 ADD --chown=ivan ctags /home/ivan/.ctags
 ADD --chown=ivan vimreboot /home/ivan/.vim
@@ -99,5 +94,4 @@ RUN \
 ENV PATH "/home/ivan/go/bin:$PATH"
 
 SHELL [ "/bin/zsh", "-c" ]
-ENTRYPOINT [ "/bin/tini", "--" ]
 CMD ["zsh"]
