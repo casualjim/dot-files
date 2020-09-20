@@ -108,6 +108,7 @@ if ! zgen saved; then
   # alias tips
   # zgen load djui/alias-tips
   zgen load zsh-users/zsh-completions src
+  #zgen load zsh-users/zsh-autosuggestions
   zgen oh-my-zsh plugins/git
   zgen load voronkovich/gitignore.plugin.zsh
 
@@ -373,3 +374,5 @@ ghcl() {
 goheapprof() { go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap }
 gocpuprof() { go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile }
 
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
