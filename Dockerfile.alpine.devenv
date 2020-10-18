@@ -6,8 +6,8 @@ ENV PATH /google-cloud-sdk/bin:$PATH
 
 RUN set -e &&\
   apk add --no-cache zsh zsh-vcs git gnupg sudo util-linux shadow vim curl tar gzip ctags ncurses jq bash mailcap tzdata ca-certificates \
-  python python-dev openssl less py2-pip py-crcmod docker tini nodejs nodejs-dev yarn npm ruby cmake redis hiredis-dev postgresql-client \
-  build-base terraform fzf fzf-zsh-completion libc6-compat openssh-client sed grep   &&\
+    python3 python3-dev py3-pip openssl less py-crcmod docker tini nodejs nodejs-dev yarn npm ruby cmake redis hiredis-dev postgresql-client \
+    build-base terraform fzf fzf-zsh-completion libc6-compat openssh-client sed grep   &&\
   curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
   curl -o /usr/bin/prettyping -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
@@ -28,19 +28,6 @@ RUN set -e &&\
   chmod +x ./kubectl &&\
   mv kubectl /usr/bin/ &&\
   ln -sf /usr/bin/kubectl /usr/bin/k &&\
-  curl -L https://raw.githubusercontent.com/helm/helm/master/scripts/get > /tmp/get_helm.sh &&\
-  chmod +x /tmp/get_helm.sh &&\
-  /tmp/get_helm.sh &&\
-  rm /tmp/get_helm.sh &&\
-  git clone --depth=1 https://github.com/ahmetb/kubectx /tmp/kubectx &&\
-  cp /tmp/kubectx/kubectx /tmp/kubectx/kubens /usr/bin &&\
-  ln -sf /usr/bin/kubectx /usr/bin/kctx &&\
-  ln -sf /usr/bin/kubens /usr/bin/kns &&\
-  cp /tmp/kubectx/completion/kubectx.zsh /usr/share/zsh/site-functions/_kubectx &&\
-  cp /tmp/kubectx/completion/kubens.zsh /usr/share/zsh/site-functions/_kubens &&\
-  go get -u go.mozilla.org/sops/cmd/sops &&\
-  mv /go/bin/sops /usr/bin/sops &&\
-  rm -rf /go/src/go.mozilla.org &&\
   go get -d github.com/github/hub &&\
   cd /go/src/github.com/github/hub &&\
   script/build &&\
@@ -49,8 +36,8 @@ RUN set -e &&\
   rm -rf /go/src/github.com/github &&\
   npm install -g npm@latest &&\
   npm install -g diff-so-fancy jshint jslint jsonlint tidy-markdown js-yaml &&\
-  gem install --no-ri --no-rdoc mdl &&\
-  pip install -U awscli &&\
+  gem install mdl &&\
+  pip3 install -U awscli &&\
   curl -sL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz | tar -xz && \
   ln -s /lib /lib64 &&\
   useradd -m -s /bin/zsh ivan &&\
