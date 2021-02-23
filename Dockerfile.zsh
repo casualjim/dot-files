@@ -5,6 +5,7 @@ RUN mkdir -p /hubfiles && git clone \
   --config transfer.fsckobjects=false \
   --config receive.fsckobjects=false \
   --config fetch.fsckobjects=false \
+  --depth 1 \
   https://github.com/github/hub.git /usr/src/hub
 
 WORKDIR /usr/src/hub

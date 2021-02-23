@@ -1,16 +1,23 @@
 FROM golang:alpine
 
-RUN apk add --no-cache musl-dev git bash upx &&\
-  go get -d github.com/github/hub &&\
-  cd /go/src/github.com/github/hub &&\
-  script/build
+RUN apk add --no-cache musl-dev git bash upx
 
-RUN upx /go/src/github.com/github/hub/bin/hub
+RUN mkdir -p /hubfiles && git clone \
+  --config transfer.fsckobjects=false \
+  --config receive.fsckobjects=false \
+  --config fetch.fsckobjects=false \
+  --depth 1 \
+  https://github.com/github/hub.git /usr/src/hub
 
+WORKDIR /usr/src/hub
+
+RUN script/build -o /hubfiles/hub
+
+RUN upx /hubfiles/hub
 
 FROM alpine
 
-COPY --from=0 /go/src/github.com/github/hub/bin/hub /usr/bin/hub
+COPY --from=0 /hubfiles/hub /usr/bin/hub
 RUN set -e &&\
   apk add --no-cache zsh zsh-vcs git sudo shadow vim curl tar unzip gzip ctags ncurses jq bash mailcap tzdata ca-certificates postgresql-client redis sed grep &&\
   curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\

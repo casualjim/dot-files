@@ -1,5 +1,26 @@
 FROM golang:alpine
 
+RUN apk add --no-cache musl-dev git bash upx
+
+RUN mkdir -p /hubfiles && git clone \
+  --config transfer.fsckobjects=false \
+  --config receive.fsckobjects=false \
+  --config fetch.fsckobjects=false \
+  --depth 1 \
+  https://github.com/github/hub.git /usr/src/hub
+
+WORKDIR /usr/src/hub
+
+RUN script/build -o /hubfiles/hub
+
+RUN upx /hubfiles/hub
+
+FROM alpine
+
+COPY --from=0 /hubfiles/hub /usr/bin/hub
+
+FROM golang:alpine
+
 ARG CLOUD_SDK_VERSION=310.0.0
 ENV CLOUD_SDK_VERSION=$CLOUD_SDK_VERSION
 ENV PATH /google-cloud-sdk/bin:$PATH
@@ -28,10 +49,6 @@ RUN set -e &&\
   chmod +x ./kubectl &&\
   mv kubectl /usr/bin/ &&\
   ln -sf /usr/bin/kubectl /usr/bin/k &&\
-  go get -d github.com/github/hub &&\
-  cd /go/src/github.com/github/hub &&\
-  script/build &&\
-  mv bin/hub /usr/bin/hub &&\
   cd / &&\  
   rm -rf /go/src/github.com/github &&\
   npm install -g npm@latest &&\
