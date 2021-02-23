@@ -7,6 +7,7 @@
 	useConfigOnly = true
 [core]
 	excludesfile = $HOME/.gitignore_global
+  pager = delta
 [alias]
   st = status
   ci = commit
@@ -40,7 +41,9 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-	helper = /usr/lib/git-core/git-credential-libsecret
+  helper = /usr/lib/git-core/git-credential-libsecret
+	;helper = /usr/libexec/git-core/git-credential-libsecret
+  ;helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
 [diff]
 	tool = vimdiff3
 [merge]
@@ -58,9 +61,9 @@
 	process = git-lfs filter-process
 [pull]
 	rebase = false
-[pager]
-  diff = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
-  show = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
+;[pager]
+  ;diff = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
+  ;show = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
 [mergetool "p4mergetool"]
 	cmd = ~/Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
 	trustExitCode = false
@@ -92,3 +95,12 @@
     path = ~/nflx/.gitconfig
 [url "ssh://git@stash.corp.netflix.com:7999/"]
 	insteadOf = https://stash.corp.netflix.com/scm/
+
+[delta]
+  syntax-theme = Coldark-Dark
+  features = diff-so-fancy
+
+[interactive]
+  diffFilter = delta --color-only
+[url "ssh://git@stash.corp.netflix.com:7999"]
+	insteadOf = https://stash.corp.netflix.com/scm

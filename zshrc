@@ -29,9 +29,10 @@ if [ ! -d "$HOME/.zgen" ]; then
   git clone https://github.com/tarjoilija/zgen "$HOME/.zgen"
 fi
 
-if [ $commands[starship] ]; then
-  eval "$(starship init zsh)"
-fi
+#if [ $commands[starship] ]; then
+  #eval "$(starship init zsh)"
+#fi
+
 
 COMPLETION_WAITING_DOTS="true"
 DISABLE_CORRECTION="true"
@@ -69,7 +70,8 @@ POWERLEVEL9K_RVM_FOREGROUND="249"
 POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
 POWERLEVEL9K_TIME_BACKGROUND="black"
 POWERLEVEL9K_TIME_FOREGROUND="249"
-POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M  \UF133  %m.%d.%y}"
+POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M}"
+#POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M  \UF133  %m.%d.%y}"
 POWERLEVEL9K_RVM_BACKGROUND="black"
 POWERLEVEL9K_RVM_FOREGROUND="249"
 POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
@@ -96,9 +98,9 @@ POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT=my_kubecontext
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_BACKGROUND=025
 POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_FOREGROUND=015
-POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$'\u2388'
+#POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$'\u2388'
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable virtualenv vcs) # custom_my_kubecontext)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time  status)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status time)
 
 HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
@@ -174,7 +176,8 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/rust
   zgen oh-my-zsh plugins/aws
 
-  # zgen load romkatv/powerlevel10k powerlevel9k
+  #zgen load silver-prompt/zsh
+  zgen load romkatv/powerlevel10k powerlevel9k
   zgen save
 fi
 
@@ -224,7 +227,7 @@ else
   export EDITOR=$VISUAL
 fi
 
-export PATH="$HOME/.rbenv/bin:$PATH"
+export PATH="$HOME/.rbenv/bin:$HOME/.go/bin:$PATH"
 if [ $commands[go] ]; then
   export PATH="${${GOPATH-$HOME/go}//://bin:}/bin:$(go env GOROOT)/bin:$PATH"
 fi
@@ -253,6 +256,7 @@ if [ $commands[minikube] ]; then
 fi
 if [ $commands[kubectl] ]; then
   source <(kubectl completion zsh)
+  alias k=kubectl
 fi
 if [ $commands[skaffold] ]; then
   source <(skaffold completion zsh)
@@ -264,20 +268,6 @@ if [ $commands[kops] ]; then
   source <(kops completion zsh)
 fi
 
-man() {
-      env \
-      	  LESS_TERMCAP_mb=$(printf "\e[1;34m") \
-	  LESS_TERMCAP_md=$(printf "\e[1;34m") \
-	  LESS_TERMCAP_me=$(printf "\e[0m") \
-	  LESS_TERMCAP_se=$(printf "\e[0m") \
-	  LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-	  LESS_TERMCAP_ue=$(printf "\e[0m") \
-	  LESS_TERMCAP_us=$(printf "\e[1;33m") \
-	  PAGER=/usr/bin/less \
-	  _NROFF_U=1 \
-	  PATH=${HOME}/bin:${PATH} \
-	  			   man "$@"
-}
 
 if [  $commands[nvim] ]; then
   export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
@@ -299,8 +289,10 @@ complete -o nospace -C /usr/bin/vault vault
 
 if [ $commands[bat] ]; then
   #export BAT_THEME="1337"
-  export BAT_THEME="DarkNeon"
-  alias cat="bat --plain"
+  #export BAT_THEME="DarkNeon"
+  export BAT_THEME='Coldark-Dark'
+  #alias cat="bat --plain"
+  cat() { bat --plain --paging never "$@" }
 fi
 
 if [ $commands[prettyping] ]; then
@@ -375,3 +367,16 @@ gocpuprof() {
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
+
+jwtdecode() {
+    if [ $# -eq 0 ]
+      then
+        jwt=$(wl-paste)
+      else
+        jwt=$1
+    fi
+    jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$jwt"
+}
+
+export MANPAGER="sh -c 'col -bx | bat -l man -p'" MANROFFOPT='-c'
+
