@@ -93,9 +93,6 @@
 	version = 2
 [includeIf "gitdir:~/nflx/"]
     path = ~/nflx/.gitconfig
-[url "ssh://git@stash.corp.netflix.com:7999/"]
-	insteadOf = https://stash.corp.netflix.com/scm/
-
 [delta]
   syntax-theme = Coldark-Dark
   features = diff-so-fancy
@@ -104,3 +101,5 @@
   diffFilter = delta --color-only
 [url "ssh://git@stash.corp.netflix.com:7999"]
 	insteadOf = https://stash.corp.netflix.com/scm
+[init]
+	defaultBranch = main

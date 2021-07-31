@@ -65,8 +65,8 @@ workflows:
     jobs:
       - zsh
       - zsh_alpine
-      - devenv
-      - devenv_alpine
+      # - devenv
+      # - devenv_alpine
   
   builds:
     jobs:
@@ -78,11 +78,11 @@ workflows:
           filters:
             branches:
               only: master
-      - devenv:
-          filters:
-            branches:
-              only: master
-      - devenv_alpine:
-          filters:
-            branches:
-              only: master
+      # - devenv:
+      #     filters:
+      #       branches:
+      #         only: master
+      # - devenv_alpine:
+      #     filters:
+      #       branches:
+      #         only: master

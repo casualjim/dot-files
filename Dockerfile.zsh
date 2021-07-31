@@ -45,6 +45,7 @@ RUN set -e &&\
   echo 'wheel ALL = (ALL) NOPASSWD: ALL' > /etc/sudoers.d/wheel &&\
   chmod 0400 /etc/sudoers.d/ivan /etc/sudoers.d/wheel &&\
   curl -fsSL https://starship.rs/install.sh | bash -s -- -y &&\
+  curl -sfL git.io/antibody | sh -s - -b /usr/local/bin &&\
   curl -o /usr/bin/prettyping -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping &&\
   chmod +x /usr/bin/prettyping &&\
   curl -o /tmp/bat.deb -L $(curl -s https://api.github.com/repos/sharkdp/bat/releases/latest | jq -r '.assets[] | select(.name | contains("amd64.deb") and contains("bat_")) | .browser_download_url') &&\

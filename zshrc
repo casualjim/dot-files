@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+#
 #shellcheck shell=bash
 
 # Path to your oh-my-zsh configuration.
@@ -17,21 +18,23 @@ zmodload zsh/terminfo
 fpath+=("/usr/local/share/zsh/site-functions")
 
 if [ "$OS" = 'Linux' ]; then
+  export ZSH_CACHE_DIR="${XDG_CACHE_HOME-"$HOME/.cache"}/zsh"
   fpath+=("$HOME/.local/share/zsh/site-functions")
 fi
 if [ "$OS" = 'Darwin' ]; then
+  export ZSH_CACHE_DIR="$HOME/Library/Caches/zsh"
   fpath+=("$HOME/.zsh/completions")
 fi
 
+autoload -Uz compinit
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
 
-if [ ! -d "$HOME/.zgen" ]; then
-  mkdir -p "$HOME/.zgen"
-  git clone https://github.com/tarjoilija/zgen "$HOME/.zgen"
+if [ $commands[starship] ]; then
+  eval "$(starship init zsh)"
 fi
-
-#if [ $commands[starship] ]; then
-  #eval "$(starship init zsh)"
-#fi
 
 
 COMPLETION_WAITING_DOTS="true"
@@ -105,81 +108,8 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status time)
 HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
 
-. "$HOME/.zgen/zgen.zsh"
-if ! zgen saved; then
-  echo "Creating zgen init"
-  zgen oh-my-zsh
-  zgen load zsh-users/zsh-syntax-highlighting
-  # alias tips
-  # zgen load djui/alias-tips
-  zgen load zsh-users/zsh-completions src
-  #zgen load zsh-users/zsh-autosuggestions
-  zgen oh-my-zsh plugins/git
-  zgen load voronkovich/gitignore.plugin.zsh
-
-  if [[ "$OS" = "Darwin" ]]; then
-    zgen oh-my-zsh plugins/osx
-  fi
-  
-  #zgen load 'wfxr/forgit'
-  zgen load 'wfxr/emoji-cli'
-  # archlinux completion (does not exist in prezto)
-  zgen oh-my-zsh plugins/archlinux
-
-  # ubuntu completion (does not exist in prezto)
-  # zgen oh-my-zsh plugins/ubuntu
-
-  # systemd completion
-  zgen oh-my-zsh plugins/systemd
-
-  # gem completion
-  zgen oh-my-zsh plugins/gem
-
-  # ruby completion
-  zgen oh-my-zsh plugins/ruby
-
-  # bundler completin
-  zgen oh-my-zsh plugins/bundler
-
-  # Maven completion
-  zgen oh-my-zsh plugins/mvn
-
-  # pip completion
-  zgen oh-my-zsh plugins/python
-  zgen oh-my-zsh plugins/pip
-
-  # node completion
-  zgen oh-my-zsh plugins/node
-
-  # npm completion
-  zgen oh-my-zsh plugins/npm
-
-  # rbenv completion
-  zgen oh-my-zsh plugins/rbenv
-
-  # httpie completion
-  zgen oh-my-zsh plugins/httpie
-
-  # Go command completion
-  zgen oh-my-zsh plugins/golang
-
-  # cp completion
-  zgen oh-my-zsh plugins/cp
-
-  # extraction helpers
-  zgen oh-my-zsh plugins/extract
-
-  # fish like history search
-  zgen load zsh-users/zsh-history-substring-search
-
-  zgen oh-my-zsh plugins/cargo
-  zgen oh-my-zsh plugins/rust
-  zgen oh-my-zsh plugins/aws
-
-  #zgen load silver-prompt/zsh
-  zgen load romkatv/powerlevel10k powerlevel9k
-  zgen save
-fi
+# 
+source ~/.zsh_plugins.sh
 
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
@@ -244,30 +174,15 @@ alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
 if [ $commands[hub] ]; then
   eval "$(hub alias -s)"
 fi
-
-if [ $commands[rbenv] ]; then
-  eval "$(rbenv init -)"
-fi
-if [ $commands[direnv] ]; then
-  source <(direnv hook zsh)
-fi
-if [ $commands[minikube] ]; then
-  source <(minikube completion zsh)
-fi
-if [ $commands[kubectl] ]; then
-  source <(kubectl completion zsh)
-  alias k=kubectl
-fi
 if [ $commands[skaffold] ]; then
   source <(skaffold completion zsh)
-fi
-if [ $commands[helm] ]; then
-  source <(helm completion zsh | sed -e "s/aliashash\\[\"\\(${LWORD}.*${RWORD}\\)\"\\]/aliashash[\\1]/g")
 fi
 if [ $commands[kops] ]; then
   source <(kops completion zsh)
 fi
-
+if [ $commands[kind] ]; then
+  source <(kind completion zsh)
+fi
 
 if [  $commands[nvim] ]; then
   export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
@@ -276,16 +191,6 @@ fi
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# tabtab source for serverless package
-# uninstall by removing these lines or running `tabtab uninstall serverless`
-[[ -f /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh ]] && . /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/serverless.zsh
-# tabtab source for sls package
-# uninstall by removing these lines or running `tabtab uninstall sls`
-[[ -f /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh ]] && . /usr/lib/node_modules/serverless/node_modules/tabtab/.completions/sls.zsh
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/bin/vault vault
 
 if [ $commands[bat] ]; then
   #export BAT_THEME="1337"
@@ -318,9 +223,9 @@ fi
 
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
 # tic $TERM.ti
-alias tf=terraform
+# alias tf=terraform
 
-complete -o nospace -C /usr/local/bin/mc mc
+# complete -o nospace -C /usr/local/bin/mc mc
 
 dcl(){ 
   git clone "${PWD##*/}/$*" 
