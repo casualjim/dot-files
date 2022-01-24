@@ -109,7 +109,7 @@ HIST_STAMPS="mm/dd/yyyy"
 DISABLE_UPDATE_PROMPT=true
 
 # 
-source ~/.zsh_plugins.sh
+[[ -f ~/.zsh_plugins.sh ]] && source ~/.zsh_plugins.sh
 
 # bind UP and DOWN arrow keys
 zmodload zsh/terminfo
@@ -183,7 +183,9 @@ fi
 if [ $commands[kind] ]; then
   source <(kind completion zsh)
 fi
-
+if [ $commands[kubebuilder] ]; then
+  source <(kubebuilder completion zsh)
+fi
 if [  $commands[nvim] ]; then
   export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
 fi
@@ -196,6 +198,7 @@ if [ $commands[bat] ]; then
   #export BAT_THEME="1337"
   #export BAT_THEME="DarkNeon"
   export BAT_THEME='Coldark-Dark'
+  #export BAT_THEME='Visual Studio Dark+'
   #alias cat="bat --plain"
   cat() { bat --plain --paging never "$@" }
 fi
@@ -219,6 +222,14 @@ fi
 
 if [ $commands[gotop] ]; then
   alias gotop='gotop -c monokai -p'
+fi
+
+if [ $commands[gdu] ]; then
+  alias du='gdu -n'
+fi
+
+if [ $commands[duf] ]; then
+  alias df='duf'
 fi
 
 # infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
@@ -285,3 +296,5 @@ jwtdecode() {
 
 export MANPAGER="sh -c 'col -bx | bat -l man -p'" MANROFFOPT='-c'
 
+
+if [ -e /home/ivan/.nix-profile/etc/profile.d/nix.sh ]; then . /home/ivan/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
