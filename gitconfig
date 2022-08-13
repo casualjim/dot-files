@@ -41,7 +41,8 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-  helper = /usr/lib/git-core/git-credential-libsecret
+  helper = osxkeychain
+  ;helper = kwallet
 	;helper = /usr/libexec/git-core/git-credential-libsecret
   ;helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
 [diff]
@@ -99,7 +100,22 @@
 
 [interactive]
   diffFilter = delta --color-only
-[url "ssh://git@stash.corp.netflix.com:7999"]
-	insteadOf = https://stash.corp.netflix.com/scm
 [init]
 	defaultBranch = main
+  
+[http "https://stash.prod.netflix.net:7006"]
+    sslCert = ~/.metatron/user.crt
+    sslKey = ~/.metatron/user.key
+    sslVerify = true
+
+[url "https://stash.prod.netflix.net:7006/scm"]
+    insteadOf = ssh://git@stash.corp.netflix.com:7999
+
+[url "https://stash.prod.netflix.net:7006"]
+    insteadOf = https://stash.corp.netflix.com
+
+[url "https://stash.prod.netflix.net:7006"]
+    insteadOf = https://stash.corp.netflix.com:7006
+
+[url "https://stash.prod.netflix.net:7006"]
+    insteadOf = https://stash.corp.netflix.com:7004

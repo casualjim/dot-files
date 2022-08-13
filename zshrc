@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+# set -x 
 #
 #shellcheck shell=bash
 
@@ -23,6 +24,7 @@ if [ "$OS" = 'Linux' ]; then
 fi
 if [ "$OS" = 'Darwin' ]; then
   export ZSH_CACHE_DIR="$HOME/Library/Caches/zsh"
+  export PATH="/opt/homebrew/bin:$PATH"
   fpath+=("$HOME/.zsh/completions")
 fi
 
@@ -31,6 +33,7 @@ for dump in ~/.zcompdump(N.mh+24); do
   compinit
 done
 compinit -C
+
 
 if [ $commands[starship] ]; then
   eval "$(starship init zsh)"
@@ -149,8 +152,8 @@ if [[ $OS = 'Darwin' ]]; then
   export VISUAL='code -w'
   export EDITOR=$VISUAL
   #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
-  export JDK_HOME="$(/usr/libexec/java_home -version 11)"
-  export JAVA_HOME="$(/usr/libexec/java_home -version 11)"
+  # export JDK_HOME="$(/usr/libexec/java_home -version 11)"
+  # export JAVA_HOME="$(/usr/libexec/java_home -version 11)"
 else
   alias ngvim='nvim-wrapper'
   export VISUAL='code -w'
@@ -297,4 +300,5 @@ jwtdecode() {
 export MANPAGER="sh -c 'col -bx | bat -l man -p'" MANROFFOPT='-c'
 
 
-if [ -e /home/ivan/.nix-profile/etc/profile.d/nix.sh ]; then . /home/ivan/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+if [ -e $HOME/.sdkman/bin/sdkman-init.sh ]; then . $HOME/.sdkman/bin/sdkman-init.sh; fi # added by sdkman installer
