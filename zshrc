@@ -34,102 +34,19 @@ for dump in ~/.zcompdump(N.mh+24); do
 done
 compinit -C
 
+# You can change the names/locations of these if you prefer.
+# source antidote
+source ~/.local/share/antidote/antidote.zsh
+
+# initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
+antidote load
+[[ -f ~/.zsh_plugins.zsh ]] && source ~/.zsh_plugins.zsh
 
 if [ $commands[starship] ]; then
   eval "$(starship init zsh)"
 fi
-
-
-COMPLETION_WAITING_DOTS="true"
-DISABLE_CORRECTION="true"
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets root)
-
-my_kubecontext() {
-  local kubectl_version="$(kubectl version --client 2>/dev/null)"
-
-  if [[ -n "$kubectl_version" ]]; then
-    # Get the current Kuberenetes context
-    local cur_ctx=$(kubectl config view -o=jsonpath='{.current-context}')
-    cur_namespace="$(kubectl config view -o=jsonpath="{.contexts[?(@.name==\"${cur_ctx}\")].context.namespace}")"
-    # If the namespace comes back empty set it default.
-    if [[ -z "${cur_namespace}" ]]; then
-      cur_namespace="default"
-    fi
-
-    if [[ "$cur_ctx" == "$cur_namespace" ]]; then
-      # No reason to print out the same identificator twice
-      echo -E $cur_ctx
-    else
-      echo -E $cur_ctx/$cur_namespace
-    fi
-  fi
-}
-
-POWERLEVEL9K_MODE=nerdfont-complete
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-POWERLEVEL9K_RPROMPT_ON_NEWLINE=false
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_beginning"
-POWERLEVEL9K_RVM_BACKGROUND="black"
-POWERLEVEL9K_RVM_FOREGROUND="249"
-POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
-POWERLEVEL9K_TIME_BACKGROUND="black"
-POWERLEVEL9K_TIME_FOREGROUND="249"
-POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M}"
-#POWERLEVEL9K_TIME_FORMAT="\UF43A %D{%I:%M  \UF133  %m.%d.%y}"
-POWERLEVEL9K_RVM_BACKGROUND="black"
-POWERLEVEL9K_RVM_FOREGROUND="249"
-POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_VCS_CLEAN_FOREGROUND='black'
-POWERLEVEL9K_VCS_CLEAN_BACKGROUND='green'
-POWERLEVEL9K_VCS_UNTRACKED_FOREGROUND='black'
-POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='yellow'
-POWERLEVEL9K_VCS_MODIFIED_FOREGROUND='white'
-POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='black'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='black'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='blue'
-POWERLEVEL9K_FOLDER_ICON=''
-POWERLEVEL9K_STATUS_OK_IN_NON_VERBOSE=true
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_THRESHOLD=0
-POWERLEVEL9K_VCS_UNTRACKED_ICON='\u25CF'
-POWERLEVEL9K_VCS_UNSTAGED_ICON='\u00b1'
-POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='\u2193'
-POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='\u2191'
-POWERLEVEL9K_VCS_COMMIT_ICON="\uf417"
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%F{blue}\u256D\u2500%f"
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%F{blue}\u2570\uf460%f "
-POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT=my_kubecontext
-POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_BACKGROUND=025
-POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_FOREGROUND=015
-#POWERLEVEL9K_CUSTOM_MY_KUBECONTEXT_ICON=$'\u2388'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon ssh root_indicator dir dir_writable virtualenv vcs) # custom_my_kubecontext)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status time)
-
-HIST_STAMPS="mm/dd/yyyy"
-DISABLE_UPDATE_PROMPT=true
-
-# 
-[[ -f ~/.zsh_plugins.sh ]] && source ~/.zsh_plugins.sh
-
-# bind UP and DOWN arrow keys
-zmodload zsh/terminfo
-if [[ "${terminfo[kcuu1]}" != "" ]]; then
-  bindkey "$terminfo[kcuu1]" history-substring-search-up
-fi
-if [[ "${terminfo[kcud1]}" != "" ]]; then
-  bindkey "$terminfo[kcud1]" history-substring-search-down
-fi
-
-# bind P and N for EMACS mode
-bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
-
-# bind k and j for VI mode
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 setopt nocorrectall
 
@@ -139,26 +56,9 @@ export JAVA_OPTS="-Dfile.encoding=UTF-8"
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 export CLICOLOR=1
-export VISUAL=vim
+export VISUAL='code -w'
 export EDITOR=$VISUAL
 
-if [[ $OS = 'Darwin' ]]; then
-  # Mac specific settings
-  # since certain things (such as BSD ls)
-  # differ from Linux
-  alias vi="mvim -v"
-  alias vim="mvim -v"
-  alias gvim='mvim -g'
-  export VISUAL='code -w'
-  export EDITOR=$VISUAL
-  #export EDITOR='mvim -f -c "au VimLeave * !open -a iTerm"'
-  # export JDK_HOME="$(/usr/libexec/java_home -version 11)"
-  # export JAVA_HOME="$(/usr/libexec/java_home -version 11)"
-else
-  alias ngvim='nvim-wrapper'
-  export VISUAL='code -w'
-  export EDITOR=$VISUAL
-fi
 
 export PATH="$HOME/.rbenv/bin:$HOME/.go/bin:$PATH"
 if [ $commands[go] ]; then
@@ -271,9 +171,33 @@ alias assume="newt --app-type awscreds refresh -r"
 export METATRON_USER="iportocarrero@netflix.com"
 
 ghcl() {
-  lpath="$HOME/github/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
-  git clone "$1" "$lpath"
+  clurl="$1"
+	lpath="$HOME/github"
+	if [[ ${#${1//[^\/]}} -gt 1 ]]
+	then
+		lpath="${lpath}/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+	else
+		lpath="${lpath}/$(echo $1 | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
+		clurl="https://github.com/$1"
+	fi
+
+  # lpath="$HOME/github/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+  git clone "$clurl" "$lpath"
   cd $lpath
+}
+
+stcl () {
+	clurl="$1"
+	lpath="$HOME/nflx"
+	if [[ ${#${1//[^\/]}} -gt 1 ]]
+	then
+		lpath="${lpath}/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+	else
+		lpath="${lpath}/$(echo $1 | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
+		clurl="https://stash.corp.netflix.com/scm/$1"
+	fi
+	hub clone "$clurl" "$lpath"
+	cd $lpath
 }
 
 goheapprof() { 

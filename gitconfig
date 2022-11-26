@@ -95,11 +95,18 @@
 [includeIf "gitdir:~/nflx/"]
     path = ~/nflx/.gitconfig
 [delta]
-  syntax-theme = Coldark-Dark
-  features = diff-so-fancy
+  syntax-theme = Visual Studio Dark+
+  # features = decorations
+  # features = diff-so-fancy
 
 [interactive]
-  diffFilter = delta --color-only
+  diffFilter = delta --color-only --features=interactive
+
+[delta "interactive"]
+    keep-plus-minus-markers = false
+
+    
+
 [init]
 	defaultBranch = main
   

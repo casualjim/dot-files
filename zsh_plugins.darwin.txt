@@ -1,11 +1,13 @@
 
+zsh-users/zsh-completions
+
+
 ohmyzsh/ohmyzsh path:lib
 
 ohmyzsh/ohmyzsh path:plugins/git
-ohmyzsh/ohmyzsh path:plugins/osx
+ohmyzsh/ohmyzsh path:plugins/macos
 ohmyzsh/ohmyzsh path:plugins/cp
 ohmyzsh/ohmyzsh path:plugins/direnv
-ohmyzsh/ohmyzsh path:plugins/ripgrep
 
 ohmyzsh/ohmyzsh path:plugins/mvn
 
@@ -17,9 +19,9 @@ ohmyzsh/ohmyzsh path:plugins/npm
 
 ohmyzsh/ohmyzsh path:plugins/golang
 
-ohmyzsh/ohmyzsh path:plugins/rustup
+#ohmyzsh/ohmyzsh path:plugins/rustup
 ohmyzsh/ohmyzsh path:plugins/rust
-ohmyzsh/ohmyzsh path:plugins/cargo
+#ohmyzsh/ohmyzsh path:plugins/cargo
 
 ohmyzsh/ohmyzsh path:plugins/aws
 
@@ -27,8 +29,7 @@ ohmyzsh/ohmyzsh path:plugins/kubectl
 ohmyzsh/ohmyzsh path:plugins/minikube
 ohmyzsh/ohmyzsh path:plugins/helm
 
-ohmyzsh/ohmyzsh path:plugins/ipfs
+#ohmyzsh/ohmyzsh path:plugins/ipfs
 
-zsh-users/zsh-syntax-highlighting
-zsh-users/zsh-completions
+zdharma-continuum/fast-syntax-highlighting kind:defer
 zsh-users/zsh-history-substring-search
