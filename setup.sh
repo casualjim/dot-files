@@ -17,7 +17,7 @@ GO=""
 echo "Installing YouCompleteMe dependencies"
 
 if [ "$(uname)" = 'Darwin' ]; then
-  brew install cmake nodejs hub diff-so-fancy httpie tmux ripgrep exa prettyping bat
+  brew install cmake nodejs hub git-delta curlie tmux ripgrep exa prettyping bat fzf gdu duf
 fi
 
 if [ -f /etc/os-release ]; then
@@ -66,17 +66,6 @@ fi
 
 echo "Installing vim plugins"
 nvim +'PlugInstall --sync' +qall >/dev/null
-
-echo "Installing jshint jshint jslint jsonlint tidy-markdown"
-$NPM -g install jshint jslint jsonlint tidy-markdown
-
-echo "installing markdown lint"
-$GEM install mdl
-
-echo "installing jsyaml"
-$NPM -g install js-yaml
-
-go get -u -v golang.org/x/tools/cmd/...
 
 # shellcheck disable=SC2164
 cd "${curr_dir}"
