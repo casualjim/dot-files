@@ -47,12 +47,7 @@ if [ -f /etc/os-release ]; then
     popd
     rm -rf /tmp/exa
     
-    sudo apt-get install -y build-essential
-    sudo gem install neovim
-    sudo pip install pynvim
-    sudo pip3 install pynvim
-    NPM="sudo npm"
-    GEM="sudo gem"
+    sudo apt-get install -y build-essential    
   fi
   if [ "${ID}" = "arch" ]; then
     echo "Installing for arch"
