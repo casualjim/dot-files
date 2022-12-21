@@ -41,7 +41,8 @@
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
 [credential]
-  helper = osxkeychain
+  ;helper = osxkeychain
+  helper = /usr/lib/git-core/git-credential-libsecret
   ;helper = kwallet
 	;helper = /usr/libexec/git-core/git-credential-libsecret
   ;helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret

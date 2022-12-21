@@ -34,12 +34,13 @@ for dump in ~/.zcompdump(N.mh+24); do
 done
 compinit -C
 
-# You can change the names/locations of these if you prefer.
-# source antidote
-source ~/.local/share/antidote/antidote.zsh
-
-# initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
-antidote load
+if [[ -f /usr/share/zsh-antidote/antidote.zsh ]]; then
+  source '/usr/share/zsh-antidote/antidote.zsh'
+  antidote load
+else if [[ -f ~/.local/share/antidote/antidote.zsh ]]
+  source ~/.local/share/antidote/antidote.zsh
+  antidote load
+fi
 [[ -f ~/.zsh_plugins.zsh ]] && source ~/.zsh_plugins.zsh
 
 if [ $commands[starship] ]; then
