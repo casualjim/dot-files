@@ -25,10 +25,9 @@ if [ -f /etc/os-release ]; then
   . /etc/os-release
   if [ "${ID_LIKE-$ID}" = "debian" ]; then
     echo "Installing for debian"
-    sudo apt-get install -y curl pv httpie vim-nox zsh cmake python-dev clang libclang-dev tmux exuberant-ctags ncurses-term nodejs npm direnv ruby jq git-hub iputils-ping gawk
-    sudo ln -sf /usr/bin/nodejs /usr/bin/node
+    sudo apt-get install -y curl pv direnv jq git-hub iputils-ping unzip
     if [ -z "$(which go)" ]; then
-      curl -sL "https://dl.google.com/go/$(curl --silent https://golang.org/doc/devel/release.html | grep -Eo 'go[0-9]+(\.[0-9]+)+' | sort -V | uniq | tail -1).linux-amd64.tar.gz" | sudo tar -C /usr/local -xz
+      curl -sL "https://dl.google.com/go/$(curl -s "https://go.dev/dl/?mode=json" | jq -r '.[0].files[].filename | select(test("go.*.linux-amd64.tar.gz"))')" | sudo tar -C /usr/local -xz
       # shellcheck disable=SC2016
       echo 'export PATH="/usr/local/go/bin:$PATH"' | sudo tee /etc/profile.d/golang.sh
       # shellcheck disable=SC1091
@@ -47,11 +46,8 @@ if [ -f /etc/os-release ]; then
     # shellcheck disable=SC2164
     popd
     rm -rf /tmp/exa
-    echo "deb http://packages.cloud.google.com/apt cloud-sdk-cosmic main" | sudo tee /etc/apt/sources.list.d/google-cloud-sdk.list
-    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    sudo npm install -g diff-so-fancy
-    sudo apt-get update 
-    sudo apt-get install -y build-essential yarn kubectl neovim python-dev ruby-dev python3-dev python3-pip cmake python-dev python-pip clang libclang-dev google-cloud-sdk
+    
+    sudo apt-get install -y build-essential
     sudo gem install neovim
     sudo pip install pynvim
     sudo pip3 install pynvim
