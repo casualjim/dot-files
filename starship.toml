@@ -10,7 +10,7 @@ discharging_symbol = ""
 [conda]
 symbol = " "
 
-[docker]
+[docker_context]
 symbol = " "
 
 [elixir]

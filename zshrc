@@ -11,8 +11,14 @@ export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
 export COLORTERM=truecolor
 export TERM="xterm-256color"
+# export TERM="xterm-direct"
 
 zmodload zsh/terminfo
+
+
+if [ "$OS" = 'Linux' ]; then 
+  export $(run-parts /usr/lib/systemd/user-environment-generators | xargs)
+fi
 
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
 
