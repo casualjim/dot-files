@@ -1,0 +1,39 @@
+
+2022/09/02 (13:03:22) | ===> btop++ v.1.2.9
+2022/09/02 (13:03:22) | ERROR: Invalid RGB decimal value: "ba1a84"
+
+2022/09/05 (18:51:51) | ===> btop++ v.1.2.9
+2022/09/05 (18:51:51) | ERROR: Stall in Runner thread, restarting!
+
+2023/01/09 (18:05:40) | ===> btop++ v.1.2.13
+2023/01/09 (18:05:40) | INFO: Logger set to INFO
+2023/01/09 (18:06:54) | INFO: Quitting! Runtime: 00:02:14
+
+2023/01/09 (18:06:56) | ===> btop++ v.1.2.13
+2023/01/09 (18:06:56) | INFO: Logger set to INFO
+2023/01/09 (18:06:56) | INFO: Running on /dev/pts/2
+2023/01/09 (18:08:04) | INFO: Quitting! Runtime: 00:01:08
+
+2023/01/09 (18:08:24) | ===> btop++ v.1.2.13
+2023/01/09 (18:08:24) | INFO: Logger set to INFO
+2023/01/09 (18:08:24) | INFO: Running on /dev/pts/2
+2023/01/09 (18:09:03) | INFO: Quitting! Runtime: 00:00:39
+
+2023/01/09 (18:10:35) | ===> btop++ v.1.2.13
+2023/01/09 (18:10:35) | INFO: Logger set to INFO
+2023/01/09 (18:10:35) | INFO: Running on /dev/pts/2
+2023/01/09 (18:11:29) | INFO: Quitting! Runtime: 00:00:54
+
+2023/01/13 (11:39:36) | ===> btop++ v.1.2.13
+2023/01/13 (11:39:36) | INFO: Logger set to INFO
+2023/01/13 (11:39:36) | INFO: Running on /dev/pts/1
+2023/01/13 (11:40:16) | INFO: Quitting! Runtime: 00:00:40
+
+2023/01/13 (12:15:04) | ===> btop++ v.1.2.13
+2023/01/13 (12:15:04) | INFO: Logger set to INFO
+2023/01/13 (12:15:04) | INFO: Running on /dev/pts/3
+2023/01/13 (13:18:03) | INFO: Quitting! Runtime: 01:02:59
+
+2023/01/13 (21:07:36) | ===> btop++ v.1.2.13
+2023/01/13 (21:07:36) | INFO: Logger set to INFO
+2023/01/13 (21:07:36) | INFO: Running on /dev/pts/0
