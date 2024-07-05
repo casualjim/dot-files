@@ -1,6 +1,13 @@
+##### BEGIN METATRON AUTOCONFIG
+# Do not remove the above line. The metatron CLI uses it to update this file.
+# Set git proxy configuration (must be the first directive in this file)
+[include]
+    path = /Users/ivan/.gitconfig-proxy
+# Do not remove the below line. The metatron CLI uses it to update this file.
+##### END METATRON AUTOCONFIG
 [user]
 	name = Ivan Porto Carrero
-	email = ivan@flanders.co.nz
+	email = iportocarrero@netflix.com
 	signingkey = B0285F8FEDCE381B
   ;signingkey = 12180E044EB5FDB2
   ;signingkey = DD913ED69953AC92
@@ -16,6 +23,8 @@
   up = push
   lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
   patch = --no-pager diff --no-color
+  dft = difftool
+  dlog = "!f() { GIT_EXTERNAL_DIFF=difft git log -p --ext-diff $@; }; f"
 [color]
   diff = auto
   status = auto
@@ -40,14 +49,21 @@
 [filter "media"]
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
-[credential]
-  ;helper = osxkeychain
-  helper = /usr/lib/git-core/git-credential-libsecret
+# [credential]
+  # helper = osxkeychain
+  # helper = /usr/lib/git-core/git-credential-libsecret
   ;helper = kwallet
 	;helper = /usr/libexec/git-core/git-credential-libsecret
   ;helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
 [diff]
-	tool = vimdiff3
+	tool = difftastic
+  # external = difft
+[difftool]
+  prompt = false
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+  difftool = true
 [merge]
 	tool = p4mergetool
 [help]
@@ -63,14 +79,6 @@
 	process = git-lfs filter-process
 [pull]
 	rebase = false
-;[pager]
-  ;diff = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
-  ;show = diff-so-fancy | less --tabs=2 -RFX --pattern '^(Date|added|deleted|modified): '
-[mergetool "p4mergetool"]
-	cmd = ~/Applications/p4merge.app/Contents/Resources/launchp4merge $PWD/$BASE $PWD/$REMOTE $PWD/$LOCAL $PWD/$MERGED
-	trustExitCode = false
-[mergetool]
-	keepBackup = false
 [commit]
   gpgsign = false
 	;template = /Users/ivan/.stCommitMsg
@@ -81,22 +89,18 @@
 	newHighlight = green bold 22
 [http "https://pkg.re"]
 	followRedirects = true
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
 [gpg]
 	program = gpg
-[diff "sopsdiffer"]
-	textconv = sops -d
+	format = openpgp
 [protocol]
 	version = 2
+
 [includeIf "gitdir:~/nflx/"]
     path = ~/nflx/.gitconfig
+
 [delta]
-  syntax-theme = Visual Studio Dark+
+  # syntax-theme = Visual Studio Dark+
+  syntax-theme = Catppuccin-mocha
   # features = decorations
   # features = diff-so-fancy
 
@@ -111,19 +115,23 @@
 [init]
 	defaultBranch = main
   
-[http "https://stash.prod.netflix.net:7006"]
-    sslCert = ~/.metatron/user.crt
-    sslKey = ~/.metatron/user.key
-    sslVerify = true
+# [http "https://stash.prod.netflix.net:7006"]
+#     sslCert = ~/.metatron/user.crt
+#     sslKey = ~/.metatron/user.key
+#     sslVerify = true
 
-[url "https://stash.prod.netflix.net:7006/scm"]
-    insteadOf = ssh://git@stash.corp.netflix.com:7999
+# [url "https://stash.prod.netflix.net:7006"]
+#     insteadOf = https://stash.corp.netflix.com
 
-[url "https://stash.prod.netflix.net:7006"]
-    insteadOf = https://stash.corp.netflix.com
+# [url "https://stash.prod.netflix.net:7006"]
+#     insteadOf = https://stash.corp.netflix.com:7006
 
-[url "https://stash.prod.netflix.net:7006"]
-    insteadOf = https://stash.corp.netflix.com:7006
-
-[url "https://stash.prod.netflix.net:7006"]
-    insteadOf = https://stash.corp.netflix.com:7004
+# [url "https://stash.prod.netflix.net:7006"]
+#     insteadOf = https://stash.corp.netflix.com:7004
+[safe]
+	directory = /workspace
+[tag]
+	forceSignAnnotated = false
+[gpg "ssh"]
+	program = ssh-keygen
+	allowedSignersFile = ""
