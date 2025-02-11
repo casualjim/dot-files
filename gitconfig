@@ -1,13 +1,6 @@
-##### BEGIN METATRON AUTOCONFIG
-# Do not remove the above line. The metatron CLI uses it to update this file.
-# Set git proxy configuration (must be the first directive in this file)
-[include]
-    path = /Users/ivan/.gitconfig-proxy
-# Do not remove the below line. The metatron CLI uses it to update this file.
-##### END METATRON AUTOCONFIG
 [user]
 	name = Ivan Porto Carrero
-	email = iportocarrero@netflix.com
+	email = ivan@flanders.co.nz
 	signingkey = B0285F8FEDCE381B
   ;signingkey = 12180E044EB5FDB2
   ;signingkey = DD913ED69953AC92
@@ -115,19 +108,6 @@
 [init]
 	defaultBranch = main
   
-# [http "https://stash.prod.netflix.net:7006"]
-#     sslCert = ~/.metatron/user.crt
-#     sslKey = ~/.metatron/user.key
-#     sslVerify = true
-
-# [url "https://stash.prod.netflix.net:7006"]
-#     insteadOf = https://stash.corp.netflix.com
-
-# [url "https://stash.prod.netflix.net:7006"]
-#     insteadOf = https://stash.corp.netflix.com:7006
-
-# [url "https://stash.prod.netflix.net:7006"]
-#     insteadOf = https://stash.corp.netflix.com:7004
 [safe]
 	directory = /workspace
 [tag]

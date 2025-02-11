@@ -32,7 +32,7 @@ if [ "$OS" = 'Linux' ]; then
 fi
 if [ "$OS" = 'Darwin' ]; then
   export ZSH_CACHE_DIR="$HOME/Library/Caches/antidote"
-  export PATH="/opt/homebrew/bin:$PATH"
+  export PATH="/etc/profiles/per-user/ivan/bin:/opt/homebrew/bin:$PATH"
   fpath+=("$ZSH_CACHE_DIR/completions")
 fi
 
@@ -209,7 +209,6 @@ if [ -e $HOME/.sdkman/bin/sdkman-init.sh ]; then . $HOME/.sdkman/bin/sdkman-init
 
 #export BAT_THEME="Catppuccin-mocha"
 
-# [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
 
 autoload -Uz compinit && compinit -i
 
@@ -248,6 +247,8 @@ if [ $commands[newt] ]; then
   eval "$(NEWT_OFFLINE=1 NEWT_QUIET=1 newt --completion-script-zsh)"
 fi
 
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
+
 if [ $commands[eza] ]; then
   alias l='eza -lh --git'
   alias la='eza -lah --git'
@@ -260,3 +261,16 @@ fi
 alias ktest="kubectl --context infraapi-test"
 alias kprod="kubectl --context infraapi-prod"
 alias humanlog='humanlog --skip-unchanged=false --truncate=false'
+
+
+# Added by Windsurf
+export PATH="/Users/ivan/.codeium/windsurf/bin:$PATH"
+
+# bun completions
+[ -s "/Users/ivan/.bun/_bun" ] && source "/Users/ivan/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
