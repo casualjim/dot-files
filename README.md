@@ -7,3 +7,8 @@ bash <(curl -s https://raw.githubusercontent.com/casualjim/dot-files/master/infe
 ```
 
 
+## Antidote setup:
+
+```sh
+antidote bundle < "$REPO_ROOT/zsh_plugins.${OS:l}.txt" >| ~/.zsh_plugins.zsh
+```
