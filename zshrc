@@ -1,28 +1,65 @@
 #!/bin/zsh
 
-# set -x 
+#set -x
 #
-#shellcheck shell=zsh
+#shellcheck shell=bash
 
-setopt nocorrectall
+# ============================================================================
+# Initial Setup
+# ============================================================================
 
-# Path to your oh-my-zsh configuration.
-#tabs -2
-# export ZSH=$HOME/.oh-my-zsh
 export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"
 export COLORTERM=truecolor
 export TERM="xterm-256color"
-# export TERM="xterm-direct"
 
 zmodload zsh/terminfo
 
+# ============================================================================
+# Environment Detection and Setup
+# ============================================================================
 
 if [ "$OS" = 'Linux' ]; then 
-  export $(run-parts /usr/lib/systemd/user-environment-generators | xargs)
+  export "$(run-parts /usr/lib/systemd/user-environment-generators | xargs)"
 fi
 
 [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+# ============================================================================
+# Base Environment Variables
+# ============================================================================
+
+export LANG="en_US.utf-8"
+export JAVA_OPTS="-Dfile.encoding=UTF-8"
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export CLICOLOR=1
+export VISUAL='code -w'
+export EDITOR="$VISUAL"
+export GITHUB_USER=casualjim
+
+# ============================================================================
+# Path Configuration
+# ============================================================================
+
+export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.rbenv/bin:$HOME/.go/bin:$PATH"
+
+if [ "${commands[go]}" ]; then
+  GOROOT="$(go env GOROOT)"
+  GOPATH_BIN="${GOPATH:-$HOME/go}"
+  GOPATH_BIN="${GOPATH_BIN//://bin:}/bin"
+  export PATH="${GOPATH_BIN}:${GOROOT}/bin:$PATH"
+fi
+
+export PATH="$HOME/bin:$PATH"
+
+if [ "$OS" = 'Darwin' ]; then
+  export PATH="/etc/profiles/per-user/ivan/bin:/opt/homebrew/bin:$PATH"
+fi
+
+# ============================================================================
+# Completion System Configuration
+# ============================================================================
 
 fpath+=("/usr/local/share/zsh/site-functions")
 
@@ -30,202 +67,70 @@ if [ "$OS" = 'Linux' ]; then
   export ZSH_CACHE_DIR="${XDG_CACHE_HOME-"$HOME/.cache"}/zsh"
   fpath+=("$HOME/.local/share/zsh/site-functions")
 fi
+
 if [ "$OS" = 'Darwin' ]; then
   export ZSH_CACHE_DIR="$HOME/Library/Caches/antidote"
-  export PATH="/etc/profiles/per-user/ivan/bin:/opt/homebrew/bin:$PATH"
   fpath+=("$ZSH_CACHE_DIR/completions")
 fi
 
-# autoload -Uz compinit
-# for dump in ~/.zcompdump(N.mh+24); do
-#   compinit
-# done
-# compinit -C
+autoload -Uz compinit && compinit -i
 
-# Customize to your needs...
-export LANG="en_US.utf-8"
-export JAVA_OPTS="-Dfile.encoding=UTF-8"
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+# ============================================================================
+# Zstyle Configuration
+# ============================================================================
 
-export CLICOLOR=1
-export VISUAL='code -w'
-export EDITOR=$VISUAL
+# Completion styling
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# shellcheck disable=SC2296
+# zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*:descriptions' format '%B%d%b'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*:warnings' format 'No matches for: %d'
+zstyle ':completion:*' group-name ''
 
+# FZF configuration via zstyle
+zstyle ':fzf-tab:*' fzf-flags --ansi
+# shellcheck disable=SC2016
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always "$realpath"'
+# shellcheck disable=SC2016
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'eza -1 --color=always "$realpath"'
 
-export PATH="$HOME/.rbenv/bin:$HOME/.go/bin:$PATH"
-if [ $commands[go] ]; then
-  export PATH="${${GOPATH-$HOME/go}//://bin:}/bin:$(go env GOROOT)/bin:$PATH"
-fi
-export PATH="$HOME/bin:$PATH"
-export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
+# Plugin-specific zstyle configurations
+zstyle ':omz:plugins:eza' 'dirs-first' yes
+zstyle ':omz:plugins:eza' 'git-status' yes
+zstyle ':omz:plugins:eza' 'icons' yes
+zstyle ':omz:plugins:eza' 'header' yes
+zstyle ':omz:plugins:eza' 'color-scale' all
+# zstyle ':omz:plugins:eza' 'color-scale-mode' gradient
+zstyle ':omz:plugins:eza' 'color-scale-mode' fixed
 
-#alias snoop='sudo ngrep -d en0 -q -W byline port 8080'
-#alias snoopLocal='sudo ngrep -d lo0 -q -W byline port 8060'
+# ============================================================================
+# FZF Configuration
+# ============================================================================
 
-#
-# added by travis gem
-#[ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
-
-if [ $commands[hub] ]; then
-  eval "$(hub alias -s)"
-fi
-#if [ $commands[skaffold] ]; then
-#  source <(skaffold completion zsh)
-#fi
-#if [ $commands[kops] ]; then
-#  source <(kops completion zsh)
-#fi
-#if [ $commands[kind] ]; then
-#  source <(kind completion zsh)
-#fi
-if [ $commands[kubebuilder] ]; then
-  source <(kubebuilder completion zsh)
-fi
-if [  $commands[nvim] ]; then
-  export NVIM_LISTEN_ADDRESS=/tmp/neovim/neovim
-fi
-
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
-
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-if [ $commands[bat] ]; then
-  #export BAT_THEME="1337"
-  #export BAT_THEME="DarkNeon"
-  #export BAT_THEME='Coldark-Dark'
-  #export BAT_THEME='Visual Studio Dark+'
-  export BAT_THEME='Catppuccin-mocha'
-  #alias cat="bat --plain"
-  cat() { bat --paging never --plain --plain "$@" }
-fi
-
-if [ $commands[prettyping] ]; then
-  alias ping='prettyping --nolegend'
-fi
-
-#if [ $commands[gotop] ]; then
-#  alias gotop='gotop -c monokai -p'
-#fi
-
-if [ $commands[gdu] ]; then
-  alias du='gdu -n'
-fi
-
-if [ $commands[duf] ]; then
-  alias df='duf'
-fi
-
-# infocmp $TERM | sed 's/kbs=^[hH]/kbs=\177/' > $TERM.ti
-# tic $TERM.ti
-# alias tf=terraform
-
-# complete -o nospace -C /usr/local/bin/mc mc
-
-# unalias dcl
-# dcl(){ 
-#   git clone "${PWD##*/}/$*" 
-# }
-
-export PATH="$HOME/.cargo/bin:$PATH"
 export FZF_DEFAULT_COMMAND="fd --type file --color=always"
 export FZF_DEFAULT_OPTS="--ansi"
 
-export nflx_registries=( us-east-1.streamingtest eu-west-1.streamingtest us-west-2.streamingtest )
+# ============================================================================
+# Tool-specific Environment Variables
+# ============================================================================
 
-export DOCKER_BUILDKIT=1
+export MAVEN_OPTS="-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
+export KUBECACHEDIR="$HOME/Library/Caches/kubectl"
 
-function awscreds {
-    if [[ $# -ne 1 ]]; then
-        echo "usage: awscreds [list|ROLENAME]"
-    else
-        if [[ "$1" == "list" ]]; then
-            newt --app-type awscreds roles
-        else
-            newt --app-type awscreds refresh -r $1 $1
-        fi
-    fi
-}
-
-alias roles="newt --app-type awscreds roles"
-alias assume="newt --app-type awscreds refresh -r"
-export METATRON_USER="iportocarrero@netflix.com"
-
-ghcl() {
-  clurl="$1"
-	lpath="$HOME/github"
-	if [[ ${#${1//[^\/]}} -gt 1 ]]
-	then
-		lpath="${lpath}/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
-	else
-		lpath="${lpath}/$(echo $1 | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
-		clurl="https://github.com/$1"
-	fi
-
-  # lpath="$HOME/github/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
-  git clone "$clurl" "$lpath"
-  cd $lpath
-}
-
-stcl () {
-	clurl="$1"
-	lpath="$HOME/nflx"
-	if [[ ${#${1//[^\/]}} -gt 1 ]]
-	then
-		lpath="${lpath}/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
-	else
-		lpath="${lpath}/$(echo $1 | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
-		clurl="https://stash.corp.netflix.com/scm/$1"
-	fi
-	hub clone "$clurl" "$lpath"
-	cd $lpath
-}
-
-goheapprof() { 
-  go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap 
-}
-
-gocpuprof() { 
-  go tool pprof -http=:7136 http://$1:7001/debug/pprof/profile 
-}
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-
-jwtdecode() {
-    if [ $# -eq 0 ]
-      then
-        jwt=$(wl-paste)
-      else
-        jwt=$1
-    fi
-    jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$jwt"
-}
-
+# Bat configuration (OMZ bat plugin will handle aliases)
+export BAT_THEME='Catppuccin-mocha'
 export MANPAGER="sh -c 'col -bx | bat -l man -p'" MANROFFOPT='-c'
 
-
-#if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then . $HOME/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
-if [ -e $HOME/.sdkman/bin/sdkman-init.sh ]; then . $HOME/.sdkman/bin/sdkman-init.sh; fi # added by sdkman installer
-
-#export BAT_THEME="Catppuccin-mocha"
-
-
-autoload -Uz compinit && compinit -i
-
-# alias k=kubectl
-export GITHUB_USER=casualjim
-#export BAT_THEME="Visual Studio Dark+"
-
-export NVM_DIR="$HOME/.nvm"
-export PATH="${PATH}:${HOME}/.krew/bin"
+# Kubernetes path
+[[ ":$PATH:" != *":$HOME/.krew/bin:"* ]] && export PATH="$HOME/.krew/bin:${PATH}"
 [[ ":$PATH:" != *":$HOME/.kube/bin:"* ]] && export PATH="$HOME/.kube/bin:${PATH}"
 
-export KUBECACHEDIR=~/Library/Caches/kubectl
-
-
-if [ $commands[starship] ]; then
-  eval "$(starship init zsh)"
-fi
+# ============================================================================
+# Load Antidote Plugin Manager
+# ============================================================================
 
 if [[ -f /usr/share/zsh-antidote/antidote.zsh ]]; then
   source '/usr/share/zsh-antidote/antidote.zsh'
@@ -234,43 +139,151 @@ elif [[ -f "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh" ]]; then
   source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh"
   antidote load
 fi
-[[ -f ~/.zsh_plugins.zsh ]] && source ~/.zsh_plugins.zsh
 
+[[ -f "$HOME/.zsh_plugins.zsh" ]] && source "$HOME/.zsh_plugins.zsh"
+
+# ============================================================================
+# Plugin Post-configuration
+# ============================================================================
+
+# Remove unwanted git plugin aliases
+for todisable in gup gupv gupa gupav gupom gupomi; do
+  unalias $todisable 2>/dev/null
+done
+
+# History substring search keybindings
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
-# eval $(grc-rs --aliases)
-[[ -s /opt/homebrew/etc/grc.zsh ]] && source /opt/homebrew/etc/grc.zsh
+# ============================================================================
+# Custom Functions
+# ============================================================================
 
 
-if [ $commands[newt] ]; then
-  eval "$(NEWT_OFFLINE=1 NEWT_QUIET=1 newt --completion-script-zsh)"
+# Clone GitHub repositories to ~/github
+ghcl() {
+  clurl="$1"
+	lpath="$HOME/github"
+	if [[ ${#${1//[^\/]}} -gt 1 ]]
+	then
+		lpath="${lpath}/$(echo "$1" | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+	else
+		lpath="${lpath}/$(echo "$1" | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
+		clurl="https://github.com/$1"
+	fi
+
+  git clone "$clurl" "$lpath"
+  cd "$lpath" || return
+}
+
+# Clone Wagyu repositories to ~/wagyu
+wcl() {
+  clurl="$1"
+	lpath="$HOME/wagyu"
+	if [[ ${#${1//[^\/]}} -gt 1 ]]
+	then
+		lpath="${lpath}/$(echo "$1" | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
+	else
+		lpath="${lpath}/$(echo "$1" | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
+		clurl="https://git.wagyu.icu/$1"
+	fi
+
+  git clone "$clurl" "$lpath"
+  cd "$lpath" || return
+}
+
+# Go profiling helpers
+goheapprof() { 
+  go tool pprof -http=:7142 "http://$1:7001/debug/pprof/heap"
+}
+
+gocpuprof() { 
+  go tool pprof -http=:7136 "http://$1:7001/debug/pprof/profile"
+}
+
+# JWT decode helper
+jwtdecode() {
+    if [ $# -eq 0 ]
+      then
+        jwt="$(wl-paste)"
+      else
+        jwt="$1"
+    fi
+    jq -R 'split(".") | .[1] | @base64d | fromjson' <<< "$jwt"
+}
+
+# Yazi file manager integration
+function y() {
+  local tmp
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+  yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d '' cwd < "$tmp"
+  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd" || exit 1
+  rm -f -- "$tmp"
+}
+
+# ============================================================================
+# Additional Tool Integrations
+# ============================================================================
+
+# Hub (Git wrapper) - gh plugin handles this now, but keep for backwards compat
+if [ "${commands[hub]}" ]; then
+  eval "$(hub alias -s)"
 fi
 
-[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
+# ============================================================================
+# Custom Aliases (those not provided by OMZ plugins)
+# ============================================================================
 
-if [ $commands[eza] ]; then
-  alias l='eza -lh --git'
-  alias la='eza -lah --git'
-  alias ll='eza -lh --git'
-  alias ls='eza -G'
-  alias lsa='eza -lah --git'
-  alias tree='eza --tree'
+# bat - better cat
+if [ "${commands[bat]}" ]; then
+  alias cat='bat --paging never --plain --plain'
 fi
 
-alias ktest="kubectl --context infraapi-test"
-alias kprod="kubectl --context infraapi-prod"
+
+# Additional utility aliases
+if [ "${commands[prettyping]}" ]; then
+  alias ping='prettyping --nolegend'
+fi
+
+if [ "${commands[nping]}" ]; then
+  alias ping='nping'
+fi
+
+if [ "${commands[gdu]}" ]; then
+  alias du='gdu -n'
+fi
+
+
+if [ "${commands[dust]}" ]; then
+  alias du='dust'
+fi
+
+if [ "${commands[duf]}" ]; then
+  alias df='duf'
+fi
+
 alias humanlog='humanlog --skip-unchanged=false --truncate=false'
 
+# ============================================================================
+# Final Integrations
+# ============================================================================
 
-# Added by Windsurf
-export PATH="/Users/ivan/.codeium/windsurf/bin:$PATH"
+# FZF integration
+[ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
 
-# bun completions
-[ -s "/Users/ivan/.bun/_bun" ] && source "/Users/ivan/.bun/_bun"
+# Local customizations
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
 
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
+# ============================================================================
+# McFly - Must be at the very end
+# ============================================================================
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+eval "$(mcfly init zsh)"
+
+# ============================================================================
+# Shell Options - Must be dead last
+# ============================================================================
+
+setopt nocorrectall
+
