@@ -1,0 +1,13 @@
+# Linux-only global config (loaded via auto_env; macOS never sees this).
+[env]
+# Docker API clients (compose, testcontainers) talk to the rootless podman socket.
+DOCKER_HOST = "unix://{{env.XDG_RUNTIME_DIR}}/podman/podman.sock"
+
+# Wayland-only session. Only shells with mise activated get these; GUI apps started from the
+# launcher do not (that would need niri's environment block).
+QT_QPA_PLATFORM = "wayland"
+MOZ_ENABLE_WAYLAND = "1"
+
+[dotfiles]
+# `zed` is `zeditor` on Arch. A script, not a shell alias, so launchers and Noctalia plugins find it.
+"~/.local/bin/zed" = {}

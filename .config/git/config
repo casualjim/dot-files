@@ -1,0 +1,48 @@
+# Shared git config, tracked in the dotfiles repo. Git reads this first and ~/.gitconfig after it,
+# so ~/.gitconfig (untracked: identity, signing, whatever `git config --global` or gh writes)
+# can override anything here. Set your identity with `mise run git-identity`.
+
+[user]
+	# Refuse to guess a name and email from the hostname; they must be configured.
+	useConfigOnly = true
+
+[core]
+	excludesfile = ~/.gitignore_global
+	pager = delta
+
+[alias]
+	st = status
+	ci = commit
+	co = checkout
+	br = branch
+	up = push
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
+	patch = --no-pager diff --no-color
+
+[fetch]
+	prune = true
+
+[pull]
+	rebase = false
+
+[help]
+	autocorrect = 1
+
+# GitHub through the gh CLI. The empty helper line clears any inherited helper first.
+[credential "https://github.com"]
+	helper =
+	helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !gh auth git-credential
+
+# Machine-local git config (untracked). Shared settings live in ~/.config/git/config,
+# which git reads first. Identity goes here: run `mise run git-identity`.
+[credential "https://code.lotsa.ai"]
+  useHttpPath = true
+  helper =
+  helper = !GITEA_CLI_CONFIG_DIR=$HOME/.config/gitea-cli /usr/bin/gt auth git-credential --host https://code.lotsa.ai
+
+# Per-OS bits (macOS: osxkeychain). Only created where mise writes it; a missing file is ignored.
+[include]
+	path = ~/.config/git/os.gitconfig

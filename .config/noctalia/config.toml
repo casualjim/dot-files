@@ -1,0 +1,59 @@
+[shell]
+polkit_agent = true
+
+# Plugins come from the two default git sources: official (noctalia/*) and community.
+[plugins]
+enabled = [
+  "noctalia/world_clock",
+  "noctalia/bitwarden",
+  "davemhammer/gocryptfs",
+  "davemhammer/tailscale",
+  "harveywuk/airpods",
+  "gabedunn/voxtype",
+  "aabidk20/yt-music",
+  "cleboost/zed-provider",
+  "noctalia/screen_recorder",
+]
+
+# Bar layout. These lists replace the built-in defaults, so the stock widgets are restated.
+# Plugin widgets are named "<author>/<plugin>:<entry>" and need the plugin enabled above.
+# bitwarden and zed-provider have no bar widget: they are launcher providers (type /bw in the launcher).
+[bar.default]
+start  = ["launcher", "wallpaper", "workspaces"]
+center = ["clock", "noctalia/world_clock:bar"]
+end = [
+  "media",
+  "aabidk20/yt-music:widget",
+  "tray",
+  "davemhammer/tailscale:status",
+  "davemhammer/gocryptfs:status",
+  "gabedunn/voxtype:status",
+  "noctalia/screen_recorder:recorder",
+  "harveywuk/airpods:airpods",
+  "notifications",
+  "clipboard",
+  "network",
+  "bluetooth",
+  "volume",
+  "brightness",
+  "battery",
+  "control-center",
+  "session",
+]
+
+[idle]
+behavior_order = ["lock", "screen-off", "suspend"]
+pre_action_fade_seconds = 3.0
+
+[idle.behavior.lock]
+action = "lock"
+timeout = 300
+
+[idle.behavior.screen-off]
+action = "screen_off"
+timeout = 330
+locked_timeout = 30
+
+[idle.behavior.suspend]
+action = "lock_and_suspend"
+timeout = 1200

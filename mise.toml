@@ -1,0 +1,299 @@
+# Provisioning for galileo: CachyOS + niri + Noctalia on a Minisforum AI X1 Pro 470.
+#
+# This file lists only what was added on top of a fresh CachyOS install. Things the
+# installer provides (kernel, firmware, fprintd, snapper, limine, NetworkManager ...)
+# are deliberately not repeated here.
+#
+# Global tools and the [dotfiles] table live in ~/.config/mise/config.toml.
+# Run from this directory (after `mise trust`):
+#   mise bootstrap --dry-run     preview everything
+#   mise bootstrap               apply
+#   mise tasks                   one-off, interactive steps (hardware, logins, secrets)
+
+# ---------------------------------------------------------------------------
+# Packages
+# ---------------------------------------------------------------------------
+[bootstrap.packages]
+# Official and CachyOS repositories
+"pacman:paru" = "latest"
+"pacman:brave-bin" = "latest"
+"pacman:claude-desktop" = "latest"
+"pacman:zed" = "latest"
+"pacman:ghostty" = "latest"
+"pacman:bitwarden" = "latest"
+"pacman:tailscale" = "latest"
+"pacman:greetd" = "latest"
+"pacman:greetd-tuigreet" = "latest"
+"pacman:libfido2" = "latest"
+"pacman:cachy-update" = "latest"
+# Smart cards and YubiKey (CCID): pcscd talks to the reader, Yubico Authenticator uses it.
+"pacman:pcsclite" = "latest"
+"pacman:ccid" = "latest"
+# Rootless containers: podman runs as the user, no daemon, no docker group.
+# podman-docker supplies a `docker` command that calls podman; passt provides pasta networking.
+"pacman:podman" = "latest"
+"pacman:podman-docker" = "latest"
+"pacman:docker-compose" = "latest"
+"pacman:passt" = "latest"
+"pacman:ttf-mona-sans" = "latest"
+"pacman:ttf-monaspace-variable" = "latest"
+"pacman:otf-monaspace-nerdfonts" = "latest"
+# Serif stays IBM Plex; sans and mono are Mona Sans and Monaspace.
+"pacman:ttf-ibm-plex" = "latest"
+# AUR (built by paru as the regular user)
+"aur:dropbox" = "latest"
+# Dropbox draws its tray icon through an AppIndicator library, or falls back to an X11
+# tray that Noctalia does not host. Not tested yet: if it is not the one Dropbox loads,
+# try the AUR libappindicator-gtk3 instead.
+"pacman:libayatana-appindicator" = "latest"
+"aur:yubico-authenticator-bin" = "latest"
+"aur:zapzap-bin" = "latest"
+"aur:zsh-antidote" = "latest"
+"aur:tmog-bin" = "latest"
+
+# Carried over from the previous machine's `paru -Qm` (everything mise can install is in
+# ~/.config/mise/config.toml instead).
+"aur:google-chrome" = "latest"
+"aur:ledger-live-bin" = "latest"
+"aur:ledger-udev" = "latest"
+"aur:musl-cross-bin" = "latest"
+"aur:ttf-ms-fonts" = "latest"
+# The previous machine had telegram-desktop-bin; the official package is newer than that one.
+"pacman:telegram-desktop" = "latest"
+# valkey-cli (also installs the server, which stays stopped) and the Gitea CLI (`tea`).
+"pacman:valkey" = "latest"
+"pacman:gitea-cli" = "latest"
+# prettyping: a single bash script that wraps ping (used by the ping alias).
+"pacman:prettyping" = "latest"
+# noctalia/screen_recorder plugin: gpu-screen-recorder records, slurp picks a region.
+"pacman:gpu-screen-recorder" = "latest"
+"pacman:slurp" = "latest"
+
+# Chat and secrets
+"pacman:discord" = "latest"
+"pacman:signal-desktop" = "latest"
+"pacman:gopass" = "latest"
+"pacman:gocryptfs" = "latest"
+
+# Needed by Noctalia plugins (see [plugins].enabled in .config/noctalia/config.toml)
+# yt-music: yt-dlp, mpv, mpv-mpris. bitwarden: bw comes from the mise tool, wtype is for Autotype.
+"pacman:yt-dlp" = "latest"
+"pacman:mpv" = "latest"
+"pacman:mpv-mpris" = "latest"
+"pacman:wtype" = "latest"
+# voxtype: push-to-talk dictation. The prebuilt binary avoids a long compile, and it also
+# installs /usr/bin/voxtype-audio-bridge, which the plugin's live overlay needs.
+"aur:voxtype-bin" = "latest"
+# airpods needs a patched librepods fork (librepods-ctl + daemon with a status verb); the
+# CachyOS `librepods` package is upstream and lacks them, so it is deliberately not listed.
+
+# ---------------------------------------------------------------------------
+# Accounts
+# ---------------------------------------------------------------------------
+# /dev/tpmrm0 is group tss; the TPM-sealed keyring credential needs it.
+# voxtype reads the keyboard for its push-to-talk hotkey, which needs the input group
+# (log out and back in after it is added).
+[bootstrap.users.ivan]
+group = "ivan"
+groups = ["tss", "input"]
+
+# ---------------------------------------------------------------------------
+# System files (copied from ./system, owned by root)
+# ---------------------------------------------------------------------------
+# greetd: autologin into niri-session, tuigreet as the fallback login.
+[bootstrap.files."/etc/greetd/config.toml"]
+source = "./system/etc/greetd/config.toml"
+owner = "root"
+group = "root"
+mode = "0644"
+
+# polkit: let ivan's local session decrypt TPM-sealed credentials without a prompt.
+[bootstrap.files."/etc/polkit-1/rules.d/49-keyring-unlock.rules"]
+source = "./system/etc/polkit-1/rules.d/49-keyring-unlock.rules"
+owner = "root"
+group = "root"
+mode = "0644"
+
+# podman-docker: an empty marker file silences "Emulate Docker CLI using podman" on every call.
+[bootstrap.files."/etc/containers/nodocker"]
+content = ""
+owner = "root"
+group = "root"
+mode = "0644"
+
+# mkinitcpio: systemd initrd with sd-encrypt (FIDO2 LUKS) and an early keyboard hook.
+# After this changes, run: mise run rebuild-initramfs
+[bootstrap.files."/etc/mkinitcpio.conf.d/05-fido2-luks.conf"]
+source = "./system/etc/mkinitcpio.conf.d/05-fido2-luks.conf"
+owner = "root"
+group = "root"
+mode = "0644"
+
+# ---------------------------------------------------------------------------
+# System services
+# ---------------------------------------------------------------------------
+# greetd runs the live session. NEVER restart it from here: on_change = "none".
+[bootstrap.services.greetd]
+state = "running"
+enabled = true
+on_change = "none"
+
+[bootstrap.services.tailscaled]
+state = "running"
+enabled = true
+
+# pcscd is socket-activated: the daemon starts on the first smart-card client.
+[bootstrap.services."pcscd.socket"]
+state = "running"
+enabled = true
+
+# sddm shipped with the install; greetd replaced it.
+[bootstrap.services.sddm]
+state = "stopped"
+enabled = false
+
+# ---------------------------------------------------------------------------
+# User services (systemd --user; no root)
+# ---------------------------------------------------------------------------
+# Rootless podman API socket, socket-activated. Clients use
+# DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
+[bootstrap.services."podman.socket"]
+scope = "user"
+state = "running"
+enabled = true
+
+# Keyring unlock: the packaged socket/service are masked so ours starts the daemon.
+[bootstrap.services."gnome-keyring-daemon.socket"]
+scope = "user"
+state = "stopped"
+enabled = false
+masked = true
+
+[bootstrap.services."gnome-keyring-daemon.service"]
+scope = "user"
+state = "stopped"
+enabled = false
+masked = true
+
+# keyring-unlock.service is a dotfile (~/.config/systemd/user/); mise only enables it.
+[bootstrap.services."keyring-unlock.service"]
+scope = "user"
+enabled = true
+
+# zage ships its own unit (`zage service install` writes zage.socket and zage.service),
+# so mise only keeps the state. Run `mise run zage-install` once before the first apply.
+[bootstrap.services."zage.socket"]
+scope = "user"
+state = "running"
+enabled = true
+
+[tasks.zage-install]
+description = "Write zage's systemd user units (Linux) or launchd agent (macOS)"
+run = "zage service install"
+
+# ---------------------------------------------------------------------------
+# One-off steps that need you present (hardware, logins, secrets)
+# ---------------------------------------------------------------------------
+[tasks.link-global-config]
+description = "FIRST step on a new machine: link ~/.config/mise/config.toml to this repo's copy"
+# mise cannot deploy the config that declares its own [dotfiles] table, so this one link
+# is made by hand (or by this task). After it, `mise bootstrap` does the rest.
+run = """
+mkdir -p "$HOME/.config/mise"
+ln -sf "$MISE_PROJECT_ROOT/.config/mise/config.toml" "$HOME/.config/mise/config.toml"
+"""
+
+[tasks.rebuild-initramfs]
+description = "Rebuild the initramfs and the Limine entries after touching mkinitcpio config"
+run = "sudo mkinitcpio -P && sudo limine-update"
+
+[tasks.seal-keyring]
+description = "Seal the login keyring password to this machine's TPM (re-run after changing it)"
+run = """
+systemd-ask-password "Keyring password:" | tr -d '\\n' \\
+  | systemd-creds encrypt --with-key=tpm2 --name=keyring - "$HOME/.config/keyring-unlock.cred"
+chmod 600 "$HOME/.config/keyring-unlock.cred"
+"""
+
+[tasks.enroll-fido2]
+description = "List FIDO2 devices and enroll a token as a LUKS keyslot (interactive, needs a touch)"
+# TODO: confirm the exact user-verification / PIN flags used originally against
+# `sudo cryptsetup luksDump "$LUKS_DEV"` before relying on this on a new machine.
+run = """
+: "${LUKS_DEV:=/dev/nvme0n1p2}"
+systemd-cryptenroll --fido2-device=list
+sudo systemd-cryptenroll --fido2-device=auto "$LUKS_DEV"
+"""
+
+[tasks.resolv-stub]
+description = "Point /etc/resolv.conf at systemd-resolved's stub (needed for Tailscale MagicDNS)"
+run = """
+sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+sudo systemctl restart NetworkManager
+"""
+
+# Voxtype's settings live in ~/.config/voxtype/config.toml, which Voxtype rewrites atomically,
+# so it is not symlinked from this repo. `voxtype config set` is idempotent and keeps comments.
+[tasks.voxtype-config]
+description = "Apply our Voxtype settings: Right Ctrl push-to-talk, own OSD off (the Noctalia plugin draws it)"
+run = """
+voxtype config set hotkey.key RIGHTCTRL
+voxtype config set hotkey.mode push_to_talk
+voxtype config set osd.enabled false
+"""
+
+[tasks.voxtype-setup]
+description = "Voxtype with Qwen3-ASR: settings, model, and user service (log out/in first for the input group)"
+depends = ["voxtype-config"]
+# Not a [bootstrap.services] entry: started without a model the service fails at every login.
+# Qwen3-ASR 0.6B (Q8, ~850 MB) runs through Voxtype's shared `gguf` engine; --activate writes
+# engine = "gguf" and the model into ~/.config/voxtype/config.toml.
+run = """
+voxtype setup --download --model Qwen3-ASR-0.6B-Q8_0.gguf --activate --no-post-install
+voxtype config validate-selection
+systemctl --user enable --now voxtype
+"""
+
+[tasks.voxtype-parakeet]
+description = "Voxtype with Parakeet Ultra (Q8, 25 European languages): settings, model, and user service"
+depends = ["voxtype-config"]
+# Same flow as voxtype-setup with a different model. Run either one; the last one run wins.
+run = """
+voxtype setup --download --model parakeet-ultra-Q8_0.gguf --activate --no-post-install
+voxtype config validate-selection
+systemctl --user enable --now voxtype
+systemctl --user try-restart voxtype
+"""
+
+[tasks.voxtype-gpu]
+description = "Optional: enable Voxtype's GPU (Vulkan) backend; vulkan-radeon is already installed"
+run = "sudo voxtype setup gpu --enable"
+
+[tasks.jj-identity]
+description = "Set your jj name and email in ~/.config/jj/conf.d/10-user.toml (kept out of this public repo)"
+run = """
+mkdir -p "$HOME/.config/jj/conf.d"
+touch "$HOME/.config/jj/conf.d/10-user.toml"
+chmod 600 "$HOME/.config/jj/conf.d/10-user.toml"
+printf 'jj user name: '; read -r name
+printf 'jj user email: '; read -r email
+jj config set --file "$HOME/.config/jj/conf.d/10-user.toml" user.name "$name"
+jj config set --file "$HOME/.config/jj/conf.d/10-user.toml" user.email "$email"
+"""
+
+[tasks.git-identity]
+description = "Set your git name and email in ~/.gitconfig (kept out of this public repo)"
+run = """
+printf 'git user name: '; read -r name
+printf 'git user email: '; read -r email
+git config --global user.name "$name"
+git config --global user.email "$email"
+"""
+
+[tasks.tailscale-up]
+description = "Join the tailnet (opens a login URL)"
+run = "sudo tailscale up --operator=$USER --accept-routes --accept-dns"
+
+[tasks.bat-cache]
+description = "Rebuild bat's theme cache after the Catppuccin themes change"
+run = "bat cache --build"

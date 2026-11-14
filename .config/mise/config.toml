@@ -1,0 +1,148 @@
+[settings]
+idiomatic_version_file_enable_tools = ["python"]
+# Set these too — mise's internal rust tool reads them BEFORE [env] is processed (#8943)
+# Redundancy is the workaround for the ordering bug
+#rust.cargo_home = "/home/ivan/.cargo"
+#rust.rustup_home = "/home/ivan/.rustup"
+color_theme = "catppuccin"
+
+[settings.dotfiles]
+root = "/home/ivan/github/casualjim/dot-files"
+
+[tools]
+cargo-binstall = "latest"
+cargo-dist = "latest"
+"cargo:cargo-release" = "latest"
+"cargo:cargo-zigbuild" = "latest"
+"cargo:grc-rs" = "latest"
+"aqua:nextest-rs/nextest/cargo-nextest" = "latest"
+go = "latest"
+gup = "latest"
+node = "lts"
+sops = "latest"
+zig = "latest"
+"github:rtk-ai/rtk" = "latest"
+fnox = "latest"
+watchexec = "latest"
+ast-grep = "latest"
+"github:casualjim/arkham" = "latest"
+kubectl = "latest"
+"github:cloudnative-pg/cloudnative-pg" = "latest"
+"github:longbridge/nsh" = "latest"
+"github:cantino/mcfly" = "latest"
+"github:casualjim/zage" = "latest"
+"github:casualjim/umber" = "latest"
+"github:casualjim/remark" = "latest"
+tealdeer = "latest"
+delta = "latest"
+eza = "latest"
+fd = "latest"
+btop = "latest"
+ripgrep = "latest"
+fzf = "latest"
+jq = "latest"
+gdu = "latest"
+duf = "latest"
+helix = "latest"
+yazi = "latest"
+uv = "latest"
+curlie = "latest"
+bat = "latest"
+worktrunk = "latest"
+bitwarden = "latest"
+bitwarden-secrets-manager = "latest"
+
+# Dev tools carried over from the previous machine's `paru -Qm`.
+act = "latest"
+devcontainer-cli = "latest"
+duckdb = "latest"
+emsdk = "latest"
+"github:ferronweb/ferron" = "latest"
+flyctl = "latest"
+"aqua:fullstorydev/grpcui" = "latest"
+grpcurl = "latest"
+hcloud = "latest"
+"github:apricote/hcloud-upload-image" = "latest"
+jj = "latest"
+jjui = "latest"
+k3d = "latest"
+kubelogin = "latest"
+"github:LadybugDB/ladybug" = "latest"
+"aqua:go-acme/lego" = "latest"
+"cargo:lspmux" = "latest"
+"aqua:nats-io/natscli" = "latest"
+restate = "latest"
+slsa-verifier = "latest"
+gh = "latest"
+
+[tools.rust]
+version = "stable"
+profile = "default"
+components = "llvm-tools,rust-analyzer"
+targets = "x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,aarch64-apple-darwin,aarch64-apple-ios-sim,wasm32-unknown-unknown,wasm32-wasip2"
+
+# ~/.config/mise/config.toml — global
+[env]
+# PATH additions, in the order they appear on PATH (first is searched first).
+_.path = [
+  "~/.microsandbox/bin",
+  "~/.humanlog/bin",
+  "~/.kube/bin",
+  "~/go/bin",
+  "~/.local/bin",
+  "~/.cargo/bin",
+  { path = "~/.krew/bin", position = "append" },
+]
+# Pin CARGO_HOME to a stable location OUTSIDE mise's data directory
+#CARGO_HOME = "{{ env.HOME }}/.cargo"
+#RUSTUP_HOME = "{{ env.HOME }}/.rustup"
+
+COLORTERM = "truecolor"
+LANG = "en_US.utf-8"
+CLICOLOR = "1"
+EDITOR = "hx"
+VISUAL = "hx"
+FZF_DEFAULT_COMMAND = "fd --type file --color=always"
+FZF_DEFAULT_OPTS = "--ansi"
+JAVA_OPTS = "-Dfile.encoding=UTF-8"
+GCC_COLORS = "error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01"
+MAVEN_OPTS = "-Xms512m -Xmx1g -XX:MaxPermSize=384m -Xss4m -XX:ReservedCodeCacheSize=128m"
+GITHUB_USER = "casualjim"
+OPENSPEC_TELEMETRY = "0"
+ZAGE_SUGGEST_TIMEOUT = "2s"
+ZAGE_ALIAS_FILE = "{{env.HOME}}/.config/zage/aliases"
+MANPAGER = "sh -c 'col -bx | bat -l man -p'"
+MANROFFOPT = "-c"
+
+# Interactive aliases, set when mise is activated (the oh-my-zsh mise plugin does that).
+# The eza aliases are not here: the oh-my-zsh eza plugin loads after mise and would override
+# them, so they live in ~/.zshrc after the plugins.
+[shell_alias]
+du = "gdu -n"
+df = "duf"
+cat = "umber"
+ping = "prettyping --nolegend"
+humanlog = "humanlog --skip-unchanged=false --truncate=false"
+
+[dotfiles]
+"~/.config/bat/config" = { content = "--theme=\"Catppuccin-mocha\"\n" }
+"~/.config/bat/themes/Catppuccin-frappe.tmTheme" = {}
+"~/.config/bat/themes/Catppuccin-latte.tmTheme" = {}
+"~/.config/bat/themes/Catppuccin-macchiato.tmTheme" = {}
+"~/.config/bat/themes/Catppuccin-mocha.tmTheme" = {}
+"~/.config/btop/btop.conf" = { mode = "copy" }
+"~/.config/fontconfig/conf.d/20-no-embedded.conf" = {}
+"~/.config/fontconfig/fonts.conf" = {}
+"~/.config/ghostty/config" = {}
+"~/.config/git/config" = {}
+"~/.config/jj/config.toml" = {}
+"~/.config/mise/config.linux.toml" = {}
+"~/.config/mise/config.macos.toml" = {}
+"~/.config/mise/miserc.toml" = {}
+"~/.config/niri" = { mode = "symlink-each" }
+"~/.config/noctalia/config.toml" = {}
+"~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
+"~/.local/bin/keyring-unlock" = { mode = "copy" }
+"~/.p10k.zsh" = {}
+"~/.zsh_plugins.txt" = {}
+"~/.zshrc" = {}

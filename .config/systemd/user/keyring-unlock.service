@@ -1,0 +1,14 @@
+[Unit]
+Description=Start gnome-keyring with the login keyring unlocked from a TPM-sealed credential
+Documentation=man:systemd-creds(1)
+Before=graphical-session-pre.target
+ConditionPathExists=%h/.config/keyring-unlock.cred
+
+[Service]
+# gnome-keyring-daemon --login forks once the daemon is up and the keyring unlocked,
+# so Type=forking makes the target wait until that is true.
+Type=forking
+ExecStart=%h/.local/bin/keyring-unlock
+
+[Install]
+WantedBy=graphical-session-pre.target

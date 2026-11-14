@@ -1,0 +1,4 @@
+#!/bin/sh
+# Arch and CachyOS install the Zed CLI as `zeditor`; macOS and the docs call it `zed`.
+# Linux only (registered in config.linux.toml), so it never shadows the real macOS command.
+exec zeditor "$@"

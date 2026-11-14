@@ -1,0 +1,19 @@
+# Secrets and machine-bound material: never commit these.
+.config/mise/age.txt
+*.cred
+.config/keyring-unlock.cred
+*.age
+*.key
+
+# Runtime state and junk.
+.DS_Store
+.config/btop/btop.log
+.config/zed/conversations/
+.config/zed/embeddings/
+.config/zed/prompts/
+.config/zed/settings_backup.json
+.config/zed/.tmp*
+
+# jj: identity lives in conf.d (never tracked); repos/ is per-machine state keyed by repo id.
+.config/jj/conf.d/
+.config/jj/repos/

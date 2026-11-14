@@ -1,0 +1,6 @@
+# macOS-only global config (loaded via auto_env; Linux never sees this). Not tested yet.
+
+[dotfiles]
+# git has no per-OS conditional, so the macOS credential helper lives in a file that only this
+# config creates. ~/.config/git/config includes it, and a missing file is ignored on Linux.
+"~/.config/git/os.gitconfig" = { content = "[credential]\n\thelper = osxkeychain\n" }

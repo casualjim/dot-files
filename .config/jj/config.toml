@@ -1,0 +1,15 @@
+#:schema https://docs.jj-vcs.dev/latest/config-schema.json
+
+[ui]
+diff-formatter = "delta"
+
+[merge-tools.delta]
+program = "sh"
+diff-args = ["-c", """
+	if [ "$3" -gt 200 ]; then
+		exec delta --side-by-side "$1" "$2" --width="$3"
+	else
+		exec delta --features=one-window "$1" "$2" --width="$3"
+	fi
+""", "_", "$left", "$right", "$width"]
+diff-expected-exit-codes = [0, 1]

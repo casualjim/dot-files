@@ -1,0 +1,15 @@
+background-blur = 45
+background-opacity = 0.90
+clipboard-read = allow
+clipboard-write = allow
+cursor-style = "bar"
+font-family = "Monaspace Neon NF"
+font-size = 10
+theme = dark:catppuccin-mocha,light:catppuccin-latte
+minimum-contrast = 1.1
+scrollback-limit-bytes = 524288000
+shell-integration = zsh
+keybind = ctrl+shift+w=close_surface
+keybind = ctrl+shift+k=clear_screen
+keybind = ctrl+shift+(=new_split:right
+keybind = ctrl+shift+)=new_split:down

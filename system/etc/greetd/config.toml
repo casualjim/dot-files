@@ -1,0 +1,10 @@
+[terminal]
+vt = 1
+
+[initial_session]
+command = "niri-session"
+user = "ivan"
+
+[default_session]
+command = "tuigreet --time --remember --cmd niri-session"
+user = "greeter"

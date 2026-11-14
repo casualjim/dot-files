@@ -1,0 +1,11 @@
+#!/bin/bash
+# Start gnome-keyring with the login keyring unlocked from a TPM-sealed credential.
+# The password only ever travels through the pipe below, never argv or the environment.
+set -euo pipefail
+
+cred="$HOME/.config/keyring-unlock.cred"
+
+systemd-creds decrypt --name=keyring "$cred" - |
+    /usr/bin/gnome-keyring-daemon --login --daemonize \
+        --components=pkcs11,secrets \
+        --control-directory="$XDG_RUNTIME_DIR/keyring"
