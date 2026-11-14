@@ -4,3 +4,5 @@
 # git has no per-OS conditional, so the macOS credential helper lives in a file that only this
 # config creates. ~/.config/git/config includes it, and a missing file is ignored on Linux.
 "~/.config/git/os.gitconfig" = { content = "[credential]\n\thelper = osxkeychain\n" }
+# TODO: add the Gitea credential helper for code.lotsa.ai here once the gitea-cli config
+# directory on macOS is known. It is not the Linux path (~/.config/gitea-cli).

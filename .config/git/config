@@ -1,15 +1,12 @@
 # Shared git config, tracked in the dotfiles repo. Git reads this first and ~/.gitconfig after it,
-# so ~/.gitconfig (untracked: identity, signing, whatever `git config --global` or gh writes)
-# can override anything here. Set your identity with `mise run git-identity`.
+# so ~/.gitconfig (untracked: name, email, signing key, whatever `git config --global` or gh writes)
+# can override anything here. Restored whole from the old repo; only the identity moved out.
 
 [user]
-	# Refuse to guess a name and email from the hostname; they must be configured.
 	useConfigOnly = true
-
 [core]
-	excludesfile = ~/.gitignore_global
+	excludesfile = $HOME/.gitignore_global
 	pager = delta
-
 [alias]
 	st = status
 	ci = commit
@@ -18,15 +15,96 @@
 	up = push
 	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative --remotes=origin
 	patch = --no-pager diff --no-color
-
-[fetch]
-	prune = true
-
-[pull]
-	rebase = false
-
+	dft = difftool
+	dlog = "!f() { GIT_EXTERNAL_DIFF=difft git log -p --ext-diff $@; }; f"
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+[mirror]
+	summary = true
+[filter "media"]
+	clean = git-media-clean %f
+	smudge = git-media-smudge %f
+# [credential]
+	# helper = osxkeychain
+	# helper = /usr/lib/git-core/git-credential-libsecret
+	;helper = kwallet
+	;helper = /usr/libexec/git-core/git-credential-libsecret
+	;helper = /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret
+[diff]
+	tool = difftastic
+	# external = difft
+[difftool]
+	prompt = false
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+	difftool = true
 [help]
 	autocorrect = 1
+[fetch]
+	prune = true
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[pull]
+	rebase = false
+[commit]
+	gpgsign = false
+	;template = /Users/ivan/.stCommitMsg
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
+[http "https://pkg.re"]
+	followRedirects = true
+[gpg]
+	program = gpg
+	format = openpgp
+[protocol]
+	version = 2
+
+[delta]
+	# syntax-theme = Visual Studio Dark+
+	syntax-theme = Catppuccin-mocha
+	# features = decorations
+	# features = diff-so-fancy
+
+[interactive]
+	diffFilter = delta --color-only --features=interactive
+
+[delta "interactive"]
+	keep-plus-minus-markers = false
+
+
+
+[init]
+	defaultBranch = main
+
+[safe]
+	directory = /workspace
+[tag]
+	forceSignAnnotated = false
+[gpg "ssh"]
+	program = ssh-keygen
+	allowedSignersFile = ""
 
 # GitHub through the gh CLI. The empty helper line clears any inherited helper first.
 [credential "https://github.com"]
@@ -36,13 +114,7 @@
 	helper =
 	helper = !gh auth git-credential
 
-# Machine-local git config (untracked). Shared settings live in ~/.config/git/config,
-# which git reads first. Identity goes here: run `mise run git-identity`.
-[credential "https://code.lotsa.ai"]
-  useHttpPath = true
-  helper =
-  helper = !GITEA_CLI_CONFIG_DIR=$HOME/.config/gitea-cli /usr/bin/gt auth git-credential --host https://code.lotsa.ai
-
-# Per-OS bits (macOS: osxkeychain). Only created where mise writes it; a missing file is ignored.
+# Per-OS bits (macOS: osxkeychain; Linux: the Gitea helper). Only created where mise writes it;
+# a missing file is ignored.
 [include]
 	path = ~/.config/git/os.gitconfig

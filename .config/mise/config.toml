@@ -74,6 +74,7 @@ kubelogin = "latest"
 restate = "latest"
 slsa-verifier = "latest"
 gh = "latest"
+difftastic = "latest"
 
 [tools.rust]
 version = "stable"
