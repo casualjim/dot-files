@@ -1,0 +1,86 @@
+// hk: git hooks and checks for this repo. https://hk.jdx.dev
+//
+// Everything here only reports; nothing rewrites your files. The hooks run `fix = false`
+// and without stashing, so a hook never edits or hides your work.
+//
+// Run all of it by hand with `mise run check`. Install the git hooks with `mise run hooks`.
+// Note: jj does not run git hooks, so committing with `jj commit` skips them. Use
+// `mise run check` before committing with jj.
+//
+// Keep the version in both URLs below equal to `hk` in mise.toml.
+amends "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.12.0/hk@2.12.0#/Builtins.pkl"
+
+// Run every step and report all failures, not just the first.
+fail_fast = false
+
+local linters = new Mapping<String, Step> {
+  // Secrets: this repo is public.
+  ["betterleaks"] = Builtins.betterleaks
+  ["detect_private_key"] = Builtins.detect_private_key
+
+  // Repo hygiene.
+  ["check_merge_conflict"] = Builtins.check_merge_conflict
+  ["check_added_large_files"] = Builtins.check_added_large_files
+  ["check_executables_have_shebangs"] = Builtins.check_executables_have_shebangs
+  ["check_shebang_scripts_are_executable"] = Builtins.check_shebang_scripts_are_executable
+
+  // TOML: mise, noctalia, jj.
+  ["taplo"] = Builtins.taplo
+
+  // Shell: the scripts in .local/bin. shellcheck does not support zsh, so zsh has its own step.
+  ["shellcheck"] = Builtins.shellcheck
+  ["zsh"] {
+    glob = List(".zshrc", ".p10k.zsh")
+    check = "for f in {{files}}; do zsh -n \"$f\" || exit 1; done"
+  }
+
+  // Markdown.
+  ["rumdl"] = Builtins.rumdl
+
+  // XML: fontconfig files use .conf and the bat themes are .tmTheme plists.
+  ["xmllint"] = (Builtins.xmllint) {
+    glob = List("**/*.xml", "**/*.tmTheme", ".config/fontconfig/fonts.conf", ".config/fontconfig/conf.d/*.conf")
+  }
+
+  // KDL: niri validates its own config, includes and all.
+  ["niri"] {
+    glob = List(".config/niri/**/*.kdl")
+    condition = "exec_ok('command -v niri')"
+    check = "niri validate -c .config/niri/config.kdl"
+  }
+
+  // App configs that ship their own validator.
+  ["git-config"] {
+    glob = List(".config/git/config")
+    check = "git config --file .config/git/config --list > /dev/null"
+  }
+  ["ghostty"] {
+    glob = List(".config/ghostty/config")
+    condition = "exec_ok('command -v ghostty')"
+    check = "ghostty +validate-config --config-file=.config/ghostty/config"
+  }
+  // JavaScript, with oxc. These cover real .js and .ts files if any are added.
+  ["oxlint"] = Builtins.ox_lint
+  // oxfmt also formats TOML and Markdown; here it is limited to JavaScript and TypeScript.
+  ["oxfmt"] = (Builtins.oxfmt) {
+    glob = List("**/*.js", "**/*.mjs", "**/*.cjs", "**/*.ts")
+  }
+  // The polkit rule is JavaScript, but oxc picks the parser from the file extension and does not
+  // read .rules. So lint and format-check a temporary .js copy.
+  ["polkit-rules"] {
+    glob = List("system/etc/polkit-1/rules.d/*.rules")
+    check = "d=$(mktemp -d); for f in {{files}}; do cp \"$f\" \"$d/$(basename \"$f\").js\"; done; oxlint --deny-warnings \"$d\" && oxfmt --check \"$d\"; s=$?; rm -rf \"$d\"; exit $s"
+  }
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = false
+    stash = "none"
+    steps = linters
+  }
+  ["check"] {
+    steps = linters
+  }
+}

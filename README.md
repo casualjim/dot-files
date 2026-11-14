@@ -18,6 +18,7 @@ Nothing secret lives here. See [Secrets](#secrets).
 | `.config/` and `.local/` | Dotfiles, symlinked or copied into `~` by `mise dot apply`. |
 | `.zshrc`, `.zsh_plugins.txt`, `.p10k.zsh` | Shell (zsh, antidote, powerlevel10k). The same files are used on macOS. |
 | `system/` | Files that belong under `/etc`, copied there by `mise bootstrap`. |
+| `hk.pkl` | Checks and git hooks ([hk](https://hk.jdx.dev)). Run them with `mise run check`. |
 
 ## New machine
 
@@ -61,6 +62,22 @@ mise dot apply                # re-link dotfiles only
 Edit files in this repo, not the copies in `~` (most are symlinks into here). A few are
 copied instead, and need `mise dot apply` after a change: `btop.conf`, the keyring unit and
 script. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
+
+## Checks
+
+`hk.pkl` runs these on the repo's own files: `taplo` (TOML), `shellcheck` (the scripts), `zsh -n`
+(`.zshrc`, `.p10k.zsh`), `rumdl` (Markdown), `xmllint` (fontconfig and the bat themes),
+`niri validate` (KDL), the git and Ghostty config validators, `oxlint` (JavaScript, including the
+polkit rule), and `betterleaks` plus `detect-private-key` for secrets, since this repo is public.
+They only report; nothing rewrites your files.
+
+```bash
+mise run check    # every check on every file
+mise run hooks    # install the git pre-commit hook in this clone
+```
+
+jj does not run git hooks, so `jj commit` skips the pre-commit hook. Run `mise run check` before
+committing with jj. The tools are declared in `mise.toml`, so they are only active inside this repo.
 
 ## Things that will bite you
 

@@ -2,9 +2,8 @@
 // so the user unit keyring-unlock.service can run unattended at login.
 // Without this, `systemd-creds decrypt` as a normal user needs polkit admin auth
 // (io.systemd.credentials.decrypt) and the unit fails with InteractiveAuthenticationRequired.
-polkit.addRule(function(action, subject) {
-    if (action.id == "io.systemd.credentials.decrypt" &&
-        subject.user == "ivan" && subject.local) {
-        return polkit.Result.YES;
-    }
+polkit.addRule(function (action, subject) {
+  if (action.id == "io.systemd.credentials.decrypt" && subject.user == "ivan" && subject.local) {
+    return polkit.Result.YES;
+  }
 });

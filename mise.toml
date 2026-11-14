@@ -11,6 +11,19 @@
 #   mise tasks                   one-off, interactive steps (hardware, logins, secrets)
 
 # ---------------------------------------------------------------------------
+# Checks and git hooks (hk). Config in hk.pkl; run everything with `mise run check`.
+# ---------------------------------------------------------------------------
+[tools]
+# Keep this equal to the version in the URLs at the top of hk.pkl.
+hk = "2.12.0"
+betterleaks = "latest"
+taplo = "latest"
+shellcheck = "latest"
+rumdl = "latest"
+oxlint = "latest"
+oxfmt = "latest"
+
+# ---------------------------------------------------------------------------
 # Packages
 # ---------------------------------------------------------------------------
 [bootstrap.packages]
@@ -65,6 +78,8 @@
 "pacman:gitea-cli" = "latest"
 # prettyping: a single bash script that wraps ping (used by the ping alias).
 "pacman:prettyping" = "latest"
+# xmllint, used by the hk XML check.
+"pacman:libxml2" = "latest"
 # noctalia/screen_recorder plugin: gpu-screen-recorder records, slurp picks a region.
 "pacman:gpu-screen-recorder" = "latest"
 "pacman:slurp" = "latest"
@@ -194,6 +209,14 @@ run = "zage service install"
 # ---------------------------------------------------------------------------
 # One-off steps that need you present (hardware, logins, secrets)
 # ---------------------------------------------------------------------------
+[tasks.check]
+description = "Run every hk check on all files (the same checks as the git pre-commit hook)"
+run = "hk check --all"
+
+[tasks.hooks]
+description = "Install hk's git hooks in this clone (they run for git commit; jj does not run git hooks)"
+run = "hk install --mise"
+
 [tasks.link-global-config]
 description = "FIRST step on a new machine: link ~/.config/mise/config.toml to this repo's copy"
 # mise cannot deploy the config that declares its own [dotfiles] table, so this one link
