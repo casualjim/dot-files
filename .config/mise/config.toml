@@ -144,7 +144,6 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/bat/themes/Catppuccin-mocha.tmTheme" = {}
 "~/.config/btop/btop.conf" = { mode = "copy" }
 "~/.config/ghostty/config" = {}
-"~/.config/alacritty/alacritty.toml" = {}
 "~/.config/helix/config.toml" = {}
 "~/.config/helix/languages.toml" = {}
 "~/.config/helix/themes/catppuccin_mocha.toml" = {}
