@@ -1,0 +1,6 @@
+# Placement rules live in ~/.config/niri/cfg/rules.kdl; nirinit only brings the last session back.
+# Found launch commands come from the installed .desktop entries; map an app_id here when none matches.
+
+[skip]
+# Chrome is for streaming only: start it when you want it, not at every login.
+apps = ["google-chrome"]

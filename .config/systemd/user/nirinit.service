@@ -1,0 +1,13 @@
+[Unit]
+Description=Save and restore the niri window layout
+Documentation=https://github.com/amaanq/nirinit
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+# nirinit restores the saved session on start, then saves it every 300 seconds. mise's shim resolves the version.
+ExecStart=%h/.local/share/mise/shims/nirinit --save-interval 300
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

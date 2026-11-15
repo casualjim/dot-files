@@ -43,3 +43,30 @@
           // blur false
         }
     }
+
+    // Chrome is only for streaming (see the managed policy in system/etc/opt/chrome): second monitor (the Dell),
+    // one full-width column.
+    window-rule {
+        match app-id="^google-chrome"
+        open-on-output "Dell Inc. DELL P2715Q V7WP959M053L"
+        default-column-width { proportion 1.0; }
+    }
+
+    // Messengers and the authenticator open as half-width columns. niri has no rule to open a window inside
+    // an existing column, so stack two by hand with consume-or-expel-window-left/right.
+    window-rule {
+        match app-id="^signal$"
+        match app-id="^zapzap$"
+        match app-id="^TelegramDesktop$"
+        match app-id="^authenticator$"
+        default-column-width { proportion 0.5; }
+    }
+
+    // Proton Mail (which includes Calendar) and Proton Drive live on the second workspace of the first monitor (the LG).
+    window-rule {
+        match app-id="proton-mail"
+        match app-id="proton-drive"
+        match app-id="pdfs"
+        match app-id="narl"
+        open-on-workspace "mail"
+    }

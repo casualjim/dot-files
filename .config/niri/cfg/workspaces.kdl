@@ -1,0 +1,12 @@
+// ────────────── Named workspaces ──────────────
+// Window rules can only target a workspace by name. They are listed in order, so on the first monitor (the LG)
+// "main" is workspace 1 and "mail" is workspace 2. Outputs are matched by make/model/serial, which
+// survives the DP-n connector names moving around (`niri msg outputs`).
+
+workspace "main" {
+    open-on-output "LG Electronics LG ULTRAGEAR+ 503NTWG2P257"
+}
+
+workspace "mail" {
+    open-on-output "LG Electronics LG ULTRAGEAR+ 503NTWG2P257"
+}
