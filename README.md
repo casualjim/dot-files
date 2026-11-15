@@ -32,24 +32,47 @@ mise trust
 mise run link-global-config      # links ~/.config/mise/config.toml to this repo's copy
 mise install                     # tools first: zage-install below needs the zage binary
 mise run zage-install            # services in mise.toml expect zage's units to exist
+mise dot apply                   # BEFORE bootstrap: several user units are dotfiles (see below)
 mise bootstrap                   # accounts, packages, /etc files, services, dotfiles, tools
 ```
 
-Then the steps that need you present. `mise tasks` lists them:
+`mise dot apply` comes first because bootstrap enables services before it applies dotfiles, and
+`keyring-unlock.service`, `gpg-agent-pass.service` and `yubikey-drill.timer` are dotfiles. Without
+it the services step stops on a unit that does not exist yet. `mise dot apply` will not overwrite
+an existing regular file; remove the old one (or pass `--force`).
+
+Then the steps that need you present, in this order. **Log out and back in first**: bootstrap adds
+you to the `tss` and `input` groups, and the TPM and Voxtype need them.
+
+1. `mise run git-identity` and `mise run jj-identity`: your name and email, kept out of this public repo.
+2. `mise run seal-keyring`: seal the login keyring password to this TPM. Needs the keyring password.
+3. **GPG.** Copy `~/.gnupg` from a machine that has your keys, remove the lock files and sockets
+   that came with it (see [GPG and gopass](#gpg-and-gopass)), then `mise run seal-gpg`.
+4. **YubiKeys.** `mise run register-u2f` (touch each key in turn; any one registered key then
+   satisfies a polkit prompt). `yubikey-drill` runs the monthly check by hand; do it once now.
+5. **fnox.** `~/.config/fnox/config.toml` is not in this repo; restore it from another machine.
+   Then create this machine's TPM key (`age-plugin-tpm --generate -o ~/.config/fnox/tpm.txt`),
+   add its recipient to the config, and run `fnox reencrypt -p age` **on a machine that can already
+   decrypt**. Recreate `~/.config/fnox/yubikey.txt` from the YubiKey's identity
+   (`age-plugin-yubikey --identity`, add `--serial N` if several are plugged in). See
+   [fnox keys](#fnox-keys-age-hardware-backed).
+6. `mise run resolv-stub` and `mise run tailscale-up`: Tailscale MagicDNS and joining the tailnet.
+7. `mise run voxtype-setup` (or `voxtype-parakeet`): settings, a model, and the user service.
+   `voxtype-gpu` is an optional Vulkan backend.
+8. By hand: log in to Dropbox (the tray icon needs `libayatana-appindicator`, already installed) and
+   restart Noctalia through niri (`niri msg action spawn -- noctalia`), not from a terminal.
+9. Optional: `enroll-fido2` (a LUKS keyslot; **verify the flags first**, TODO in the task), then
+   `rebuild-initramfs` after touching the mkinitcpio drop-in.
+
+`mise tasks` lists every task. The ones not in the sequence above:
 
 | Task | When |
 | --- | --- |
-| `seal-keyring` | Seal the keyring password to the TPM. Needs `~/.config/keyring-unlock.cred` (never in the repo). |
-| `enroll-fido2` | Enroll a FIDO2 token as a LUKS keyslot. Interactive. **Verify the flags first** (TODO in the task). |
-| `rebuild-initramfs` | After the mkinitcpio drop-in changes. |
-| `resolv-stub`, `tailscale-up` | Tailscale MagicDNS and joining the tailnet. |
-| `voxtype-setup` or `voxtype-parakeet` | Voxtype settings, a model, and its user service. Log out and in first (the `input` group). |
-| `voxtype-gpu` | Optional Vulkan backend. |
-| `git-identity` | Set your git name and email in `~/.gitconfig`, which is untracked because this repo is public. Shared settings are in `.config/git/config`. |
-| `jj-identity` | Set your jj name and email. They live in an untracked `~/.config/jj/conf.d/10-user.toml`, because this repo is public. |
 | `bat-cache` | After the Catppuccin bat themes change. |
-
-Log out and back in after the first `mise bootstrap`: it adds you to the `tss` and `input` groups.
+| `check`, `hooks` | The repo's checks and the git pre-commit hook; see [Checks](#checks). |
+| `rebuild-initramfs` | After the mkinitcpio drop-in changes. |
+| `seal-keyring`, `seal-gpg` | Re-run after changing the keyring or GPG passphrase. |
+| `register-u2f` | Re-run to change which YubiKeys are registered. It rewrites the whole file. |
 
 ## Day to day
 
@@ -60,8 +83,8 @@ mise dot apply                # re-link dotfiles only
 ```
 
 Edit files in this repo, not the copies in `~` (most are symlinks into here). A few are
-copied instead, and need `mise dot apply` after a change: `btop.conf`, the keyring unit and
-script. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
+copied instead, and need `mise dot apply` after a change: `btop.conf`, and the units and scripts
+for the keyring, gpg-agent and yubikey-drill. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
 
 ## Checks
 
@@ -92,8 +115,14 @@ committing with jj. The tools are declared in `mise.toml`, so they are only acti
   unit does not exist yet (zage) aborts the whole services step, which is why `zage-install`
   comes first.
 - **The keyring unit needs the polkit rule** in `system/etc/polkit-1/`, or
-  `systemd-creds decrypt` as a normal user is refused. The packaged
-  `gnome-keyring-daemon.socket/.service` are masked on purpose.
+  `systemd-creds decrypt` as a normal user is refused. The rule also allows `encrypt`, which the
+  `seal-*` tasks need. The packaged `gnome-keyring-daemon.socket/.service` are masked on purpose.
+- **polkit prompts take a fingerprint or a YubiKey touch**, then the password
+  (`system/etc/pam.d/polkit-1`). `pam_faillock` locks the account for 10 minutes after 3 failed
+  passwords, and the Noctalia prompt can count one typed password twice. Do not keep typing into a
+  rejected prompt. `faillock --user ivan` shows the failures. `fprintd` also crashes now and then
+  (`free(): invalid pointer`, not fixed upstream as far as we know); the 5 s fingerprint timeout
+  keeps it from blocking the prompt.
 - **What lives in `.zshrc` and what in mise.** Environment variables, PATH entries and most
   aliases are in `.config/mise/config.toml` (Linux-only ones in `config.linux.toml`). They
   apply once the oh-my-zsh `mise` plugin has activated mise, partway through `antidote load`,
@@ -107,10 +136,10 @@ committing with jj. The tools are declared in `mise.toml`, so they are only acti
 
 ## Secrets
 
-Never committed (see `.gitignore`): `~/.config/mise/age.txt` (age key), `*.cred`
-(TPM-sealed credentials, tied to one machine's TPM), and `*.age`, `*.key`. Restore the age key
-from your password manager before using anything encrypted with it. After a TPM change or a
-new machine, re-seal the keyring with `mise run seal-keyring`.
+Never committed (see `.gitignore`): `*.cred` (TPM-sealed credentials, tied to one machine's
+TPM) and `*.age`, `*.key`. After a TPM change or a new machine, re-seal with
+`mise run seal-keyring` and `mise run seal-gpg`. The fnox, YubiKey and U2F files live under
+`~/.config/fnox` and `~/.config/Yubico`, outside this repo.
 
 ### fnox keys (age, hardware-backed)
 
@@ -134,9 +163,28 @@ opens a terminal once a drill is more than 25 days old and keeps asking daily un
 It decrypts a canary file with the YubiKey: one PIN attempt, one touch. Run it by hand any time
 with `yubikey-drill`. Three wrong PINs block the PIN, so stop after one miss.
 
+### GPG and gopass
+
+gpg-agent is unlocked at login the same way as the keyring, from a TPM-sealed credential:
+
+1. Copy `~/.gnupg` from a machine that has the keys (`rsync -aHz host:.gnupg ~`). Then delete the
+   lock files and socket stubs that came with it (`public-keys.d/.#lk*`, `pubring.db.lock`,
+   `S.*`), or `gpg` waits forever on a lock held by a process on the other machine.
+2. `mise dot apply`, then `mise bootstrap` (enables `gpg-agent-pass.service`).
+3. `mise run seal-gpg` asks for the passphrase once and seals it to this TPM.
+
+At login `gpg-agent-pass` presets the passphrase for the encryption subkey only. gopass can then
+decrypt without a prompt, and nothing can sign with the key. `gpg-agent.conf` allows presetting and
+caches for a day (a week at most); `systemctl --user restart gpg-agent-pass` after that.
+
 ## Not done yet
 
-- `gitconfig` still needs rewriting as a per-OS template.
+- gopass is installed but not set up (which store, and where it comes from). Git credentials
+  still use the OS keychain and `gh`; the plan is to move them to gopass.
+- The fnox secrets are readable by any process running as you. A lease-style system (fnox has
+  `lease`) would limit that.
+- `enroll-fido2` has unverified flags. The macOS Gitea credential helper is a TODO in
+  `config.macos.toml`.
 - Zed settings and the btop themes are not captured.
 - The bootstrap section is Linux (pacman and AUR) only. macOS and Ubuntu would need their own
   `[bootstrap.packages]`, possibly as platform-specific config files.

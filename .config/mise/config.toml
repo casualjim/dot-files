@@ -145,9 +145,13 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/mise/miserc.toml" = {}
 "~/.config/niri" = { mode = "symlink-each" }
 "~/.config/noctalia/config.toml" = {}
+"~/.gnupg/common.conf" = {}
+"~/.gnupg/gpg-agent.conf" = {}
 "~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
+"~/.config/systemd/user/gpg-agent-pass.service" = { mode = "copy" }
 "~/.config/systemd/user/yubikey-drill.service" = { mode = "copy" }
 "~/.config/systemd/user/yubikey-drill.timer" = { mode = "copy" }
+"~/.local/bin/gpg-agent-pass" = { mode = "copy" }
 "~/.local/bin/keyring-unlock" = { mode = "copy" }
 "~/.local/bin/yubikey-drill" = { mode = "copy" }
 "~/.p10k.zsh" = {}

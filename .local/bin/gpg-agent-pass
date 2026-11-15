@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Preset the GPG passphrase into gpg-agent from a TPM-sealed credential, so gopass and git
+# never stop to ask. Seal the passphrase once with `mise run seal-gpg`.
+#
+# Only the encryption subkeys are preset (gopass decrypts; it does not sign). The passphrase goes
+# through pipes, never argv or the environment.
+set -euo pipefail
+
+cred="${GPG_UNLOCK_CRED:-$HOME/.config/gpg-unlock.cred}"
+
+gpgconf --launch gpg-agent
+
+mapfile -t keygrips < <(
+  gpg --list-secret-keys --with-colons --with-keygrip |
+    awk -F: '$1=="sec"{e=0} $1=="ssb"{e=($12 ~ /e/)} $1=="grp" && e {print $10}'
+)
+
+if [[ ${#keygrips[@]} -eq 0 ]]; then
+  echo "gpg-agent-pass: no secret encryption subkey found" >&2
+  exit 1
+fi
+
+for keygrip in "${keygrips[@]}"; do
+  systemd-creds decrypt --name=gpg "$cred" - |
+    /usr/lib/gnupg/gpg-preset-passphrase --preset "$keygrip"
+done

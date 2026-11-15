@@ -42,6 +42,8 @@ oxfmt = "latest"
 # Smart cards and YubiKey (CCID): pcscd talks to the reader, Yubico Authenticator uses it.
 "pacman:pcsclite" = "latest"
 "pacman:ccid" = "latest"
+# pam-u2f lets a YubiKey touch satisfy polkit prompts (system/etc/pam.d/polkit-1).
+"pacman:pam-u2f" = "latest"
 # age plugins for hardware-backed gopass identities (exploring replacing the keyring with gopass).
 # yubikey: PIV on the YubiKey, via pcscd. tpm: bound to this machine's TPM.
 "pacman:age-plugin-yubikey" = "latest"
@@ -94,6 +96,9 @@ oxfmt = "latest"
 "pacman:discord" = "latest"
 "pacman:signal-desktop" = "latest"
 "pacman:gopass" = "latest"
+# gpg and the agent that gopass uses. The passphrase is preset from a TPM-sealed credential (seal-gpg).
+"pacman:gnupg" = "latest"
+"pacman:pinentry" = "latest"
 "pacman:gocryptfs" = "latest"
 
 # Needed by Noctalia plugins (see [plugins].enabled in .config/noctalia/config.toml)
@@ -131,6 +136,12 @@ mode = "0644"
 # polkit: let ivan's local session decrypt TPM-sealed credentials without a prompt.
 [bootstrap.files."/etc/polkit-1/rules.d/49-keyring-unlock.rules"]
 source = "./system/etc/polkit-1/rules.d/49-keyring-unlock.rules"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[bootstrap.files."/etc/pam.d/polkit-1"]
+source = "./system/etc/pam.d/polkit-1"
 owner = "root"
 group = "root"
 mode = "0644"
@@ -207,6 +218,11 @@ scope = "user"
 state = "running"
 enabled = true
 
+# gpg-agent-pass.service is a dotfile; it presets the GPG passphrase at login from a TPM-sealed credential.
+[bootstrap.services."gpg-agent-pass.service"]
+scope = "user"
+enabled = true
+
 # zage ships its own unit (`zage service install` writes zage.socket and zage.service),
 # so mise only keeps the state. Run `mise run zage-install` once before the first apply.
 [bootstrap.services."zage.socket"]
@@ -248,6 +264,39 @@ run = """
 systemd-ask-password "Keyring password:" | tr -d '\\n' \\
   | systemd-creds encrypt --with-key=tpm2 --name=keyring - "$HOME/.config/keyring-unlock.cred"
 chmod 600 "$HOME/.config/keyring-unlock.cred"
+"""
+
+[tasks.seal-gpg]
+description = "Seal your GPG passphrase to this machine's TPM so gpg-agent is unlocked at login (re-run after changing it)"
+run = """
+systemd-ask-password "GPG passphrase:" | tr -d '\\n' \\
+  | systemd-creds encrypt --with-key=tpm2 --name=gpg - "$HOME/.config/gpg-unlock.cred"
+chmod 600 "$HOME/.config/gpg-unlock.cred"
+systemctl --user restart gpg-agent-pass.service
+"""
+
+[tasks.register-u2f]
+description = "Register YubiKeys for pam_u2f (polkit prompts), one at a time. Any one registered key is enough to authenticate"
+shell = "bash -c"
+run = """
+set -euo pipefail
+f="$HOME/.config/Yubico/u2f_keys"
+mkdir -p "$(dirname "$f")"
+line=""
+for name in "YubiKey Bio" "YubiKey 5C" "YubiKey NEO"; do
+  read -r -p "Plug in ONLY the $name, then press Enter (s to skip): " answer
+  [[ $answer == s ]] && continue
+  echo "Touch the $name when it blinks."
+  if [[ -z $line ]]; then
+    line=$(pamu2fcfg -u "$USER")
+  else
+    line+=$(pamu2fcfg -n)
+  fi
+done
+[[ -n $line ]] || { echo "No key registered; nothing written."; exit 1; }
+printf "%s\\n" "$line" > "$f"
+chmod 600 "$f"
+echo "Wrote $f"
 """
 
 [tasks.enroll-fido2]

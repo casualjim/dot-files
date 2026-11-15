@@ -1,9 +1,11 @@
-// Let ivan's local session decrypt TPM-sealed credentials without an admin prompt,
-// so the user unit keyring-unlock.service can run unattended at login.
-// Without this, `systemd-creds decrypt` as a normal user needs polkit admin auth
-// (io.systemd.credentials.decrypt) and the unit fails with InteractiveAuthenticationRequired.
+// Let ivan's local session encrypt and decrypt TPM-sealed credentials without an admin prompt.
+// Decrypt lets the user units keyring-unlock.service and gpg-agent-pass.service run unattended at
+// login; without it `systemd-creds decrypt` needs polkit admin auth and the unit fails with
+// InteractiveAuthenticationRequired. Encrypt lets `mise run seal-keyring` and `seal-gpg` seal a
+// credential without an admin password prompt.
+var credentialActions = ["io.systemd.credentials.decrypt", "io.systemd.credentials.encrypt"];
 polkit.addRule(function (action, subject) {
-  if (action.id == "io.systemd.credentials.decrypt" && subject.user == "ivan" && subject.local) {
+  if (credentialActions.indexOf(action.id) >= 0 && subject.user == "ivan" && subject.local) {
     return polkit.Result.YES;
   }
 });

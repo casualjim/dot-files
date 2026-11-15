@@ -1,0 +1,15 @@
+#%PAM-1.0
+# polkit prompts (the admin dialogs from Noctalia). A fingerprint or a YubiKey touch each prove the
+# user is at the keyboard, so either one is enough; the password is only the fallback.
+#
+# pam_fprintd goes first, as in /etc/pam.d/sudo. pam_u2f needs a registered key
+# (`mise run register-u2f`); with none registered it is skipped, so the password still works.
+# Do not add nouserok to pam_u2f: with `sufficient` it would turn "no key registered" into success.
+# The fingerprint wait is short (one try, 5 s) so a YubiKey touch is reachable without waiting out
+# fprintd's default 30 s, and a crashing fprintd does not hold up the prompt.
+auth       sufficient   pam_fprintd.so   max-tries=1 timeout=5
+auth       sufficient   pam_u2f.so       cue
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth

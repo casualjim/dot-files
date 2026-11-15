@@ -1,0 +1,14 @@
+[Unit]
+Description=Preset the GPG passphrase into gpg-agent from a TPM-sealed credential
+Documentation=man:gpg-preset-passphrase(1) man:systemd-creds(1)
+Wants=gpg-agent.socket
+After=gpg-agent.socket
+ConditionPathExists=%h/.config/gpg-unlock.cred
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/.local/bin/gpg-agent-pass
+
+[Install]
+WantedBy=default.target
