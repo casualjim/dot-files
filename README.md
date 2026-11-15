@@ -84,6 +84,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. The language servers named in `languages.toml` come from mise (TypeScript uses `tsc --lsp` from TypeScript 7). |
 | `hindsight-install` | First time: `npx @vectorize-io/hindsight-coding-agents install all` (detects the agents), then the pi-mimir patch. Clones or fast-forwards `~/github/casualjim/pi-mimir` first (`pi-mimir-sync`). |
 | `hindsight-update` | Update an existing or rsynced Hindsight, then re-apply the patch (`hindsight-patch`; an update wipes it). |
+| `claude-code-config-sync` | Clone or fast-forward `casualjim/claude-code-config` and `bun install`. The Claude hooks in `~/.claude/settings.json` run from that exact path, so do this before using Claude Code on a new machine. |
 | `codebase-memory-build` | Pull and build `DeusData/codebase-memory-mcp` with the UI, stop the daemon, install the binary into `~/.local/bin`, restart the daemon. Re-run to update. |
 | `codebase-memory-install` | First time only: `codebase-memory-mcp install -y --hooks` (builds first). |
 

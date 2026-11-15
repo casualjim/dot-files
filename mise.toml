@@ -163,6 +163,24 @@ else
 fi
 '''
 
+[tasks.claude-code-config-sync]
+description = "Clone casualjim/claude-code-config (the Claude Code hooks, run with bun) or fast-forward it, then bun install"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+# ~/.claude/settings.json runs hooks/*.ts from this checkout, so it has to exist at exactly this path.
+# Its .env (TTS API keys) is not in the repo and is not needed by the guard hooks; restore it by hand if wanted.
+dir="$HOME/github/casualjim/claude-code-config"
+if [[ -d $dir/.git ]]; then
+  git -C "$dir" pull --ff-only
+else
+  mkdir -p "$(dirname "$dir")"
+  git clone https://github.com/casualjim/claude-code-config "$dir"
+fi
+cd "$dir"
+bun install
+'''
+
 [tasks.codebase-memory-build]
 description = "Pull and build DeusData/codebase-memory-mcp (with the UI) and install the binary into ~/.local/bin"
 shell = "bash -c"
