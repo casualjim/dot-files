@@ -217,6 +217,14 @@ Besides the desktop pieces, two user services are declared in `mise.linux.toml`:
   (a rootless container on `127.0.0.1:8788`, state in `~/.local/state/headroom`). Quadlet units cannot be
   enabled, so mise only keeps it running; its `[Install]` section wires it to login.
 
+## Coding-agent config is not tracked
+
+The settings of Claude Code, Codex, pi and omp (`~/.claude`, `~/.codex`, `~/.pi`, `~/.omp`) change too
+often and carry API keys, so they are deliberately **not** in this repo. A new machine gets them by copying the
+config (not the history) from another machine. What is tracked is what goes on top: the install tasks
+(`hindsight-install`, `codebase-memory-install`), the hooks repo (`claude-code-config-sync`), and
+`~/.hindsight/coding-agent.json`. Session history is not carried over either; Hindsight is the shared memory.
+
 ## Tern
 
 Tern is downloaded by hand from its private server (not yet released) and kept at `~/.local/bin/tern`. It
