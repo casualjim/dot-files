@@ -39,7 +39,10 @@
 [filter "media"]
 	clean = git-media-clean %f
 	smudge = git-media-smudge %f
-# [credential]
+# Default for every host not named below: gopass (git/<host>/<user> in the store). GitHub uses gh
+# and code.lotsa.ai uses gt (see the per-host sections); they clear this helper first.
+[credential]
+	helper = gopass
 	# helper = osxkeychain
 	# helper = /usr/lib/git-core/git-credential-libsecret
 	;helper = kwallet

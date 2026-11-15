@@ -73,21 +73,6 @@ ghcl() {
   cd $lpath
 }
 
-wcl() {
-  clurl="$1"
-        lpath="$HOME/wagyu"
-        if [[ ${#${1//[^\/]}} -gt 1 ]]
-        then
-                lpath="${lpath}/$(echo $1 | cut -d '/' -f 4)/$(echo "$1" | cut -d '/' -f 5 | cut -d '.' -f 1)"
-        else
-                lpath="${lpath}/$(echo $1 | cut -d '/' -f 1)/$(echo "$1" | cut -d '/' -f 2 | cut -d '.' -f 1)"
-                clurl="https://git.wagyu.icu/$1"
-        fi
-
-  git clone "$clurl" "$lpath"
-  cd $lpath
-}
-
 goheapprof() {
   go tool pprof -http=:7142 http://$1:7001/debug/pprof/heap
 }

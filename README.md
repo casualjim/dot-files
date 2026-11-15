@@ -73,6 +73,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `rebuild-initramfs` | After the mkinitcpio drop-in changes. |
 | `seal-keyring`, `seal-gpg` | Re-run after changing the keyring or GPG passphrase. |
 | `register-u2f` | Re-run to change which YubiKeys are registered. It rewrites the whole file. |
+| `docker-credential-gopass` | Build the Docker credential helper from the fork (branch `mine`) into `~/.local/bin`. Run after bootstrap; it needs Go from mise and the gopass store (`gopass clone https://github.com/casualjim/gopass`). |
 
 ## Day to day
 

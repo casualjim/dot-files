@@ -96,6 +96,8 @@ oxfmt = "latest"
 "pacman:discord" = "latest"
 "pacman:signal-desktop" = "latest"
 "pacman:gopass" = "latest"
+# git-credential-gopass answers git's credential protocol from the gopass store (git/<host>/<user>).
+"pacman:git-credential-gopass" = "latest"
 # gpg and the agent that gopass uses. The passphrase is preset from a TPM-sealed credential (seal-gpg).
 "pacman:gnupg" = "latest"
 "pacman:pinentry" = "latest"
@@ -381,3 +383,22 @@ run = "sudo tailscale up --operator=$USER --accept-routes --accept-dns"
 [tasks.bat-cache]
 description = "Rebuild bat's theme cache after the Catppuccin themes change"
 run = "bat cache --build"
+
+[tasks.docker-credential-gopass]
+description = "Build docker-credential-gopass from casualjim/docker-credential-helpers (branch mine) into ~/.local/bin"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+# The fork keeps upstream's module path, so `go install` of the fork does not work; build from a clone.
+src=$(mktemp -d)
+trap 'rm -rf "$src"' EXIT
+git clone --depth 1 --branch mine https://github.com/casualjim/docker-credential-helpers "$src"
+cd "$src"
+go build -trimpath -ldflags="-X github.com/docker/docker-credential-helpers/credentials.Name=docker-credential-gopass" -o "$HOME/.local/bin/docker-credential-gopass" ./gopass/cmd/
+"$HOME/.local/bin/docker-credential-gopass" version
+# Point Docker at the helper. Only credsStore is set; docker adds the auths entries itself on login.
+mkdir -p "$HOME/.docker"
+f="$HOME/.docker/config.json"
+[[ -f $f ]] || echo "{}" > "$f"
+jq '.credsStore = "gopass"' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+'''
