@@ -48,8 +48,9 @@ ruff = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 # The one Python tool: there is no other systemd language server. Pinned to Python 3.13 so uv uses prebuilt lxml wheels.
 "pipx:systemd-language-server" = { version = "latest", python = "3.13" } # lxml 5.4 has no wheel for 3.14 and fails to build
-# LobeHub desktop: the stable release ships an AppImage, a tarball, .deb and .rpm; pick the AppImage.
-"github:lobehub/lobehub" = { version = "latest", asset_pattern = "LobeHub-*.AppImage" }
+# LobeHub desktop: the stable release ships an AppImage, a tarball, .deb and .rpm; pick the AppImage. It does not
+# integrate itself, so postinstall installs the menu entry and icon the AppImage ships (needs appimage-integrate applied).
+"github:lobehub/lobehub" = { version = "latest", asset_pattern = "LobeHub-*.AppImage", postinstall = "$HOME/.local/bin/appimage-integrate \"$MISE_TOOL_INSTALL_PATH\"" }
 # ArtCraft launcher (installer and updater for the Craft app suite): the x86_64 AppImage.
 "github:storytold/craft-launcher" = { version = "latest", asset_pattern = "artcraft-launcher-*-linux-x86_64.AppImage" }
 tealdeer = "latest"
@@ -163,8 +164,6 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/mise/config.macos.toml" = {}
 "~/.config/mise/miserc.toml" = {}
 "~/.config/signal-desktop-flags.conf" = {}
-"~/.local/share/applications/lobehub.desktop" = { mode = "copy" }
-"~/.local/share/applications/artcraft-launcher.desktop" = { mode = "copy" }
 "~/.config/niri" = { mode = "symlink-each" }
 "~/.config/noctalia/config.toml" = {}
 "~/.gnupg/common.conf" = {}
@@ -173,8 +172,7 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/systemd/user/gpg-agent-pass.service" = { mode = "copy" }
 "~/.config/systemd/user/yubikey-drill.service" = { mode = "copy" }
 "~/.config/systemd/user/yubikey-drill.timer" = { mode = "copy" }
-"~/.local/bin/artcraft-launcher" = { mode = "copy" }
-"~/.local/bin/lobehub" = { mode = "copy" }
+"~/.local/bin/appimage-integrate" = { mode = "copy" }
 "~/.local/bin/gpg-agent-pass" = { mode = "copy" }
 "~/.local/bin/keyring-unlock" = { mode = "copy" }
 "~/.local/bin/yubikey-drill" = { mode = "copy" }

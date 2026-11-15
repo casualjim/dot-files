@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=ArtCraft Launcher
-Comment=Installer and updater for the Craft app suite (AppImage installed by mise)
-Exec=/home/ivan/.local/bin/artcraft-launcher %U
-Terminal=false
-Categories=Graphics;

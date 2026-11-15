@@ -1,0 +1,38 @@
+#!/bin/sh
+# Desktop-integrate the AppImage in a mise tool's install directory, as an installer would: install the
+# .desktop entry and icons the AppImage ships, with Exec pointing at the installed file. Run from a tool's
+# `postinstall`, so every new version rewrites the entry. Usage: appimage-integrate <install-dir>
+set -eu
+
+dir=${1:?usage: appimage-integrate <install-dir>}
+img=$(find "$dir" -maxdepth 1 -name '*.AppImage' | head -n 1)
+[ -n "$img" ] || { echo "appimage-integrate: no AppImage in $dir" >&2; exit 1; }
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+(cd "$tmp" && "$img" --appimage-extract >/dev/null)
+root=$tmp/squashfs-root
+
+desktop=$(find "$root" -maxdepth 1 -name '*.desktop' | head -n 1)
+[ -n "$desktop" ] || { echo "appimage-integrate: $img ships no .desktop file" >&2; exit 1; }
+icon=$(sed -n 's/^Icon=//p' "$desktop" | head -n 1)
+
+apps=${XDG_DATA_HOME:-$HOME/.local/share}
+mkdir -p "$apps/applications"
+# The AppImage's Exec is its internal launcher (AppRun, with any flags it needs): point it at the file itself.
+sed "s|^Exec=[^ ]*|Exec=\"$img\"|" "$desktop" > "$apps/applications/$(basename "$desktop")"
+
+if [ -d "$root/usr/share/icons" ]; then
+  find "$root/usr/share/icons" -path "*/apps/$icon.*" -type f | while read -r f; do
+    rel=${f#"$root"/usr/share/icons/}
+    # hicolor only indexes the standard sizes; an odd one (514x514) would never be found.
+    case $rel in hicolor/514x514/*) rel=hicolor/512x512/${rel#hicolor/514x514/} ;; esac
+    dest=$apps/icons/$rel
+    mkdir -p "$(dirname "$dest")"
+    cp "$f" "$dest"
+  done
+fi
+
+command -v update-desktop-database >/dev/null && update-desktop-database "$apps/applications" || true
+command -v gtk-update-icon-cache >/dev/null && gtk-update-icon-cache -q -t "$apps/icons/hicolor" 2>/dev/null || true
+echo "appimage-integrate: installed $(basename "$desktop") for $img"

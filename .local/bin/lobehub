@@ -1,3 +1,0 @@
-#!/bin/sh
-# Runs the mise-installed AppImage; "latest" survives version bumps.
-exec "$HOME"/.local/share/mise/installs/github-lobehub-lobehub/latest/LobeHub-*.AppImage "$@"
