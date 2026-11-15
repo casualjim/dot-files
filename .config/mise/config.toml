@@ -36,6 +36,18 @@ kubectl = "latest"
 # age, age-keygen and the compatibility plugins (age-plugin-tag etc.) from the release tarball.
 # The aqua entry only exposes age and age-keygen, and fnox needs age-plugin-tag for age1tag1 recipients.
 "github:FiloSottile/age" = "latest"
+# Language servers named in .config/helix/languages.toml (remark and taplo are above; rust-analyzer comes with rust;
+# TypeScript is served by `tsc --lsp` from npm:typescript 7).
+"npm:typescript" = "latest" # 7.x: the native compiler, whose `tsc --lsp` is Helix's TypeScript server
+"npm:bash-language-server" = "latest"
+"npm:pyright" = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"github:washanhanzi/cargo-appraiser" = "latest"
+ruff = "latest"
+"npm:@tailwindcss/language-server" = "latest"
+"npm:dockerfile-language-server-nodejs" = "latest"
+# The one Python tool: there is no other systemd language server. Pinned to Python 3.13 so uv uses prebuilt lxml wheels.
+"pipx:systemd-language-server" = { version = "latest", python = "3.13" } # lxml 5.4 has no wheel for 3.14 and fails to build
 tealdeer = "latest"
 delta = "latest"
 eza = "latest"
@@ -138,6 +150,9 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/fontconfig/conf.d/20-no-embedded.conf" = {}
 "~/.config/fontconfig/fonts.conf" = {}
 "~/.config/ghostty/config" = {}
+"~/.config/helix/config.toml" = {}
+"~/.config/helix/languages.toml" = {}
+"~/.config/helix/themes/catppuccin_mocha.toml" = {}
 "~/.config/git/config" = {}
 "~/.config/jj/config.toml" = {}
 "~/.config/mise/config.linux.toml" = {}

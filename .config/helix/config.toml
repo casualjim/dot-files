@@ -1,0 +1,24 @@
+theme = "catppuccin_mocha"
+
+[editor]
+shell = ["zsh", "-c"]
+true-color = true
+gutters = ["diff", "diagnostics", "line-numbers", "spacer"]
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.lsp]
+display-inlay-hints = true
+
+[editor.file-picker]
+hidden = true
+
+[editor.indent-guides]
+render = true
+
+[keys.normal]
+A-h = ':hsplit .git/remark/draft.md'
+A-v = ':vsplit .git/remark/draft.md'

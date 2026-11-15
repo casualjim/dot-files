@@ -74,6 +74,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `seal-keyring`, `seal-gpg` | Re-run after changing the keyring or GPG passphrase. |
 | `register-u2f` | Re-run to change which YubiKeys are registered. It rewrites the whole file. |
 | `docker-credential-gopass` | Build the Docker credential helper from the fork (branch `mine`) into `~/.local/bin`. Run after bootstrap; it needs Go from mise and the gopass store (`gopass clone https://github.com/casualjim/gopass`). |
+| `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. Several language servers named in `languages.toml` are not installed yet (see the language-server block in `.config/mise/config.toml`; TypeScript uses `tsc --lsp` from TypeScript 7). |
 
 ## Day to day
 

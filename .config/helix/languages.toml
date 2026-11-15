@@ -1,0 +1,134 @@
+[language-server.remark]
+command = "remark"
+args = ["lsp"]
+required-root-patterns = [".git"]
+
+# Cargo.toml: dependency versions, features and audit. --renderer inlayHint shows them as inlay hints.
+[language-server.cargo-appraiser]
+command = "cargo-appraiser"
+args = ["--renderer", "inlayHint"]
+
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.tailwindcss-language-server]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
+
+[language-server.docker-langserver]
+command = "docker-langserver"
+args = ["--stdio"]
+
+[language-server.taplo]
+config = {}
+
+[language-server.systemd-language-server]
+command = "systemd-language-server"
+args = ["--stdio"]
+
+# TypeScript 7's native compiler is the language server (`tsc --lsp --stdio`); the
+# typescript-language-server wrapper is not needed.
+[language-server.tsc]
+command = "tsc"
+args = ["--lsp", "--stdio"]
+
+[language-server.rust-analyzer]
+command = "rust-analyzer"
+
+[language-server.rust-analyzer.config]
+# Proc macros
+procMacro.enable = true
+
+# Cargo settings
+cargo.buildScripts.enable = true
+
+# Diagnostics
+diagnostics.experimental.enable = false
+
+# Semantic highlighting
+semanticHighlighting.operator.specialization.enable = true
+
+# Assist features
+assist.preferSelf = true
+
+# Inlay hints configuration
+inlayHints.bindingModeHints.enable = false
+inlayHints.closingBraceHints.minLines = 10
+inlayHints.closureReturnTypeHints.enable = "with_block"
+inlayHints.discriminantHints.enable = "fieldless"
+inlayHints.lifetimeElisionHints.enable = "skip_trivial"
+inlayHints.typeHints.hideClosureInitialization = false
+
+# JavaScript / JSX
+[[language]]
+name = "javascript"
+language-servers = ["remark", "tsc", "tailwindcss-language-server"]
+
+[[language]]
+name = "jsx"
+language-servers = ["remark", "tsc", "tailwindcss-language-server"]
+
+# TypeScript / TSX
+[[language]]
+name = "typescript"
+language-servers = ["remark", "tsc", "tailwindcss-language-server"]
+
+[[language]]
+name = "tsx"
+language-servers = ["remark", "tsc", "tailwindcss-language-server"]
+
+# Go
+[[language]]
+name = "go"
+language-servers = ["remark", "gopls"]
+
+# Python
+[[language]]
+name = "python"
+language-servers = ["remark", "pyright", "ruff"]
+
+# Shell (pick what you use)
+[[language]]
+name = "bash"
+language-servers = ["remark", "bash-language-server"]
+
+# Dockerfile
+[[language]]
+name = "dockerfile"
+scope = "source.dockerfile"
+file-types = ["Dockerfile", "Dockerfile.*"]
+language-servers = ["docker-langserver"]
+
+[[language]]
+name = "toml"
+language-servers = ["cargo-appraiser", "taplo", "remark"]
+formatter = { command = "taplo", args = ["fmt", "-"] }
+
+[[language]]
+name = "rust"
+auto-format = true
+roots = ["Cargo.toml", "Cargo.lock"]
+language-servers = ["remark", "rust-analyzer"]
+
+[[language]]
+name = "systemd"
+scope = "source.systemd"
+file-types = [
+  "service",
+  "socket",
+  "timer",
+  "mount",
+  "target",
+  "path",
+  "slice",
+  "scope",
+  "automount",
+  "swap",
+  "network",
+  "netdev",
+  "link",
+  "nspawn",
+]
+comment-token = "#"
+language-servers = ["systemd-language-server", "remark"]

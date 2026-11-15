@@ -380,6 +380,10 @@ git config --global user.email "$email"
 description = "Join the tailnet (opens a login URL)"
 run = "sudo tailscale up --operator=$USER --accept-routes --accept-dns"
 
+[tasks.helix-grammars]
+description = "Fetch and build Helix's tree-sitter grammars into ~/.config/helix/runtime (slow; needs a C compiler)"
+run = "hx --grammar fetch && hx --grammar build"
+
 [tasks.bat-cache]
 description = "Rebuild bat's theme cache after the Catppuccin themes change"
 run = "bat cache --build"
