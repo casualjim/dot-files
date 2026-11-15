@@ -8,6 +8,10 @@ x-scheme-handler/lobehub=lobehub-desktop.desktop
 x-scheme-handler/proton-inbox=proton-mail.desktop
 x-scheme-handler/mailto=brave-browser.desktop
 x-scheme-handler/tern=so.stencil.tern.url.desktop
+application/schema+json=dev.zed.Zed.desktop
+application/yaml=dev.zed.Zed.desktop
 
 [Added Associations]
 x-scheme-handler/lobehub=lobehub-desktop.desktop;
+application/schema+json=dev.zed.Zed.desktop;
+application/yaml=dev.zed.Zed.desktop;
