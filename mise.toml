@@ -42,6 +42,12 @@ oxfmt = "latest"
 # Smart cards and YubiKey (CCID): pcscd talks to the reader, Yubico Authenticator uses it.
 "pacman:pcsclite" = "latest"
 "pacman:ccid" = "latest"
+# age plugins for hardware-backed gopass identities (exploring replacing the keyring with gopass).
+# yubikey: PIV on the YubiKey, via pcscd. tpm: bound to this machine's TPM.
+"pacman:age-plugin-yubikey" = "latest"
+"pacman:age-plugin-tpm" = "latest"
+# Inspect the TPM (persistent handles, NV indexes): tpm2_getcap handles-persistent
+"pacman:tpm2-tools" = "latest"
 # Rootless containers: podman runs as the user, no daemon, no docker group.
 # podman-docker supplies a `docker` command that calls podman; passt provides pasta networking.
 "pacman:podman" = "latest"
@@ -193,6 +199,12 @@ masked = true
 # keyring-unlock.service is a dotfile (~/.config/systemd/user/); mise only enables it.
 [bootstrap.services."keyring-unlock.service"]
 scope = "user"
+enabled = true
+
+# yubikey-drill.service and .timer are dotfiles; the timer opens a terminal when a drill is due.
+[bootstrap.services."yubikey-drill.timer"]
+scope = "user"
+state = "running"
 enabled = true
 
 # zage ships its own unit (`zage service install` writes zage.socket and zage.service),

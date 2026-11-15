@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# Monthly YubiKey drill. Exercises the PIV PIN and the touch so they are not forgotten.
+#
+#   yubikey-drill        run the drill (a systemd user timer opens this in a terminal)
+#   yubikey-drill --due  exit 0 if a drill is due (never done, or older than MAX_DAYS), else 1
+#
+# It decrypts a small canary file with the YubiKey identity. That takes the PIV PIN once and a touch.
+set -euo pipefail
+
+export PATH="$HOME/.local/share/mise/shims:$PATH"
+
+MAX_DAYS=25
+identity="$HOME/.config/fnox/yubikey.txt"
+state="${XDG_STATE_HOME:-$HOME/.local/state}/yubikey-drill"
+stamp="$state/last-success"
+canary="$state/canary.age"
+
+if [[ "${1:-}" == "--due" ]]; then
+  [[ -f $stamp ]] || exit 0
+  days=$((($(date +%s) - $(stat -c %Y "$stamp")) / 86400))
+  [[ $days -ge $MAX_DAYS ]]
+  exit
+fi
+
+pause() {
+  read -r -p "Press Enter to close. " _ || true
+}
+
+cat <<'EOF'
+YubiKey drill
+=============
+
+Why this exists
+  The YubiKey is the recovery key for your fnox secrets. The TPM key is the everyday one and is
+  tied to this machine. If this board dies, the YubiKey is the only way back in.
+
+  Its PIV PIN is long and you almost never type it, so you will forget it. A touch policy of
+  "always" means every decryption also needs a touch. Doing it once a month keeps both fresh.
+
+Careful
+  Three wrong PINs in a row block the PIN. This drill tries exactly once. If the PIN is
+  wrong, stop. Do not guess again. Look it up first.
+
+EOF
+
+if [[ ! -f $identity ]]; then
+  echo "Missing $identity. Nothing to drill with."
+  pause
+  exit 1
+fi
+
+mkdir -p "$state"
+if [[ ! -f $canary ]]; then
+  recipient=$(sed -n 's/^#[[:space:]]*Recipient: //p' "$identity" | head -n 1)
+  printf 'yubikey drill ok' | age -r "$recipient" -o "$canary"
+fi
+
+echo "Enter the PIN when asked, then touch the key when it blinks."
+echo
+if [[ $(age -d -i "$identity" "$canary") == "yubikey drill ok" ]]; then
+  touch "$stamp"
+  echo
+  echo "Done. Next drill is due in $MAX_DAYS days."
+  pause
+else
+  echo
+  echo "The drill failed. If it said it could not find the YubiKey, plug it in and run it again;"
+  echo "that costs no PIN try. If the PIN was wrong, do not retry blindly: each wrong PIN uses one of three."
+  pause
+  exit 1
+fi

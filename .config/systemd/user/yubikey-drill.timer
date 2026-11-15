@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily check whether the YubiKey drill is due
+
+[Timer]
+# Daily, and the service only opens a window once a drill is due, so it keeps nagging until done.
+OnCalendar=*-*-* 09:30
+# Catch up after the machine was off or asleep at 09:30.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -112,6 +112,28 @@ Never committed (see `.gitignore`): `~/.config/mise/age.txt` (age key), `*.cred`
 from your password manager before using anything encrypted with it. After a TPM change or a
 new machine, re-seal the keyring with `mise run seal-keyring`.
 
+### fnox keys (age, hardware-backed)
+
+fnox's age provider encrypts to several recipients. None of the private keys is a plain file:
+
+- **TPM** (`~/.config/fnox/tpm.txt`, `age1tag1…`): the everyday key. Bound to this machine's TPM,
+  unlocks without a prompt. Create it with `age-plugin-tpm --generate -o ~/.config/fnox/tpm.txt`.
+  `age-plugin-tag` (from the `age` release tarball, in mise) is needed to encrypt to it.
+- **YubiKey** (`~/.config/fnox/yubikey.txt`, `age1yubikey1…`): the recovery key. A PIN once per
+  session and a touch every time. Create it with
+  `age-plugin-yubikey --generate --name fnox-recovery --pin-policy once --touch-policy always`
+  (add `--serial N` if several keys are plugged in) and save the identity it prints.
+- The other recipients belong to other machines. After changing the list, run
+  `fnox reencrypt -p age`.
+
+The identity files are untracked: they name a serial and a slot, or hold a key blob wrapped by one
+machine's TPM. A TPM key is useless on another machine, so keep the YubiKey recipient in the list.
+
+Because the PIN is long and rarely typed, `yubikey-drill` (a user timer, `yubikey-drill.timer`)
+opens a terminal once a drill is more than 25 days old and keeps asking daily until it is done.
+It decrypts a canary file with the YubiKey: one PIN attempt, one touch. Run it by hand any time
+with `yubikey-drill`. Three wrong PINs block the PIN, so stop after one miss.
+
 ## Not done yet
 
 - `gitconfig` still needs rewriting as a per-OS template.

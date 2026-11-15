@@ -1,0 +1,10 @@
+[Unit]
+Description=Open a terminal for the monthly YubiKey drill when one is due
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=oneshot
+# Skip quietly (not a failure) unless the last successful drill is older than 25 days.
+ExecCondition=%h/.local/bin/yubikey-drill --due
+# niri starts the terminal, so it is not killed when this oneshot unit finishes.
+ExecStart=/usr/bin/niri msg action spawn -- /usr/bin/ghostty --title=YubiKey-drill -e %h/.local/bin/yubikey-drill

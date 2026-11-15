@@ -33,6 +33,9 @@ kubectl = "latest"
 "github:casualjim/zage" = "latest"
 "github:casualjim/umber" = "latest"
 "github:casualjim/remark" = "latest"
+# age, age-keygen and the compatibility plugins (age-plugin-tag etc.) from the release tarball.
+# The aqua entry only exposes age and age-keygen, and fnox needs age-plugin-tag for age1tag1 recipients.
+"github:FiloSottile/age" = "latest"
 tealdeer = "latest"
 delta = "latest"
 eza = "latest"
@@ -143,7 +146,10 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/niri" = { mode = "symlink-each" }
 "~/.config/noctalia/config.toml" = {}
 "~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
+"~/.config/systemd/user/yubikey-drill.service" = { mode = "copy" }
+"~/.config/systemd/user/yubikey-drill.timer" = { mode = "copy" }
 "~/.local/bin/keyring-unlock" = { mode = "copy" }
+"~/.local/bin/yubikey-drill" = { mode = "copy" }
 "~/.p10k.zsh" = {}
 "~/.zsh_plugins.txt" = {}
 "~/.zshrc" = {}
