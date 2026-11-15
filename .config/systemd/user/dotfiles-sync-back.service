@@ -1,0 +1,12 @@
+[Unit]
+Description=Copy edits to copy-mode dotfiles back into the dot-files repo
+Documentation=https://mise.jdx.dev/dotfiles/
+
+[Service]
+Environment=PATH=%h/.local/share/mise/shims:%h/.local/bin:/usr/local/bin:/usr/bin
+ExecStart=%h/.local/bin/dotfiles-sync-back --watch
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

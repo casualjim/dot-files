@@ -1,0 +1,64 @@
+#!/bin/bash
+# Keep the repo in step with `copy`-mode dotfiles. mise copies repo -> live on `mise dot apply`; apps then
+# edit the live file, and nothing carried that edit back. This does: when a live copy is newer than, and
+# different from, its repo source, it overwrites the source. The repo is only changed in the working copy;
+# nothing is committed. A source you edited and have not applied yet is newer than its live file, so it is
+# never overwritten.
+#
+#   dotfiles-sync-back          sync once
+#   dotfiles-sync-back --watch  sync, then again whenever a watched directory changes (the systemd service)
+#
+# --watch also watches the directory that holds the global mise config. When an edit there adds or removes
+# a copy entry, the list of watched directories is stale, so the watcher exits and systemd starts it again.
+#
+# DOTFILES_SYNC_LIST=<file> replaces the mise query with "target<TAB>source" lines (for testing).
+set -euo pipefail
+
+copies() {
+  if [[ -n ${DOTFILES_SYNC_LIST-} ]]; then
+    cat "$DOTFILES_SYNC_LIST"
+    return
+  fi
+  mise dotfiles status --json \
+    | jq -r '.files[] | select(.mode == "copy" and .source != null) | [.target, .source] | @tsv' \
+    | sed "s|^~|$HOME|; s|\t~|\t$HOME|"
+}
+
+signature() { copies | sort | sha1sum | cut -d' ' -f1; }
+
+sync_once() {
+  local target source
+  while IFS=$'\t' read -r target source; do
+    [[ -f $target && -f $source ]] || continue
+    cmp -s "$target" "$source" && continue
+    [[ $target -nt $source ]] || continue
+    cp -- "$target" "$source"
+    echo "synced $target -> $source"
+  done < <(copies)
+}
+
+if [[ ${1-} != --watch ]]; then
+  sync_once
+  # Started by the watcher: leave if the set of copy entries changed since it began.
+  if [[ -n ${SYNC_SIGNATURE-} && $(signature) != "$SYNC_SIGNATURE" ]]; then
+    echo "the copy entries changed; restarting the watcher"
+    kill "$PPID"
+  fi
+  exit 0
+fi
+
+sync_once
+SYNC_SIGNATURE=$(signature)
+export SYNC_SIGNATURE
+# Watch each file's parent directory, not the file: apps replace files by renaming a new one over them,
+# which a watch on the old inode would miss. -W keeps it from recursing into ~/.config as a whole.
+dirs=()
+while IFS=$'\t' read -r target _; do
+  dirs+=(-W "$(dirname "$target")")
+done < <(copies)
+# The repo directory behind the global mise config: where new copy entries get declared.
+if [[ -L $HOME/.config/mise/config.toml ]]; then
+  dirs+=(-W "$(dirname "$(readlink -f "$HOME/.config/mise/config.toml")")")
+fi
+(( ${#dirs[@]} )) || { echo "no copy-mode dotfiles to watch" >&2; exit 0; }
+exec watchexec --debounce 2s --no-vcs-ignore --no-project-ignore --postpone "${dirs[@]}" -- "$0"
