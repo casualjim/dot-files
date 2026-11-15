@@ -17,6 +17,9 @@ Exec=--host 0.0.0.0 --port 8787 --no-cache
 
 [Service]
 Restart=always
+# The unit is Type=notify, so it stays "starting" until the container is up, and the first start pulls the
+# image. The default 90 s start timeout can kill a slow pull.
+TimeoutStartSec=900
 
 [Install]
 WantedBy=default.target

@@ -215,4 +215,13 @@ fi
 [tasks.codebase-memory-install]
 description = "First time only: register codebase-memory-mcp with the coding agents it detects, with hooks"
 depends = ["codebase-memory-build"]
-run = "codebase-memory-mcp install -y --hooks"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+# The installer needs ~/.claude/hooks/cbm-* and the Codex hooks to be its own: a copy from another machine, or an
+# older inline [[hooks.SessionStart]] in ~/.codex/config.toml, makes it refuse that agent (and the run fail).
+codebase-memory-mcp install -y --hooks
+# It also appends `export PATH="$HOME/.local/bin:$PATH"` to ~/.zshrc, a symlink into this repo. .zshrc already puts
+# ~/.local/bin on PATH, and an export at the end would sit ahead of the mise tool directories, so take it back out.
+sed -i --follow-symlinks '/^# Added by codebase-memory-mcp install$/,+1d' "$HOME/.zshrc"
+'''
