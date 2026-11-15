@@ -1,0 +1,16 @@
+[Unit]
+Description=codebase-memory-mcp daemon (keeps the code graph warm for coding agents)
+Documentation=https://github.com/DeusData/codebase-memory-mcp
+ConditionPathExists=%h/.local/bin/codebase-memory-mcp
+
+[Service]
+# There is no foreground mode: `daemon start` double-forks (setsid, then fork, then the parent exits) and writes
+# no pidfile, so this is Type=forking and systemd finds the main process itself. `daemon stop` is the clean stop.
+Type=forking
+ExecStart=%h/.local/bin/codebase-memory-mcp daemon start
+ExecStop=%h/.local/bin/codebase-memory-mcp daemon stop
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

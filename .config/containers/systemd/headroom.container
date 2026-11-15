@@ -1,0 +1,22 @@
+# Headroom, a local proxy. A Quadlet: podman turns this into headroom.service (systemctl --user status headroom).
+# Loopback only; the container listens on 8787 and the host port is 8788.
+[Unit]
+Description=Headroom proxy
+After=network-online.target
+
+[Container]
+Image=ghcr.io/chopratejas/headroom
+ContainerName=headroom
+PublishPort=127.0.0.1:8788:8787
+Environment=HEADROOM_HOST=0.0.0.0
+Environment=HEADROOM_PORT=8787
+Environment=HEADROOM_TELEMETRY=off
+Environment=HEADROOM_SAVINGS_PATH=/data/proxy_savings.json
+Volume=%h/.local/state/headroom:/data
+Exec=--host 0.0.0.0 --port 8787 --no-cache
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target
