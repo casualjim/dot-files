@@ -95,6 +95,15 @@ oxfmt = "latest"
 # Chat and secrets
 "pacman:discord" = "latest"
 "pacman:signal-desktop" = "latest"
+# Proton: Mail (Calendar is part of it) and Pass are in the CachyOS repo. Drive is an UNOFFICIAL third-party
+# client from the AUR (1 vote, new): it handles your Proton login, so read its PKGBUILD before trusting it.
+"pacman:proton-mail-bin" = "latest"
+"pacman:proton-pass" = "latest"
+"aur:proton-drive-for-linux-bin" = "latest" # prebuilt; the source package needs a pacman Rust toolchain you do not otherwise have
+# Zen is just installed: it is not the default browser, and nothing configures it.
+"pacman:zen-browser-bin" = "latest"
+# LobeHub ships an AppImage, which needs libfuse2 (only fuse3 is installed).
+"pacman:fuse2" = "latest"
 "pacman:gopass" = "latest"
 # git-credential-gopass answers git's credential protocol from the gopass store (git/<host>/<user>).
 "pacman:git-credential-gopass" = "latest"
@@ -406,3 +415,18 @@ f="$HOME/.docker/config.json"
 [[ -f $f ]] || echo "{}" > "$f"
 jq '.credsStore = "gopass"' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 '''
+
+# Chrome is only for streaming video. This managed policy blocks every
+# URL except the streaming sites, sign-in hosts and Chrome's own settings pages. If a service's
+# login breaks, the blocked page shows up in Chrome: add the host to URLAllowlist.
+# Chrome does not create /etc/opt/chrome, and mise will not create a file's missing parents.
+[bootstrap.directories."/etc/opt/chrome/policies/managed"]
+owner = "root"
+group = "root"
+mode = "0755"
+
+[bootstrap.files."/etc/opt/chrome/policies/managed/streaming-only.json"]
+source = "./system/etc/opt/chrome/policies/managed/streaming-only.json"
+owner = "root"
+group = "root"
+mode = "0644"

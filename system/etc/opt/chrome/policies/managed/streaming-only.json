@@ -1,0 +1,19 @@
+{
+  "DefaultBrowserSettingEnabled": false,
+  "URLBlocklist": ["*"],
+  "URLAllowlist": [
+    "youtube.com",
+    "youtu.be",
+    "accounts.google.com",
+    "netflix.com",
+    "primevideo.com",
+    "amazon.com",
+    "disneyplus.com",
+    "disney.com",
+    "tv.apple.com",
+    "apple.com",
+    "chrome://version",
+    "chrome://settings",
+    "chrome://policy"
+  ]
+}

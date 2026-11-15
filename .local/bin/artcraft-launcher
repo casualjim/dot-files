@@ -1,0 +1,3 @@
+#!/bin/sh
+# Runs the mise-installed AppImage; "latest" survives version bumps.
+exec "$HOME"/.local/share/mise/installs/github-storytold-craft-launcher/latest/artcraft-launcher-*.AppImage "$@"

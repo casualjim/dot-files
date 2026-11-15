@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=LobeHub
+Comment=LobeHub desktop (AppImage installed by mise)
+Exec=/home/ivan/.local/bin/lobehub %U
+Terminal=false
+Categories=Network;
+StartupWMClass=LobeHub

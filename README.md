@@ -57,7 +57,8 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
    (`age-plugin-yubikey --identity`, add `--serial N` if several are plugged in). See
    [fnox keys](#fnox-keys-age-hardware-backed).
 6. `mise run resolv-stub` and `mise run tailscale-up`: Tailscale MagicDNS and joining the tailnet.
-7. `mise run voxtype-setup` (or `voxtype-parakeet`): settings, a model, and the user service.
+7. `mise run voxtype-parakeet`: Right Ctrl push-to-talk, the Parakeet Ultra model, and the user service.
+   That is what is in use now. `voxtype-setup` is the Qwen3-ASR alternative (the last one you run wins).
    `voxtype-gpu` is an optional Vulkan backend.
 8. By hand: log in to Dropbox (the tray icon needs `libayatana-appindicator`, already installed) and
    restart Noctalia through niri (`niri msg action spawn -- noctalia`), not from a terminal.
@@ -131,8 +132,11 @@ committing with jj. The tools are declared in `mise.toml`, so they are only acti
   so anything needed earlier stays in `.zshrc` (`TERM`, history, `ZSH_CACHE_DIR`, the macOS
   Homebrew PATH). The `eza` aliases also stay there: the oh-my-zsh `eza` plugin loads after
   `mise` and would override `ls`, `ll` and `la`.
-- **Voxtype's config is not tracked.** It lives in `~/.config/voxtype/config.toml`, which
-  Voxtype rewrites atomically. `voxtype-config` applies our settings with `voxtype config set`.
+- **Voxtype's config is captured as tasks, not as a file.** It lives in `~/.config/voxtype/config.toml`,
+  which Voxtype rewrites atomically, so a symlink would not survive. `voxtype-config` sets the hotkey
+  (Right Ctrl, push to talk) and turns its own OSD off, and `voxtype-parakeet` or `voxtype-setup` set
+  the engine and model. Together they reproduce every non-default setting (`voxtype config` shows the
+  resolved result).
 - **`airpods` Noctalia plugin** needs a patched librepods fork. The CachyOS package is upstream
   and is not enough, so it is not installed.
 
