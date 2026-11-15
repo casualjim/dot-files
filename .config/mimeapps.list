@@ -1,0 +1,13 @@
+[Default Applications]
+text/html=brave-browser.desktop
+x-scheme-handler/http=brave-browser.desktop
+x-scheme-handler/https=brave-browser.desktop
+x-scheme-handler/about=brave-browser.desktop
+x-scheme-handler/unknown=brave-browser.desktop
+x-scheme-handler/lobehub=lobehub-desktop.desktop
+x-scheme-handler/proton-inbox=proton-mail.desktop
+x-scheme-handler/mailto=brave-browser.desktop
+x-scheme-handler/tern=so.stencil.tern.url.desktop
+
+[Added Associations]
+x-scheme-handler/lobehub=lobehub-desktop.desktop;

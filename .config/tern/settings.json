@@ -1,0 +1,39 @@
+{
+  "theme": "System",
+  "theme_dark": "dark-catppuccin",
+  "cursor": {
+    "programs": true
+  },
+  "link_click": "Command",
+  "link_target": "Browser",
+  "layout": "Studio",
+  "font_family": "Monaspace Neon NF",
+  "ui_font": "Mona Sans",
+  "code_font": "Monaspace Neon Var",
+  "tabs": "Vertical",
+  "material": "Glass",
+  "opacity": 85,
+  "surface_diffs": "Split",
+  "surface_tab_width": 2,
+  "surface_chat": "Spine",
+  "prompt_style": "catppuccin",
+  "prefs_width": 989,
+  "git": {
+    "external_editor": "zed --wait",
+    "diff_split": true
+  },
+  "agents": {
+    "custom": [
+      {
+        "id": "pi",
+        "name": "Pi Coding Agent",
+        "command": "pi",
+        "args": [],
+        "env": {}
+      }
+    ],
+    "own_tools": [
+      "pi"
+    ]
+  }
+}

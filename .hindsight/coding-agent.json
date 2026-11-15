@@ -1,0 +1,15 @@
+{
+  "serverMode": "self-hosted",
+  "apiUrl": "http://aristotle:8888",
+  "observationScopes": "per_source",
+  "observationScopes": "per_source",
+  "bankIdTemplate": "omp-{gitProjectLower}",
+  "autoUpdate": false,
+  "optInOnly": true,
+  "optInPaths": [
+    "~/wagyu",
+    "~/codeberg",
+    "~/github",
+    "~/gitea"
+  ]
+}
