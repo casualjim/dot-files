@@ -1,8 +1,14 @@
-# Provisioning for galileo: CachyOS + niri + Noctalia on a Minisforum AI X1 Pro 470.
+# Provisioning for every machine this repo sets up. This file holds only what works on macOS AND Linux;
+# the rest is split by what the machine is, in files that sit next to this one:
 #
-# This file lists only what was added on top of a fresh CachyOS install. Things the
-# installer provides (kernel, firmware, fprintd, snapper, limine, NetworkManager ...)
-# are deliberately not repeated here.
+#   mise.linux.toml    any Linux (loaded automatically): TPM/YubiKey/gpg/gopass, podman, polkit and PAM
+#   mise.arch.toml     Arch and CachyOS, headless or desktop: the pacman/aur package names
+#   mise.desktop.toml  a machine with a desktop (CachyOS + niri + Noctalia): the session, apps, AppImages
+#   (mise.ubuntu.toml  will hold the apt equivalents when an Ubuntu box needs them)
+#
+# arch, ubuntu and desktop are config environments that mise cannot detect by itself: pick them per
+# machine with `mise run set-env arch desktop` (writes ~/.config/mise/miserc.local.toml, not in the repo).
+# The same split exists for the global config in ~/.config/mise/ (config.linux.toml, config.desktop.toml).
 #
 # Global tools and the [dotfiles] table live in ~/.config/mise/config.toml.
 # Run from this directory (after `mise trust`):
@@ -24,230 +30,18 @@ oxlint = "latest"
 oxfmt = "latest"
 
 # ---------------------------------------------------------------------------
-# Packages
+# Steps that work the same everywhere
 # ---------------------------------------------------------------------------
-[bootstrap.packages]
-# Official and CachyOS repositories
-"pacman:paru" = "latest"
-"pacman:brave-bin" = "latest"
-"pacman:claude-desktop" = "latest"
-"pacman:zed" = "latest"
-"pacman:ghostty" = "latest"
-"pacman:bitwarden" = "latest"
-"pacman:tailscale" = "latest"
-"pacman:greetd" = "latest"
-"pacman:greetd-tuigreet" = "latest"
-"pacman:libfido2" = "latest"
-"pacman:cachy-update" = "latest"
-# Smart cards and YubiKey (CCID): pcscd talks to the reader, Yubico Authenticator uses it.
-"pacman:pcsclite" = "latest"
-"pacman:ccid" = "latest"
-# pam-u2f lets a YubiKey touch satisfy polkit prompts (system/etc/pam.d/polkit-1).
-"pacman:pam-u2f" = "latest"
-# age plugins for hardware-backed gopass identities (exploring replacing the keyring with gopass).
-# yubikey: PIV on the YubiKey, via pcscd. tpm: bound to this machine's TPM.
-"pacman:age-plugin-yubikey" = "latest"
-"pacman:age-plugin-tpm" = "latest"
-# Inspect the TPM (persistent handles, NV indexes): tpm2_getcap handles-persistent
-"pacman:tpm2-tools" = "latest"
-# Rootless containers: podman runs as the user, no daemon, no docker group.
-# podman-docker supplies a `docker` command that calls podman; passt provides pasta networking.
-"pacman:podman" = "latest"
-"pacman:podman-docker" = "latest"
-"pacman:docker-compose" = "latest"
-"pacman:passt" = "latest"
-"pacman:ttf-mona-sans" = "latest"
-"pacman:ttf-monaspace-variable" = "latest"
-"pacman:otf-monaspace-nerdfonts" = "latest"
-# Serif stays IBM Plex; sans and mono are Mona Sans and Monaspace.
-"pacman:ttf-ibm-plex" = "latest"
-# AUR (built by paru as the regular user)
-"aur:dropbox" = "latest"
-# Dropbox draws its tray icon through an AppIndicator library, or falls back to an X11
-# tray that Noctalia does not host. Not tested yet: if it is not the one Dropbox loads,
-# try the AUR libappindicator-gtk3 instead.
-"pacman:libayatana-appindicator" = "latest"
-"aur:yubico-authenticator-bin" = "latest"
-"aur:zapzap-bin" = "latest"
-"aur:zsh-antidote" = "latest"
-"aur:tmog-bin" = "latest"
-
-# Carried over from the previous machine's `paru -Qm` (everything mise can install is in
-# ~/.config/mise/config.toml instead).
-"aur:google-chrome" = "latest"
-"aur:ledger-live-bin" = "latest"
-"aur:ledger-udev" = "latest"
-"aur:musl-cross-bin" = "latest"
-"aur:ttf-ms-fonts" = "latest"
-# The previous machine had telegram-desktop-bin; the official package is newer than that one.
-"pacman:telegram-desktop" = "latest"
-# valkey-cli (also installs the server, which stays stopped) and the Gitea CLI (`tea`).
-"pacman:valkey" = "latest"
-"pacman:gitea-cli" = "latest"
-# prettyping: a single bash script that wraps ping (used by the ping alias).
-"pacman:prettyping" = "latest"
-# xmllint, used by the hk XML check.
-"pacman:libxml2" = "latest"
-# noctalia/screen_recorder plugin: gpu-screen-recorder records, slurp picks a region.
-"pacman:gpu-screen-recorder" = "latest"
-"pacman:slurp" = "latest"
-
-# Chat and secrets
-"pacman:discord" = "latest"
-"pacman:signal-desktop" = "latest"
-# Proton: Mail (Calendar is part of it) and Pass are in the CachyOS repo. Drive is an UNOFFICIAL third-party
-# client from the AUR (1 vote, new): it handles your Proton login, so read its PKGBUILD before trusting it.
-"pacman:proton-mail-bin" = "latest"
-"pacman:proton-pass" = "latest"
-"aur:proton-drive-for-linux-bin" = "latest" # prebuilt; the source package needs a pacman Rust toolchain you do not otherwise have
-# Zen is just installed: it is not the default browser, and nothing configures it.
-"pacman:zen-browser-bin" = "latest"
-# LobeHub ships an AppImage, which needs libfuse2 (only fuse3 is installed).
-"pacman:fuse2" = "latest"
-"pacman:gopass" = "latest"
-# git-credential-gopass answers git's credential protocol from the gopass store (git/<host>/<user>).
-"pacman:git-credential-gopass" = "latest"
-# gpg and the agent that gopass uses. The passphrase is preset from a TPM-sealed credential (seal-gpg).
-"pacman:gnupg" = "latest"
-"pacman:pinentry" = "latest"
-"pacman:gocryptfs" = "latest"
-
-# Needed by Noctalia plugins (see [plugins].enabled in .config/noctalia/config.toml)
-# yt-music: yt-dlp, mpv, mpv-mpris. bitwarden: bw comes from the mise tool, wtype is for Autotype.
-"pacman:yt-dlp" = "latest"
-"pacman:mpv" = "latest"
-"pacman:mpv-mpris" = "latest"
-"pacman:wtype" = "latest"
-# voxtype: push-to-talk dictation. The prebuilt binary avoids a long compile, and it also
-# installs /usr/bin/voxtype-audio-bridge, which the plugin's live overlay needs.
-"aur:voxtype-bin" = "latest"
-# airpods needs a patched librepods fork (librepods-ctl + daemon with a status verb); the
-# CachyOS `librepods` package is upstream and lacks them, so it is deliberately not listed.
-
-# ---------------------------------------------------------------------------
-# Accounts
-# ---------------------------------------------------------------------------
-# /dev/tpmrm0 is group tss; the TPM-sealed keyring credential needs it.
-# voxtype reads the keyboard for its push-to-talk hotkey, which needs the input group
-# (log out and back in after it is added).
-[bootstrap.users.ivan]
-group = "ivan"
-groups = ["tss", "input"]
-
-# ---------------------------------------------------------------------------
-# System files (copied from ./system, owned by root)
-# ---------------------------------------------------------------------------
-# greetd: autologin into niri-session, tuigreet as the fallback login.
-[bootstrap.files."/etc/greetd/config.toml"]
-source = "./system/etc/greetd/config.toml"
-owner = "root"
-group = "root"
-mode = "0644"
-
-# polkit: let ivan's local session decrypt TPM-sealed credentials without a prompt.
-[bootstrap.files."/etc/polkit-1/rules.d/49-keyring-unlock.rules"]
-source = "./system/etc/polkit-1/rules.d/49-keyring-unlock.rules"
-owner = "root"
-group = "root"
-mode = "0644"
-
-[bootstrap.files."/etc/pam.d/polkit-1"]
-source = "./system/etc/pam.d/polkit-1"
-owner = "root"
-group = "root"
-mode = "0644"
-
-# podman-docker: an empty marker file silences "Emulate Docker CLI using podman" on every call.
-[bootstrap.files."/etc/containers/nodocker"]
-content = ""
-owner = "root"
-group = "root"
-mode = "0644"
-
-# mkinitcpio: systemd initrd with sd-encrypt (FIDO2 LUKS) and an early keyboard hook.
-# After this changes, run: mise run rebuild-initramfs
-[bootstrap.files."/etc/mkinitcpio.conf.d/05-fido2-luks.conf"]
-source = "./system/etc/mkinitcpio.conf.d/05-fido2-luks.conf"
-owner = "root"
-group = "root"
-mode = "0644"
-
-# ---------------------------------------------------------------------------
-# System services
-# ---------------------------------------------------------------------------
-# greetd runs the live session. NEVER restart it from here: on_change = "none".
-[bootstrap.services.greetd]
-state = "running"
-enabled = true
-on_change = "none"
-
-[bootstrap.services.tailscaled]
-state = "running"
-enabled = true
-
-# pcscd is socket-activated: the daemon starts on the first smart-card client.
-[bootstrap.services."pcscd.socket"]
-state = "running"
-enabled = true
-
-# sddm shipped with the install; greetd replaced it.
-[bootstrap.services.sddm]
-state = "stopped"
-enabled = false
-
-# ---------------------------------------------------------------------------
-# User services (systemd --user; no root)
-# ---------------------------------------------------------------------------
-# Rootless podman API socket, socket-activated. Clients use
-# DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock
-[bootstrap.services."podman.socket"]
-scope = "user"
-state = "running"
-enabled = true
-
-# Keyring unlock: the packaged socket/service are masked so ours starts the daemon.
-[bootstrap.services."gnome-keyring-daemon.socket"]
-scope = "user"
-state = "stopped"
-enabled = false
-masked = true
-
-[bootstrap.services."gnome-keyring-daemon.service"]
-scope = "user"
-state = "stopped"
-enabled = false
-masked = true
-
-# keyring-unlock.service is a dotfile (~/.config/systemd/user/); mise only enables it.
-[bootstrap.services."keyring-unlock.service"]
-scope = "user"
-enabled = true
-
-# yubikey-drill.service and .timer are dotfiles; the timer opens a terminal when a drill is due.
-[bootstrap.services."yubikey-drill.timer"]
-scope = "user"
-state = "running"
-enabled = true
-
-# gpg-agent-pass.service is a dotfile; it presets the GPG passphrase at login from a TPM-sealed credential.
-[bootstrap.services."gpg-agent-pass.service"]
-scope = "user"
-enabled = true
+# zage keeps its aliases in ~/.config/zage/aliases (ZAGE_ALIAS_FILE in the global config). The file is yours and not in
+# this repo; only the directory is created, so zage has somewhere to write it.
+[bootstrap.directories."~/.config/zage"]
 
 # zage ships its own unit (`zage service install` writes zage.socket and zage.service),
 # so mise only keeps the state. Run `mise run zage-install` once before the first apply.
-[bootstrap.services."zage.socket"]
-scope = "user"
-state = "running"
-enabled = true
-
 [tasks.zage-install]
 description = "Write zage's systemd user units (Linux) or launchd agent (macOS)"
 run = "zage service install"
 
-# ---------------------------------------------------------------------------
-# One-off steps that need you present (hardware, logins, secrets)
-# ---------------------------------------------------------------------------
 [tasks.check]
 description = "Run every hk check on all files (the same checks as the git pre-commit hook)"
 run = "hk check --all"
@@ -265,104 +59,17 @@ mkdir -p "$HOME/.config/mise"
 ln -sf "$MISE_PROJECT_ROOT/.config/mise/config.toml" "$HOME/.config/mise/config.toml"
 """
 
-[tasks.rebuild-initramfs]
-description = "Rebuild the initramfs and the Limine entries after touching mkinitcpio config"
-run = "sudo mkinitcpio -P && sudo limine-update"
-
-[tasks.seal-keyring]
-description = "Seal the login keyring password to this machine's TPM (re-run after changing it)"
-run = """
-systemd-ask-password "Keyring password:" | tr -d '\\n' \\
-  | systemd-creds encrypt --with-key=tpm2 --name=keyring - "$HOME/.config/keyring-unlock.cred"
-chmod 600 "$HOME/.config/keyring-unlock.cred"
-"""
-
-[tasks.seal-gpg]
-description = "Seal your GPG passphrase to this machine's TPM so gpg-agent is unlocked at login (re-run after changing it)"
-run = """
-systemd-ask-password "GPG passphrase:" | tr -d '\\n' \\
-  | systemd-creds encrypt --with-key=tpm2 --name=gpg - "$HOME/.config/gpg-unlock.cred"
-chmod 600 "$HOME/.config/gpg-unlock.cred"
-systemctl --user restart gpg-agent-pass.service
-"""
-
-[tasks.register-u2f]
-description = "Register YubiKeys for pam_u2f (polkit prompts), one at a time. Any one registered key is enough to authenticate"
+[tasks.set-env]
+description = "Say what this machine is: mise run set-env arch desktop fprint (or just arch, or ubuntu). Run it before the first bootstrap"
+# arch, ubuntu, desktop and fprint cannot be detected, so they are a per-machine choice that stays out of the repo.
+usage = 'arg "<env>" var=#true help="arch, ubuntu, desktop, fprint"'
 shell = "bash -c"
-run = """
+run = '''
 set -euo pipefail
-f="$HOME/.config/Yubico/u2f_keys"
-mkdir -p "$(dirname "$f")"
-line=""
-for name in "YubiKey Bio" "YubiKey 5C" "YubiKey NEO"; do
-  read -r -p "Plug in ONLY the $name, then press Enter (s to skip): " answer
-  [[ $answer == s ]] && continue
-  echo "Touch the $name when it blinks."
-  if [[ -z $line ]]; then
-    line=$(pamu2fcfg -u "$USER")
-  else
-    line+=$(pamu2fcfg -n)
-  fi
-done
-[[ -n $line ]] || { echo "No key registered; nothing written."; exit 1; }
-printf "%s\\n" "$line" > "$f"
-chmod 600 "$f"
-echo "Wrote $f"
-"""
-
-[tasks.enroll-fido2]
-description = "List FIDO2 devices and enroll a token as a LUKS keyslot (interactive, needs a touch)"
-# TODO: confirm the exact user-verification / PIN flags used originally against
-# `sudo cryptsetup luksDump "$LUKS_DEV"` before relying on this on a new machine.
-run = """
-: "${LUKS_DEV:=/dev/nvme0n1p2}"
-systemd-cryptenroll --fido2-device=list
-sudo systemd-cryptenroll --fido2-device=auto "$LUKS_DEV"
-"""
-
-[tasks.resolv-stub]
-description = "Point /etc/resolv.conf at systemd-resolved's stub (needed for Tailscale MagicDNS)"
-run = """
-sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-sudo systemctl restart NetworkManager
-"""
-
-# Voxtype's settings live in ~/.config/voxtype/config.toml, which Voxtype rewrites atomically,
-# so it is not symlinked from this repo. `voxtype config set` is idempotent and keeps comments.
-[tasks.voxtype-config]
-description = "Apply our Voxtype settings: Right Ctrl push-to-talk, own OSD off (the Noctalia plugin draws it)"
-run = """
-voxtype config set hotkey.key RIGHTCTRL
-voxtype config set hotkey.mode push_to_talk
-voxtype config set osd.enabled false
-"""
-
-[tasks.voxtype-setup]
-description = "Voxtype with Qwen3-ASR: settings, model, and user service (log out/in first for the input group)"
-depends = ["voxtype-config"]
-# Not a [bootstrap.services] entry: started without a model the service fails at every login.
-# Qwen3-ASR 0.6B (Q8, ~850 MB) runs through Voxtype's shared `gguf` engine; --activate writes
-# engine = "gguf" and the model into ~/.config/voxtype/config.toml.
-run = """
-voxtype setup --download --model Qwen3-ASR-0.6B-Q8_0.gguf --activate --no-post-install
-voxtype config validate-selection
-systemctl --user enable --now voxtype
-"""
-
-[tasks.voxtype-parakeet]
-description = "Voxtype with Parakeet Ultra (Q8, 25 European languages): settings, model, and user service"
-depends = ["voxtype-config"]
-# Same flow as voxtype-setup with a different model. Run either one; the last one run wins.
-run = """
-voxtype setup --download --model parakeet-ultra-Q8_0.gguf --activate --no-post-install
-voxtype config validate-selection
-systemctl --user enable --now voxtype
-systemctl --user try-restart voxtype
-"""
-
-[tasks.voxtype-gpu]
-description = "Optional: enable Voxtype's GPU (Vulkan) backend; vulkan-radeon is already installed"
-run = "sudo voxtype setup gpu --enable"
+mkdir -p "$HOME/.config/mise"
+printf 'env = [%s]\n' "$(printf '"%s", ' $usage_env | sed 's/, $//')" > "$HOME/.config/mise/miserc.local.toml"
+cat "$HOME/.config/mise/miserc.local.toml"
+'''
 
 [tasks.jj-identity]
 description = "Set your jj name and email in ~/.config/jj/conf.d/10-user.toml (kept out of this public repo)"
@@ -384,10 +91,6 @@ printf 'git user email: '; read -r email
 git config --global user.name "$name"
 git config --global user.email "$email"
 """
-
-[tasks.tailscale-up]
-description = "Join the tailnet (opens a login URL)"
-run = "sudo tailscale up --operator=$USER --accept-routes --accept-dns"
 
 [tasks.helix-grammars]
 description = "Fetch and build Helix's tree-sitter grammars into ~/.config/helix/runtime (slow; needs a C compiler)"
@@ -416,17 +119,82 @@ f="$HOME/.docker/config.json"
 jq '.credsStore = "gopass"' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
 '''
 
-# Chrome is only for streaming video. This managed policy blocks every
-# URL except the streaming sites, sign-in hosts and Chrome's own settings pages. If a service's
-# login breaks, the blocked page shows up in Chrome: add the host to URLAllowlist.
-# Chrome does not create /etc/opt/chrome, and mise will not create a file's missing parents.
-[bootstrap.directories."/etc/opt/chrome/policies/managed"]
-owner = "root"
-group = "root"
-mode = "0755"
+# ---------------------------------------------------------------------------
+# Coding agents: Hindsight and the code graph
+# ---------------------------------------------------------------------------
+# Tern, Claude Code, Codex and pi install and update themselves, and Tern also owns omp (see the README).
+# What is here is what goes on top of them.
+[tasks.hindsight-install]
+description = "First time: add Hindsight to every coding agent it detects, then apply the pi-mimir patch"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+mise run pi-mimir-sync
+npx @vectorize-io/hindsight-coding-agents install all
+mise run hindsight-patch
+'''
 
-[bootstrap.files."/etc/opt/chrome/policies/managed/streaming-only.json"]
-source = "./system/etc/opt/chrome/policies/managed/streaming-only.json"
-owner = "root"
-group = "root"
-mode = "0644"
+[tasks.hindsight-update]
+description = "Update Hindsight in place (a machine that already has it, or an rsynced one), then re-apply the pi-mimir patch"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+mise run pi-mimir-sync
+# The update re-stages ~/.hindsight/coding-agents and wipes the patch, so the patch always follows it.
+npx @vectorize-io/hindsight-coding-agents update
+mise run hindsight-patch
+'''
+
+[tasks.hindsight-patch]
+description = "Apply pi-mimir's patch-dist.mjs to the staged Hindsight dist (idempotent; needed after every install or update)"
+run = 'node "$HOME/github/casualjim/pi-mimir/packages/pi-hindsight/patch-dist.mjs"'
+
+[tasks.pi-mimir-sync]
+description = "Clone casualjim/pi-mimir into ~/github/casualjim/pi-mimir, or fast-forward it if it is already there"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+dir="$HOME/github/casualjim/pi-mimir"
+if [[ -d $dir/.git ]]; then
+  git -C "$dir" pull --ff-only
+else
+  mkdir -p "$(dirname "$dir")"
+  git clone https://github.com/casualjim/pi-mimir "$dir"
+fi
+'''
+
+[tasks.codebase-memory-build]
+description = "Pull and build DeusData/codebase-memory-mcp (with the UI) and install the binary into ~/.local/bin"
+shell = "bash -c"
+run = '''
+set -euo pipefail
+dir="$HOME/github/DeusData/codebase-memory-mcp"
+if [[ -d $dir/.git ]]; then
+  git -C "$dir" pull --ff-only
+else
+  mkdir -p "$(dirname "$dir")"
+  git clone https://github.com/DeusData/codebase-memory-mcp "$dir"
+fi
+cd "$dir"
+./scripts/build.sh --with-ui
+# Every running process must be the same build, so stop the daemon before the binary changes. The copy goes
+# through a temporary name and a rename: overwriting a running executable in place fails with "text file busy".
+bin="$HOME/.local/bin/codebase-memory-mcp"
+had_daemon=0
+if [[ -x $bin ]] && systemctl --user is-active --quiet codebase-memory-mcp.service 2>/dev/null; then
+  had_daemon=1
+  systemctl --user stop codebase-memory-mcp.service
+fi
+mkdir -p "$HOME/.local/bin"
+install -m 755 build/c/codebase-memory-mcp "$bin.new"
+mv -f "$bin.new" "$bin"
+if (( had_daemon )); then
+  systemctl --user start codebase-memory-mcp.service
+fi
+"$bin" --version
+'''
+
+[tasks.codebase-memory-install]
+description = "First time only: register codebase-memory-mcp with the coding agents it detects, with hooks"
+depends = ["codebase-memory-build"]
+run = "codebase-memory-mcp install -y --hooks"

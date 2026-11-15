@@ -18,12 +18,18 @@ fi
 
 #shellcheck shell=zsh
 
-# Environment variables, PATH entries and aliases live in mise, not here:
-#   ~/.config/mise/config.toml        shared: [env], _.path, [shell_alias]
+# Environment variables and aliases live in mise, not here (PATH entries are the exception, below):
+#   ~/.config/mise/config.toml        shared: [env], [shell_alias]
 #   ~/.config/mise/config.linux.toml  Linux only
 # mise is activated by the oh-my-zsh mise plugin (see ~/.zsh_plugins.txt), so they apply
 # once that plugin has loaded. What stays below is what must exist before that point, or
 # belongs to this shell session.
+
+# Global PATH entries live here and not in mise's _.path: mise puts _.path entries ahead of the tool
+# directories it manages, and the tools must win. The activation hook prepends the tool directories on
+# every prompt, so these stay behind them. -U drops duplicates; krew goes last.
+typeset -U path
+path=(~/.microsandbox/bin ~/.humanlog/bin ~/.kube/bin ~/go/bin ~/.local/bin ~/.cargo/bin ~/.bun/bin $path ~/.krew/bin)
 
 export SHELL="${SHELL-/bin/zsh}"
 export OS="${OS-$(uname)}"

@@ -1,0 +1,42 @@
+# A machine with a desktop (select it with `mise run set-env arch desktop`; see the root mise.toml).
+# Global tools and dotfiles that only make sense with a graphical session.
+[tools]
+# Saves the niri window layout every 5 minutes and restores it at login (nirinit.service, below).
+"github:amaanq/nirinit" = { version = "latest", asset_pattern = "nirinit-linux-amd64" }
+# LobeHub desktop: the stable release ships an AppImage, a tarball, .deb and .rpm; pick the AppImage. It does not
+# integrate itself, so postinstall installs the menu entry and icon the AppImage ships (needs appimage-integrate applied).
+"github:lobehub/lobehub" = { version = "latest", asset_pattern = "LobeHub-*.AppImage", postinstall = "$HOME/.local/bin/appimage-integrate \"$MISE_TOOL_INSTALL_PATH\"" }
+# ArtCraft launcher (installer and updater for the Craft app suite): the x86_64 AppImage.
+"github:storytold/craft-launcher" = { version = "latest", asset_pattern = "artcraft-launcher-*-linux-x86_64.AppImage" }
+
+[env]
+# Wayland-only session. Only shells with mise activated get these; GUI apps started from the
+# launcher do not (that would need niri's environment block).
+QT_QPA_PLATFORM = "wayland"
+MOZ_ENABLE_WAYLAND = "1"
+
+[dotfiles]
+"~/.config/niri" = { mode = "symlink-each" }
+"~/.config/noctalia/config.toml" = {}
+"~/.config/fontconfig/conf.d/20-no-embedded.conf" = {}
+"~/.config/fontconfig/fonts.conf" = {}
+"~/.config/signal-desktop-flags.conf" = {}
+# What starts at login. Apps rewrite their own entries, so these are copies. Discord (a versioned path under ~/.config/discord)
+# and Tern (its own login entry) are left out: they manage theirs.
+"~/.config/autostart/com.rtosta.zapzap.desktop" = { mode = "copy" }
+"~/.config/autostart/bitwarden.desktop" = { mode = "copy" }
+"~/.config/autostart/dropbox.desktop" = { mode = "copy" }
+"~/.config/autostart/org.telegram.desktop.desktop" = { mode = "copy" }
+# Default applications (Brave for the web). Apps add to it, so it is a copy; dotfiles-sync-back carries their edits back into the repo.
+"~/.config/mimeapps.list" = { mode = "copy" }
+"~/.config/TMOG/Task Manager TMOG/settings.json" = { mode = "copy" }
+# The world clock keeps its zone list in the plugin data directory; Noctalia rewrites it when you edit zones in the panel,
+# so it is a copy; dotfiles-sync-back carries panel edits back into the repo. (Includes the "Shenzhen" label for Asia/Shanghai if you set one.)
+"~/.local/state/noctalia/plugins/data/noctalia/world_clock/zones.json" = { mode = "copy" }
+"~/.config/nirinit/config.toml" = {}
+"~/.config/systemd/user/nirinit.service" = { mode = "copy" }
+"~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
+"~/.local/bin/keyring-unlock" = { mode = "copy" }
+"~/.local/bin/appimage-integrate" = { mode = "copy" }
+# `zed` is `zeditor` on Arch. A script, not a shell alias, so launchers and Noctalia plugins find it.
+"~/.local/bin/zed" = {}

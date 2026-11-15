@@ -1,0 +1,8 @@
+# A machine with a fingerprint reader (select it with `mise run set-env ... fprint`). Hardware differs per
+# machine, so this is its own environment and not part of desktop. It replaces the PAM file from
+# mise.arch.toml with one that tries the fingerprint first.
+[bootstrap.files."/etc/pam.d/polkit-1"]
+source = "./system/fprint/etc/pam.d/polkit-1"
+owner = "root"
+group = "root"
+mode = "0644"

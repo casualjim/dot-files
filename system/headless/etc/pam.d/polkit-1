@@ -1,0 +1,11 @@
+#%PAM-1.0
+# polkit prompts on a machine with no fingerprint reader or desktop. A YubiKey touch proves the user is
+# at the keyboard; the password is the fallback. Register a key with `mise run register-u2f`; with none
+# registered pam_u2f is skipped, so the password still works. The desktop version of this file
+# (system/etc/pam.d/polkit-1) adds a fingerprint line in front.
+# Do not add nouserok to pam_u2f: with `sufficient` it would turn "no key registered" into success.
+auth       sufficient   pam_u2f.so       cue
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth

@@ -1,0 +1,72 @@
+# Arch and CachyOS, headless or desktop (select it with `mise run set-env arch ...`). The pacman and aur
+# package names for everything that is not desktop-only; desktop packages are in mise.desktop.toml.
+# An Ubuntu machine would get the apt equivalents in mise.ubuntu.toml.
+[bootstrap.packages]
+"pacman:paru" = "latest"
+"pacman:tailscale" = "latest"
+"pacman:libfido2" = "latest"
+# Smart cards and YubiKey (CCID): pcscd talks to the reader, Yubico Authenticator uses it.
+"pacman:pcsclite" = "latest"
+"pacman:ccid" = "latest"
+# pam-u2f lets a YubiKey touch satisfy polkit prompts (system/headless/etc/pam.d/polkit-1).
+"pacman:pam-u2f" = "latest"
+# age plugins for hardware-backed gopass identities.
+# yubikey: PIV on the YubiKey, via pcscd. tpm: bound to this machine's TPM.
+"pacman:age-plugin-yubikey" = "latest"
+"pacman:age-plugin-tpm" = "latest"
+# Inspect the TPM (persistent handles, NV indexes): tpm2_getcap handles-persistent
+"pacman:tpm2-tools" = "latest"
+# Rootless containers: podman runs as the user, no daemon, no docker group.
+# podman-docker supplies a `docker` command that calls podman; passt provides pasta networking.
+"pacman:podman" = "latest"
+"pacman:podman-docker" = "latest"
+"pacman:docker-compose" = "latest"
+"pacman:passt" = "latest"
+"aur:zsh-antidote" = "latest"
+"aur:musl-cross-bin" = "latest"
+# valkey-cli (also installs the server, which stays stopped) and the Gitea CLI (`tea`).
+"pacman:valkey" = "latest"
+"pacman:gitea-cli" = "latest"
+# prettyping: a single bash script that wraps ping (used by the ping alias).
+"pacman:prettyping" = "latest"
+# xmllint, used by the hk XML check.
+"pacman:libxml2" = "latest"
+"pacman:gopass" = "latest"
+# git-credential-gopass answers git's credential protocol from the gopass store (git/<host>/<user>).
+"pacman:git-credential-gopass" = "latest"
+# gpg and the agent that gopass uses. The passphrase is preset from a TPM-sealed credential (seal-gpg).
+"pacman:gnupg" = "latest"
+"pacman:pinentry" = "latest"
+"pacman:gocryptfs" = "latest"
+
+# polkit prompts: a YubiKey touch, then the password. mise.fprint.toml replaces this on a machine with a
+# fingerprint reader. (system-auth is Arch's PAM stack; Ubuntu's differs.)
+[bootstrap.files."/etc/pam.d/polkit-1"]
+source = "./system/headless/etc/pam.d/polkit-1"
+owner = "root"
+group = "root"
+mode = "0644"
+
+# mkinitcpio: systemd initrd with sd-encrypt (FIDO2 LUKS) and an early keyboard hook.
+# After this changes, run: mise run rebuild-initramfs
+[bootstrap.files."/etc/mkinitcpio.conf.d/05-fido2-luks.conf"]
+source = "./system/etc/mkinitcpio.conf.d/05-fido2-luks.conf"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[tasks.rebuild-initramfs]
+description = "Rebuild the initramfs and the Limine entries after touching mkinitcpio config"
+run = "sudo mkinitcpio -P && sudo limine-update"
+
+
+[tasks.enroll-fido2]
+description = "List FIDO2 devices and enroll a token as a LUKS keyslot (interactive, needs a touch)"
+# TODO: confirm the exact user-verification / PIN flags used originally against
+# `sudo cryptsetup luksDump "$LUKS_DEV"` before relying on this on a new machine.
+run = """
+: "${LUKS_DEV:=/dev/nvme0n1p2}"
+systemd-cryptenroll --fido2-device=list
+sudo systemd-cryptenroll --fido2-device=auto "$LUKS_DEV"
+"""
+

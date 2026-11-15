@@ -1,5 +1,9 @@
 [settings]
-idiomatic_version_file_enable_tools = ["python"]
+# Opt-in per tool: without bun and pnpm here, mise ignores packageManager/devEngines in package.json for them.
+idiomatic_version_file_enable_tools = ["python", "bun", "pnpm"]
+python.uv_venv_auto = "create|source"
+env_shell_expand = true
+npm.package_manager = "bun"
 # Set these too — mise's internal rust tool reads them BEFORE [env] is processed (#8943)
 # Redundancy is the workaround for the ordering bug
 #rust.cargo_home = "/home/ivan/.cargo"
@@ -19,6 +23,8 @@ cargo-dist = "latest"
 go = "latest"
 gup = "latest"
 node = "lts"
+bun = "latest"
+pnpm = "latest" # registry default is aqua:pnpm/pnpm; no Corepack needed
 sops = "latest"
 zig = "latest"
 "github:rtk-ai/rtk" = "latest"
@@ -48,11 +54,6 @@ ruff = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 # The one Python tool: there is no other systemd language server. Pinned to Python 3.13 so uv uses prebuilt lxml wheels.
 "pipx:systemd-language-server" = { version = "latest", python = "3.13" } # lxml 5.4 has no wheel for 3.14 and fails to build
-# LobeHub desktop: the stable release ships an AppImage, a tarball, .deb and .rpm; pick the AppImage. It does not
-# integrate itself, so postinstall installs the menu entry and icon the AppImage ships (needs appimage-integrate applied).
-"github:lobehub/lobehub" = { version = "latest", asset_pattern = "LobeHub-*.AppImage", postinstall = "$HOME/.local/bin/appimage-integrate \"$MISE_TOOL_INSTALL_PATH\"" }
-# ArtCraft launcher (installer and updater for the Craft app suite): the x86_64 AppImage.
-"github:storytold/craft-launcher" = { version = "latest", asset_pattern = "artcraft-launcher-*-linux-x86_64.AppImage" }
 tealdeer = "latest"
 delta = "latest"
 eza = "latest"
@@ -104,16 +105,6 @@ targets = "x86_64-unknown-linux-gnu,aarch64-unknown-linux-gnu,aarch64-apple-darw
 
 # ~/.config/mise/config.toml — global
 [env]
-# PATH additions, in the order they appear on PATH (first is searched first).
-_.path = [
-  "~/.microsandbox/bin",
-  "~/.humanlog/bin",
-  "~/.kube/bin",
-  "~/go/bin",
-  "~/.local/bin",
-  "~/.cargo/bin",
-  { path = "~/.krew/bin", position = "append" },
-]
 # Pin CARGO_HOME to a stable location OUTSIDE mise's data directory
 #CARGO_HOME = "{{ env.HOME }}/.cargo"
 #RUSTUP_HOME = "{{ env.HOME }}/.rustup"
@@ -152,30 +143,21 @@ humanlog = "humanlog --skip-unchanged=false --truncate=false"
 "~/.config/bat/themes/Catppuccin-macchiato.tmTheme" = {}
 "~/.config/bat/themes/Catppuccin-mocha.tmTheme" = {}
 "~/.config/btop/btop.conf" = { mode = "copy" }
-"~/.config/fontconfig/conf.d/20-no-embedded.conf" = {}
-"~/.config/fontconfig/fonts.conf" = {}
 "~/.config/ghostty/config" = {}
+"~/.config/alacritty/alacritty.toml" = {}
 "~/.config/helix/config.toml" = {}
 "~/.config/helix/languages.toml" = {}
 "~/.config/helix/themes/catppuccin_mocha.toml" = {}
 "~/.config/git/config" = {}
 "~/.config/jj/config.toml" = {}
+"~/.config/tern/settings.json" = { mode = "copy" }
+"~/.config/mise/config.desktop.toml" = {}
 "~/.config/mise/config.linux.toml" = {}
 "~/.config/mise/config.macos.toml" = {}
 "~/.config/mise/miserc.toml" = {}
-"~/.config/signal-desktop-flags.conf" = {}
-"~/.config/niri" = { mode = "symlink-each" }
-"~/.config/noctalia/config.toml" = {}
+"~/.hindsight/coding-agent.json" = {}
 "~/.gnupg/common.conf" = {}
 "~/.gnupg/gpg-agent.conf" = {}
-"~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
-"~/.config/systemd/user/gpg-agent-pass.service" = { mode = "copy" }
-"~/.config/systemd/user/yubikey-drill.service" = { mode = "copy" }
-"~/.config/systemd/user/yubikey-drill.timer" = { mode = "copy" }
-"~/.local/bin/appimage-integrate" = { mode = "copy" }
-"~/.local/bin/gpg-agent-pass" = { mode = "copy" }
-"~/.local/bin/keyring-unlock" = { mode = "copy" }
-"~/.local/bin/yubikey-drill" = { mode = "copy" }
 "~/.p10k.zsh" = {}
 "~/.zsh_plugins.txt" = {}
 "~/.zshrc" = {}

@@ -1,7 +1,8 @@
 # dot-files
 
 Everything added on top of a fresh install, driven by [mise](https://mise.jdx.dev).
-Currently built around one machine: `galileo`, a Minisforum AI X1 Pro 470 running
+It has to work on macOS and on two kinds of Linux machine: headless (Arch or CachyOS, or Ubuntu) and
+with a desktop (CachyOS). The one desktop so far is `galileo`, a Minisforum AI X1 Pro 470 running
 CachyOS with niri and the Noctalia shell (Wayland only). The installer's own defaults
 (kernel, firmware, fprintd, snapper, limine, NetworkManager) are deliberately not repeated.
 
@@ -11,10 +12,14 @@ Nothing secret lives here. See [Secrets](#secrets).
 
 | Path | What it is |
 | --- | --- |
-| `mise.toml` | Machine bootstrap: packages, system files, services, users, and one-off tasks. Run from this directory. |
-| `.config/mise/config.toml` | The **global** mise config: `[tools]`, `[env]`, and the `[dotfiles]` table that maps files here to `~`. |
-| `.config/mise/config.linux.toml` | Linux-only global config (`DOCKER_HOST` for rootless podman). Loaded via `auto_env`. |
-| `.config/mise/miserc.toml` | Turns on `auto_env` so the per-OS file loads. |
+| `mise.toml` | What works on macOS and Linux: the check tools, `set-env`, identity and helper tasks. Run from this directory. |
+| `mise.linux.toml` | Any Linux (loaded automatically): TPM, YubiKey, gpg and gopass setup, podman, tailscale, polkit. |
+| `mise.arch.toml` | Arch and CachyOS, headless or desktop: the pacman and aur packages, the PAM and initramfs files. |
+| `mise.desktop.toml` | A machine with a desktop: apps, greetd, the keyring, Voxtype, the Chrome policy. |
+| `mise.fprint.toml` | A machine with a fingerprint reader: the PAM file that tries it first. |
+| `.config/mise/config.toml` | The **global** mise config shared by every OS: `[tools]`, `[env]`, and the `[dotfiles]` table that maps files here to `~`. |
+| `.config/mise/config.linux.toml`, `config.desktop.toml`, `config.macos.toml` | The same split for the global config: Linux-wide, desktop-only (niri, AppImages, nirinit), macOS-only. |
+| `.config/mise/miserc.toml` | Turns on `auto_env` so the per-OS files load. `arch`, `ubuntu`, `desktop` and `fprint` cannot be detected, so you choose them per machine (below). |
 | `.config/` and `.local/` | Dotfiles, symlinked or copied into `~` by `mise dot apply`. |
 | `.zshrc`, `.zsh_plugins.txt`, `.p10k.zsh` | Shell (zsh, antidote, powerlevel10k). The same files are used on macOS. |
 | `system/` | Files that belong under `/etc`, copied there by `mise bootstrap`. |
@@ -30,6 +35,7 @@ git clone <this repo> ~/github/casualjim/dot-files    # the path is set in .conf
 cd ~/github/casualjim/dot-files
 mise trust
 mise run link-global-config      # links ~/.config/mise/config.toml to this repo's copy
+mise run set-env arch desktop    # what this machine is: arch, ubuntu, desktop, fprint (galileo: arch desktop fprint)
 mise install                     # tools first: zage-install below needs the zage binary
 mise run zage-install            # services in mise.toml expect zage's units to exist
 mise dot apply                   # BEFORE bootstrap: several user units are dotfiles (see below)
@@ -75,7 +81,11 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `seal-keyring`, `seal-gpg` | Re-run after changing the keyring or GPG passphrase. |
 | `register-u2f` | Re-run to change which YubiKeys are registered. It rewrites the whole file. |
 | `docker-credential-gopass` | Build the Docker credential helper from the fork (branch `mine`) into `~/.local/bin`. Run after bootstrap; it needs Go from mise and the gopass store (`gopass clone https://github.com/casualjim/gopass`). |
-| `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. Several language servers named in `languages.toml` are not installed yet (see the language-server block in `.config/mise/config.toml`; TypeScript uses `tsc --lsp` from TypeScript 7). |
+| `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. The language servers named in `languages.toml` come from mise (TypeScript uses `tsc --lsp` from TypeScript 7). |
+| `hindsight-install` | First time: `npx @vectorize-io/hindsight-coding-agents install all` (detects the agents), then the pi-mimir patch. Clones or fast-forwards `~/github/casualjim/pi-mimir` first (`pi-mimir-sync`). |
+| `hindsight-update` | Update an existing or rsynced Hindsight, then re-apply the patch (`hindsight-patch`; an update wipes it). |
+| `codebase-memory-build` | Pull and build `DeusData/codebase-memory-mcp` with the UI, stop the daemon, install the binary into `~/.local/bin`, restart the daemon. Re-run to update. |
+| `codebase-memory-install` | First time only: `codebase-memory-mcp install -y --hooks` (builds first). |
 
 ## Day to day
 
@@ -183,14 +193,43 @@ At login `gpg-agent-pass` presets the passphrase for the encryption subkey only.
 decrypt without a prompt, and nothing can sign with the key. `gpg-agent.conf` allows presetting and
 caches for a day (a week at most); `systemctl --user restart gpg-agent-pass` after that.
 
+## Keeping copies in step
+
+Most dotfiles are symlinks, so an edit lands in the repo by itself. Some are `copy` entries because the app that owns
+the file rewrites it (Tern settings, `mimeapps.list`, the world-clock zones, systemd units). For those, `mise dot apply`
+only goes repo to live. `dotfiles-sync-back.service` (a user service, from `mise.linux.toml`) watches the live files
+and, when one is newer than and different from its repo source, copies it back. It changes the working copy only:
+review with `jj diff` and commit. A source you edited but have not applied is newer than its live file, so it is
+never overwritten. Run `dotfiles-sync-back` by hand to sync once. When you add or remove a copy entry in the
+global mise config, the watcher notices (it also watches the repo directory behind that config), exits, and
+systemd starts it again with the new list. (`mise dot save` is something else: a checkpoint in mise's local
+history.)
+
+## Services that run at login
+
+Besides the desktop pieces, two user services are declared in `mise.linux.toml`:
+
+- `codebase-memory-mcp.service` runs `codebase-memory-mcp daemon start`. The daemon has no foreground mode: it
+  double-forks and writes no pidfile, so the unit is `Type=forking` and systemd finds the process by itself. It is
+  skipped until the binary exists (`mise run codebase-memory-build`).
+- `headroom.service` is generated by podman from the Quadlet `.config/containers/systemd/headroom.container`
+  (a rootless container on `127.0.0.1:8788`, state in `~/.local/state/headroom`). Quadlet units cannot be
+  enabled, so mise only keeps it running; its `[Install]` section wires it to login.
+
+## Tern
+
+Tern is downloaded by hand from its private server (not yet released) and kept at `~/.local/bin/tern`. It
+updates itself and the components it manages: `tern` (the terminal), `omp` (the coding agent), `ovfns`
+(a copy-on-write filesystem) and `abkit` (the WebKit library it embeds). **Do not install any of those
+with mise or pacman**, or two updaters will fight over the same files. Only `~/.config/tern/settings.json`
+is tracked here, as a copy that `dotfiles-sync-back` keeps current (see below).
+
 ## Not done yet
 
-- gopass is installed but not set up (which store, and where it comes from). Git credentials
-  still use the OS keychain and `gh`; the plan is to move them to gopass.
 - The fnox secrets are readable by any process running as you. A lease-style system (fnox has
   `lease`) would limit that.
 - `enroll-fido2` has unverified flags. The macOS Gitea credential helper is a TODO in
   `config.macos.toml`.
 - Zed settings and the btop themes are not captured.
-- The bootstrap section is Linux (pacman and AUR) only. macOS and Ubuntu would need their own
-  `[bootstrap.packages]`, possibly as platform-specific config files.
+- Only Arch and CachyOS have package lists (`mise.arch.toml`, `mise.desktop.toml`). macOS (brew) and
+  Ubuntu (apt) still need theirs, as `mise.macos.toml` and `mise.ubuntu.toml`.
