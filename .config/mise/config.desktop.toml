@@ -35,6 +35,7 @@ MOZ_ENABLE_WAYLAND = "1"
 "~/.local/state/noctalia/plugins/data/noctalia/world_clock/zones.json" = { mode = "copy" }
 "~/.config/nirinit/config.toml" = {}
 "~/.config/systemd/user/nirinit.service" = { mode = "copy" }
+"~/.config/systemd/user/screensaver.service" = { mode = "copy" }
 "~/.config/systemd/user/keyring-unlock.service" = { mode = "copy" }
 "~/.local/bin/keyring-unlock" = { mode = "copy" }
 "~/.local/bin/appimage-integrate" = { mode = "copy" }

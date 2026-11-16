@@ -1,0 +1,9 @@
+[Unit]
+Description=CachyOS ASCII screensaver
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionFileIsExecutable=%h/.local/bin/omarchy-launch-screensaver
+
+[Service]
+ExecCondition=/bin/sh -c 'noctalia msg status | "%h/.local/share/mise/shims/jq" -e -s "length == 1 and .[0].locked == false"'
+ExecStart=%h/.local/bin/omarchy-launch-screensaver --input %h/.config/niri/screensaver.txt

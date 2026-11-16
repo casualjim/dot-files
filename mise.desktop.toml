@@ -36,6 +36,10 @@
 # noctalia/screen_recorder plugin: gpu-screen-recorder records, slurp picks a region.
 "pacman:gpu-screen-recorder" = "latest"
 "pacman:slurp" = "latest"
+"pacman:imagemagick" = "latest"
+# Build dependencies for the native Wayland screensaver.
+"pacman:pkgconf" = "latest"
+"pacman:libxkbcommon" = "latest"
 
 # Chat and secrets
 "pacman:discord" = "latest"
@@ -114,6 +118,10 @@ enabled = true
 [bootstrap.services."nirinit.service"]
 scope = "user"
 enabled = true
+
+[tasks.screensaver-install]
+description = "Build the Niri screensaver fork into ~/.local/bin (run after bootstrap)"
+run = 'cargo install --git https://github.com/casualjim/omarchy-screensaver --branch niri-screensaver --locked --force --root "$HOME/.local"'
 
 [tasks.seal-keyring]
 description = "Seal the login keyring password to this machine's TPM (re-run after changing it)"

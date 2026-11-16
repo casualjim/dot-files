@@ -42,8 +42,14 @@ end = [
 ]
 
 [idle]
-behavior_order = ["lock", "screen-off", "suspend"]
+behavior_order = ["screensaver", "lock", "screen-off", "suspend"]
 pre_action_fade_seconds = 3.0
+
+[idle.behavior.screensaver]
+action = "command"
+timeout = 120
+command = "systemctl --user start screensaver.service"
+resume_command = "systemctl --user stop screensaver.service"
 
 [idle.behavior.lock]
 action = "lock"
@@ -51,9 +57,12 @@ timeout = 300
 
 [idle.behavior.screen-off]
 action = "screen_off"
-timeout = 330
+timeout = 900
 locked_timeout = 30
 
 [idle.behavior.suspend]
 action = "lock_and_suspend"
-timeout = 1200
+timeout = 1800
+
+[hooks]
+session_locked = "systemctl --user stop screensaver.service"

@@ -87,6 +87,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `claude-code-config-sync` | Clone or fast-forward `casualjim/claude-code-config` and `bun install`. The Claude hooks in `~/.claude/settings.json` run from that exact path, so do this before using Claude Code on a new machine. |
 | `codebase-memory-build` | Pull and build `DeusData/codebase-memory-mcp` with the UI, stop the daemon, install the binary into `~/.local/bin`, restart the daemon. Re-run to update. |
 | `codebase-memory-install` | First time only: `codebase-memory-mcp install -y --hooks` (builds first). |
+| `screensaver-install` | After desktop bootstrap: build `casualjim/omarchy-screensaver` branch `niri-screensaver` into `~/.local/bin`. Re-run to update. |
 
 ## Day to day
 
@@ -99,6 +100,13 @@ mise dot apply                # re-link dotfiles only
 Edit files in this repo, not the copies in `~` (most are symlinks into here). A few are
 copied instead, and need `mise dot apply` after a change: `btop.conf`, and the units and scripts
 for the keyring, gpg-agent and yubikey-drill. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
+
+The desktop screensaver starts after 120 seconds idle, before the existing 300-second lock.
+Noctalia stops it on activity or lock; the `screensaver.service` user unit is started on demand,
+not enabled at login. Artwork lives in `.config/niri/screensaver.txt`. Run
+`mise run screensaver-install`, `mise dot apply`, `systemctl --user daemon-reload`, then
+`noctalia msg config-reload` after first installing it. To preview, run
+`systemctl --user start screensaver.service`.
 
 ## Checks
 
