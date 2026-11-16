@@ -1,0 +1,10 @@
+[Unit]
+Description=Noctalia Wayland shell
+PartOf=graphical-session.target
+After=niri.service
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/noctalia
+Restart=on-failure
+Slice=session.slice

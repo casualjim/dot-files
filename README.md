@@ -67,7 +67,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
    That is what is in use now. `voxtype-setup` is the Qwen3-ASR alternative (the last one you run wins).
    `voxtype-gpu` is an optional Vulkan backend.
 8. By hand: log in to Dropbox (the tray icon needs `libayatana-appindicator`, already installed) and
-   restart Noctalia through niri (`niri msg action spawn -- noctalia`), not from a terminal.
+   restart Noctalia with `systemctl --user restart noctalia.service`.
 9. Optional: `enroll-fido2` (a LUKS keyslot; **verify the flags first**, TODO in the task), then
    `rebuild-initramfs` after touching the mkinitcpio drop-in.
 
@@ -100,6 +100,11 @@ mise dot apply                # re-link dotfiles only
 Edit files in this repo, not the copies in `~` (most are symlinks into here). A few are
 copied instead, and need `mise dot apply` after a change: `btop.conf`, and the units and scripts
 for the keyring, gpg-agent and yubikey-drill. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
+
+Niri starts `noctalia.service`, which restarts the shell after a crash and stops with the graphical session.
+The shell runs in `session.slice`, protected by CachyOS's OOM policy. CachyOS already enables `systemd-oomd`;
+keep its packaged thresholds rather than adding another OOM manager.
+Noctalia holds a logind delay inhibitor to lock before sleep; no separate sleep-lock service is installed.
 
 The desktop screensaver starts after 120 seconds idle, before the existing 300-second lock.
 Noctalia stops it on activity or lock; the `screensaver.service` user unit is started on demand,
