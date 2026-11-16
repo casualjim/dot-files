@@ -37,6 +37,9 @@
 "pacman:gpu-screen-recorder" = "latest"
 "pacman:slurp" = "latest"
 "pacman:imagemagick" = "latest"
+# PDF viewing, form filling, and signatures.
+"pacman:papers" = "latest"
+"aur:signed" = "latest"
 # Build dependencies for the native Wayland screensaver.
 "pacman:pkgconf" = "latest"
 "pacman:libxkbcommon" = "latest"

@@ -2,16 +2,20 @@
 # Loopback only; the container listens on 8787 and the host port is 8788.
 [Unit]
 Description=Headroom proxy
-After=network-online.target
+
+[Quadlet]
+DefaultDependencies=false
 
 [Container]
-Image=ghcr.io/chopratejas/headroom
+Image=ghcr.io/headroomlabs-ai/headroom
 # Only a label: podman-auto-update.timer (enabled in mise.linux.toml) pulls a newer image and restarts the unit.
 AutoUpdate=registry
 ContainerName=headroom
 PublishPort=127.0.0.1:8788:8787
 Environment=HEADROOM_HOST=0.0.0.0
 Environment=HEADROOM_PORT=8787
+# The host publishes this container port on loopback only.
+Environment=HEADROOM_ALLOW_UNAUTHENTICATED_BIND=1
 Environment=HEADROOM_TELEMETRY=off
 Environment=HEADROOM_SAVINGS_PATH=/data/proxy_savings.json
 Volume=%h/.local/state/headroom:/data

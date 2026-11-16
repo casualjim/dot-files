@@ -52,6 +52,11 @@
         default-column-width { proportion 1.0; }
     }
 
+    window-rule {
+        match app-id=r#"^so\.stencil\.tern$"#
+        default-column-width { proportion 1.0; }
+    }
+
     // Messengers and the authenticator open as half-width columns. niri has no rule to open a window inside
     // an existing column, so stack two by hand with consume-or-expel-window-left/right.
     window-rule {
