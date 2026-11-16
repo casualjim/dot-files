@@ -6,6 +6,8 @@ After=network-online.target
 
 [Container]
 Image=ghcr.io/chopratejas/headroom
+# Only a label: podman-auto-update.timer (enabled in mise.linux.toml) pulls a newer image and restarts the unit.
+AutoUpdate=registry
 ContainerName=headroom
 PublishPort=127.0.0.1:8788:8787
 Environment=HEADROOM_HOST=0.0.0.0

@@ -117,6 +117,13 @@ scope = "user"
 state = "running"
 enabled = false
 
+# AutoUpdate=registry in the headroom Quadlet does nothing by itself; this timer (shipped with podman) runs
+# `podman auto-update` daily, which pulls newer images for labelled containers and restarts their units.
+[bootstrap.services."podman-auto-update.timer"]
+scope = "user"
+state = "running"
+enabled = true
+
 # codebase-memory-mcp.service is a dotfile; it starts the daemon at login once the binary is installed
 # (`mise run codebase-memory-build`).
 [bootstrap.services."codebase-memory-mcp.service"]
