@@ -8,6 +8,11 @@
 "pacman:claude-desktop" = "latest"
 "pacman:zed" = "latest"
 "pacman:ghostty" = "latest"
+"pacman:remmina" = "latest"
+# Remmina's protocol plugins require these optional dependencies.
+"pacman:freerdp" = "latest"
+"pacman:libvncserver" = "latest"
+"pacman:spice-gtk" = "latest"
 "pacman:bitwarden" = "latest"
 "pacman:greetd" = "latest"
 "pacman:greetd-tuigreet" = "latest"
