@@ -14,6 +14,7 @@
 "pacman:freerdp" = "latest"
 "pacman:libvncserver" = "latest"
 "pacman:spice-gtk" = "latest"
+"pacman:virt-viewer" = "latest"
 "pacman:bitwarden" = "latest"
 "pacman:greetd" = "latest"
 "pacman:greetd-tuigreet" = "latest"

@@ -1,0 +1,20 @@
+[Unit]
+Description=OpenTelemetry desktop viewer
+
+[Quadlet]
+DefaultDependencies=false
+
+[Container]
+Image=ghcr.io/ctrlspice/otel-desktop-viewer:latest
+AutoUpdate=registry
+ContainerName=otel-desktop-viewer
+PublishPort=127.0.0.1:8376:8000
+PublishPort=127.0.0.1:4317:4317
+PublishPort=127.0.0.1:4318:4318
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

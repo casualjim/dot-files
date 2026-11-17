@@ -4,6 +4,9 @@
 # Docker API clients (compose, testcontainers) talk to the rootless podman socket.
 DOCKER_HOST = "unix://{{env.XDG_RUNTIME_DIR}}/podman/podman.sock"
 
+[bootstrap.hooks]
+post-dotfiles = "systemctl --user daemon-reload"
+
 [dotfiles]
 "~/.config/noctalia/update-adapters/dotfiles/adapter.json" = {}
 "~/.local/bin/dotfiles-update" = {}
@@ -12,6 +15,7 @@ DOCKER_HOST = "unix://{{env.XDG_RUNTIME_DIR}}/podman/podman.sock"
 "~/.config/systemd/user/codebase-memory-mcp.service" = { mode = "copy" }
 # Quadlet: podman generates headroom.service from it (volume dir is declared in mise.linux.toml).
 "~/.config/containers/systemd/headroom.container" = { mode = "copy" }
+"~/.config/containers/systemd/otel-desktop-viewer.container" = { mode = "copy" }
 # Edits made to copy-mode dotfiles (by apps, in the live file) are carried back into this repo.
 "~/.config/systemd/user/dotfiles-sync-back.service" = { mode = "copy" }
 "~/.local/bin/dotfiles-sync-back" = { mode = "copy" }
