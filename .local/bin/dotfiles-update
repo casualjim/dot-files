@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+import hashlib
+import runpy
+from pathlib import Path
+import subprocess
+import sys
+
+
+CHECKER = Path(__file__).resolve().with_name('dotfiles-update-check')
+
+
+def main():
+    if sys.platform != 'linux':
+        print('Dotfiles updater is supported only on Linux.', file=sys.stderr)
+        return 1
+    checker = runpy.run_path(str(CHECKER))
+    updates, errors = checker['collect_updates']()
+    if errors:
+        for error in errors:
+            print(error, file=sys.stderr)
+        return 1
+
+    groups = {}
+    for row in updates:
+        kind, name = row['id'].split(':', 1)
+        groups.setdefault(kind, []).append(name)
+
+    known = {'checkupdates', 'paru', 'mise self', 'mise global', 'mise no-global',
+             'container', 'source', 'npm', 'grammar', 'cache', 'patch'}
+    unknown = groups.keys() - known
+    sources = {'pi-mimir', 'claude-code-config', 'codebase-memory-mcp',
+               'screensaver', 'docker-credential-gopass'}
+    unknown_sources = [name for name in groups.get('source', [])
+                       if name not in sources and not name.startswith('Noctalia ')]
+    if (unknown or unknown_sources or set(groups.get('npm', [])) - {'Hindsight'}
+            or set(groups.get('grammar', [])) - {'helix'}
+            or set(groups.get('cache', [])) - {'bat'}
+            or set(groups.get('mise self', [])) - {'mise'}
+            or set(groups.get('patch', [])) - {'Hindsight'}):
+        print('Unrecognized update rows; update aborted.', file=sys.stderr)
+        return 1
+    if not updates:
+        print('No updates available.')
+        return 0
+
+    pi_changed = 'pi-mimir' in groups.get('source', [])
+    patcher = Path.home() / 'github/casualjim/pi-mimir/packages/pi-hindsight/patch-dist.mjs'
+    pending = checker['STATE'] / 'dotfiles/updates/hindsight-patch.pending'
+    retry_patch = bool(groups.get('patch'))
+    if groups.get('npm') or retry_patch:
+        patcher.stat()
+    old_patcher = hashlib.sha256(patcher.read_bytes()).digest() if pi_changed and not groups.get('npm') else None
+    for row in updates:
+        print(f"{row['id']}: {row['from_version']} -> {row['to_version']}", flush=True)
+
+    def run(*args, check=True):
+        return subprocess.run(args, cwd=checker['ROOT'], check=check)
+
+    if groups.get('checkupdates') or groups.get('paru'):
+        run('arch-update')
+    if groups.get('mise self'):
+        run('mise', 'self-update')
+    for scope in ('global', 'no-global'):
+        tools = groups.get('mise ' + scope, [])
+        if tools:
+            run('mise', 'upgrade', '--' + scope, *tools)
+    if groups.get('container'):
+        run('podman', 'auto-update')
+    for source in groups.get('source', []):
+        if source.startswith('Noctalia '):
+            run('noctalia', 'msg', 'plugins', 'update', source.removeprefix('Noctalia '))
+
+    source_updates = set(groups.get('source', []))
+    if pi_changed:
+        pending.parent.mkdir(parents=True, exist_ok=True)
+        pending.touch()
+        run('mise', 'run', 'pi-mimir-sync')
+    if groups.get('npm'):
+        pending.parent.mkdir(parents=True, exist_ok=True)
+        pending.touch()
+        try:
+            result = run('npx', '@vectorize-io/hindsight-coding-agents', 'update', check=False)
+        finally:
+            run('mise', 'run', 'hindsight-patch')
+        pending.unlink()
+        if result.returncode:
+            return result.returncode
+    elif retry_patch or pi_changed and hashlib.sha256(patcher.read_bytes()).digest() != old_patcher:
+        run('mise', 'run', 'hindsight-patch')
+        pending.unlink(missing_ok=True)
+    elif pi_changed:
+        pending.unlink(missing_ok=True)
+
+    for source, task in (
+        ('claude-code-config', 'claude-code-config-sync'),
+        ('codebase-memory-mcp', 'codebase-memory-build'),
+        ('screensaver', 'screensaver-install'),
+        ('docker-credential-gopass', 'docker-credential-gopass'),
+    ):
+        if source in source_updates:
+            run('mise', 'run', task)
+
+    changed_tools = set(groups.get('checkupdates', []) + groups.get('paru', [])
+                        + groups.get('mise global', []) + groups.get('mise no-global', []))
+    if groups.get('grammar') or 'helix' in changed_tools:
+        run('mise', 'run', 'helix-grammars')
+    if groups.get('cache') or 'bat' in changed_tools:
+        run('mise', 'run', 'bat-cache')
+    print('Updates complete. Review .pacnew files with sudo pacdiff; reboot after kernel or core system updates.')
+    return 0
+
+
+if __name__ == '__main__':
+    try:
+        sys.exit(main())
+    except (OSError, subprocess.CalledProcessError, ValueError) as error:
+        print(error, file=sys.stderr)
+        sys.exit(error.returncode if isinstance(error, subprocess.CalledProcessError) and error.returncode > 0 else 1)

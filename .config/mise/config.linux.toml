@@ -5,6 +5,10 @@
 DOCKER_HOST = "unix://{{env.XDG_RUNTIME_DIR}}/podman/podman.sock"
 
 [dotfiles]
+"~/.config/noctalia/update-adapters/dotfiles/adapter.json" = {}
+"~/.local/bin/dotfiles-update" = {}
+"~/.local/bin/dotfiles-update-check" = {}
+"~/.local/bin/dotfiles-update-launch" = {}
 "~/.config/systemd/user/codebase-memory-mcp.service" = { mode = "copy" }
 # Quadlet: podman generates headroom.service from it (volume dir is declared in mise.linux.toml).
 "~/.config/containers/systemd/headroom.container" = { mode = "copy" }

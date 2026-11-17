@@ -129,3 +129,9 @@ enabled = true
 [bootstrap.services."codebase-memory-mcp.service"]
 scope = "user"
 enabled = true
+
+[tasks.update]
+description = "Update outdated packages, tools, containers, plugins and source builds"
+raw = true
+run = 'python3 "$MISE_PROJECT_ROOT/.local/bin/dotfiles-update"'
+

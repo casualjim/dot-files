@@ -6,5 +6,9 @@ After=niri.service
 [Service]
 Type=notify
 ExecStart=/usr/bin/noctalia
+Environment="PATH=%h/.local/share/mise/shims:%h/.local/bin:/usr/local/bin:/usr/bin"
 Restart=on-failure
 Slice=session.slice
+
+[Install]
+WantedBy=graphical-session.target

@@ -1,0 +1,9 @@
+{
+  "name": "Dotfiles",
+  "enabled": true,
+  "dependencies": ["python3", "ghostty", "mise"],
+  "check_command": "python3 \"$HOME/.local/bin/dotfiles-update-check\"",
+  "update_package_command": "",
+  "update_all_command": "python3 \"$HOME/.local/bin/dotfiles-update-launch\"",
+  "actions": {}
+}

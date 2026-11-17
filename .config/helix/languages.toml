@@ -132,3 +132,8 @@ file-types = [
 ]
 comment-token = "#"
 language-servers = ["systemd-language-server", "remark"]
+
+# Helix 25.07.1's bundled gotmpl source is unavailable; use Helix upstream's replacement.
+[[grammar]]
+name = "gotmpl"
+source = { git = "https://github.com/ngalaiko/tree-sitter-go-template", rev = "ca26229bafcd3f37698a2496c2a5efa2f07e86bc" }

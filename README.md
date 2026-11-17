@@ -66,8 +66,7 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 7. `mise run voxtype-parakeet`: Right Ctrl push-to-talk, the Parakeet Ultra model, and the user service.
    That is what is in use now. `voxtype-setup` is the Qwen3-ASR alternative (the last one you run wins).
    `voxtype-gpu` is an optional Vulkan backend.
-8. By hand: log in to Dropbox (the tray icon needs `libayatana-appindicator`, already installed) and
-   restart Noctalia with `systemctl --user restart noctalia.service`.
+8. By hand: log in to Dropbox (the tray icon needs `libayatana-appindicator`, already installed).
 9. Optional: `enroll-fido2` (a LUKS keyslot; **verify the flags first**, TODO in the task), then
    `rebuild-initramfs` after touching the mkinitcpio drop-in.
 
@@ -81,27 +80,28 @@ you to the `tss` and `input` groups, and the TPM and Voxtype need them.
 | `seal-keyring`, `seal-gpg` | Re-run after changing the keyring or GPG passphrase. |
 | `register-u2f` | Re-run to change which YubiKeys are registered. It rewrites the whole file. |
 | `docker-credential-gopass` | Build the Docker credential helper from the fork (branch `mine`) into `~/.local/bin`. Run after bootstrap; it needs Go from mise and the gopass store (`gopass clone https://github.com/casualjim/gopass`). |
-| `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. The language servers named in `languages.toml` come from mise (TypeScript uses `tsc --lsp` from TypeScript 7). |
+| `helix-grammars` | Build Helix's tree-sitter grammars (slow). Config is tracked; `runtime/grammars` is build output and is not. The language servers named in `languages.toml` come from mise (TypeScript uses `tsc --lsp` from TypeScript 7). `gotmpl` uses the replacement source pinned by [Helix upstream](https://github.com/helix-editor/helix/pull/14746) because 25.07.1's source is unavailable. |
 | `hindsight-install` | First time: `npx @vectorize-io/hindsight-coding-agents install all` (detects the agents), then the pi-mimir patch. Clones or fast-forwards `~/github/casualjim/pi-mimir` first (`pi-mimir-sync`). |
 | `hindsight-update` | Update an existing or rsynced Hindsight, then re-apply the patch (`hindsight-patch`; an update wipes it). |
 | `claude-code-config-sync` | Clone or fast-forward `casualjim/claude-code-config` and `bun install`. The Claude hooks in `~/.claude/settings.json` run from that exact path, so do this before using Claude Code on a new machine. |
-| `codebase-memory-build` | Pull and build `DeusData/codebase-memory-mcp` with the UI, stop the daemon, install the binary into `~/.local/bin`, restart the daemon. Re-run to update. |
+| `codebase-memory-build` | Refuse active codegraph clients or workers, stop the idle native daemon, pull and build with the UI, then install. Restore a previously permanent daemon on success or failure. |
 | `codebase-memory-install` | First time only: `codebase-memory-mcp install -y --hooks` (builds first). |
 | `screensaver-install` | After desktop bootstrap: build `casualjim/omarchy-screensaver` branch `niri-screensaver` into `~/.local/bin`. Re-run to update. |
 
 ## Day to day
 
 ```bash
+mise dot apply                # deploy configuration and user units before services are applied
 mise bootstrap --dry-run      # preview; asks for sudo to inspect /etc
 mise bootstrap                # apply
-mise dot apply                # re-link dotfiles only
 ```
 
 Edit files in this repo, not the copies in `~` (most are symlinks into here). A few are
 copied instead, and need `mise dot apply` after a change: `btop.conf`, and the units and scripts
 for the keyring, gpg-agent and yubikey-drill. Run `noctalia msg config-reload` after changing `.config/noctalia/config.toml`.
 
-Niri starts `noctalia.service`, which restarts the shell after a crash and stops with the graphical session.
+Bootstrap enables and starts `noctalia.service`. Systemd starts it with `graphical-session.target`,
+orders it after `niri.service`, restarts it after a crash and stops it with the graphical session.
 The shell runs in `session.slice`, protected by CachyOS's OOM policy. CachyOS already enables `systemd-oomd`;
 keep its packaged thresholds rather than adding another OOM manager.
 Noctalia holds a logind delay inhibitor to lock before sleep; no separate sleep-lock service is installed.
@@ -164,6 +164,65 @@ committing with jj. The tools are declared in `mise.toml`, so they are only acti
 - **`airpods` Noctalia plugin** needs a patched librepods fork. The CachyOS package is upstream
   and is not enough, so it is not installed.
 
+## Updating
+
+From this checkout, run `mise run update` on the Arch desktop. It checks for outdated items before running
+updates sequentially. A failed or incomplete check stops the task before any updates. An update failure stops
+later actions. Rerun after resolving the failure; interactive package prompts remain available.
+The updater task, scripts and Noctalia adapter are declared only in the Linux mise configs.
+Direct script entrypoints reject other operating systems before probing or changing anything.
+
+- Runs `arch-update` when repository or AUR packages are outdated, retaining Cachy-Update's checks and prompts.
+- Disables `arch-update.timer` through bootstrap and its separate tray through an XDG autostart `Hidden=true`
+  override. Log out once after applying if that tray is already running.
+- Updates mise itself and outdated global and checkout tools, respecting configured version constraints.
+- Runs `podman auto-update` when containers are outdated. The existing auto-update timer remains enabled.
+- Updates only changed Noctalia plugin sources and source builds.
+- Updates Hindsight only when its installed package is outdated. Reapplies its compatibility patch after
+  Hindsight staging or when a pi-mimir update changes the patcher.
+- Rebuilds Helix grammars and the bat cache when the check finds them stale, or after a detected update
+  to the corresponding tool.
+
+The update task attempts the Hindsight compatibility patch even when staging fails and reports the failure.
+The standalone `hindsight-update` task also synchronizes pi-mimir first.
+If compatibility patching fails, the next check reports that pending work; retry does not restage Hindsight.
+Grammar checks inspect configured overrides; a Helix version update refreshes bundled grammars too.
+
+Codebase-memory updates use its native `daemon status`, `stop` and `start`, not a systemd service.
+Attached clients and other codegraph processes block the update before source changes.
+When the installed source revision is current, the updater skips codegraph maintenance entirely.
+The task waits for shutdown, checks for new processes again before replacement, and leaves the installed
+binary untouched if building or checking the candidate fails. Keep coding-agent sessions closed throughout
+maintenance: the shell task cannot prevent a new client from starting between its final check and replacement.
+
+The Noctalia System Updates Manager uses one external `Dotfiles` adapter. Its update button opens
+Ghostty and runs this task once, preserving interactive prompts and the actual task exit status.
+Close the terminal after reading the result. Closing it before completion reports failure.
+Built-in adapters are disabled; plugin sources are not modified.
+
+`python3 ~/.local/bin/dotfiles-update-check` lists known updates with installed and available versions.
+It checks Arch/AUR packages, mise, rootless auto-update containers, Noctalia sources, Hindsight and source builds.
+Pi-mimir is consumed directly from its checkout. Its check follows the configured upstream branch and
+compares Git ancestry: an equal or locally ahead checkout is not an update. Known divergence reports an error.
+Successful binary-build and dependency-install tasks record installed revisions under
+`$XDG_STATE_HOME/dotfiles/updates` (default `~/.local/state/dotfiles/updates`). Existing builds stay unknown
+until their next successful explicit source task; checkout revisions are not treated as installed binaries.
+
+Read the adapter's `INCOMPLETE` notice when a probe fails or an installed revision is unknown.
+The upstream panel can still say up to date when its update count is zero, even after a failed check;
+that headline is not proof of a complete check. Noctalia source revisions describe the source catalog,
+not held-back plugins whose API requires a newer shell.
+
+Isolated checks without live upgrades:
+`python3 tests/update.py`, `python3 tests/update-check.py`, `python3 tests/update-checkouts.py`,
+`python3 tests/update-launch.py`, `python3 tests/hindsight-update.py`, and `python3 tests/codebase-memory-update.py`.
+The Hindsight regression uses the pi-mimir checkout and an installed Node to patch an isolated runtime fixture.
+
+Run inside the graphical session so Noctalia IPC is available. This entrypoint is for the configured Arch desktop,
+not macOS or Ubuntu. Tern and its components, Claude Code, Codex, pi and other self-updating apps keep their own
+update ownership. No automatic config migration, orphan removal or reboot. Review `.pacnew` files with
+`sudo pacdiff` and reboot after kernel or core system updates.
+
 ## Secrets
 
 Never committed (see `.gitignore`): `*.cred` (TPM-sealed credentials, tied to one machine's
@@ -223,9 +282,10 @@ history.)
 
 Besides the desktop pieces, two user services are declared in `mise.linux.toml`:
 
-- `codebase-memory-mcp.service` runs `codebase-memory-mcp daemon start`. The daemon has no foreground mode: it
-  double-forks and writes no pidfile, so the unit is `Type=forking` and systemd finds the process by itself. It is
-  skipped until the binary exists (`mise run codebase-memory-build`).
+- `codebase-memory-mcp.service` is a Linux-only oneshot startup request for the native daemon.
+  An already-active daemon counts as success; the unit does not adopt it, retry it, or stop clients.
+  `active (exited)` records a completed startup request, not daemon health; use the native `daemon status`.
+  The unit is skipped until the binary exists (`mise run codebase-memory-build`).
 - `headroom.service` is generated by podman from the Quadlet `.config/containers/systemd/headroom.container`
   (a rootless container on `127.0.0.1:8788`, state in `~/.local/state/headroom`). Quadlet units cannot be
   enabled, so mise only keeps it running; its `[Install]` section wires it to login.

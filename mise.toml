@@ -21,7 +21,7 @@
 # ---------------------------------------------------------------------------
 [tools]
 # Keep this equal to the version in the URLs at the top of hk.pkl.
-hk = "2.12.0"
+hk = "latest"
 betterleaks = "latest"
 taplo = "latest"
 shellcheck = "latest"
@@ -116,7 +116,14 @@ go build -trimpath -ldflags="-X github.com/docker/docker-credential-helpers/cred
 mkdir -p "$HOME/.docker"
 f="$HOME/.docker/config.json"
 [[ -f $f ]] || echo "{}" > "$f"
-jq '.credsStore = "gopass"' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+jq '.credsStore = "gopass"' "$f" > "$f.tmp"
+mv "$f.tmp" "$f"
+revision=$(git rev-parse HEAD)
+state="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/updates"
+mkdir -p "$state"
+tmp=$(mktemp "$state/.docker-credential-gopass.XXXXXXXX")
+printf '%s\n' "$revision" > "$tmp"
+mv -f "$tmp" "$state/docker-credential-gopass.revision"
 '''
 
 # ---------------------------------------------------------------------------
@@ -130,8 +137,10 @@ shell = "bash -c"
 run = '''
 set -euo pipefail
 mise run pi-mimir-sync
-npx @vectorize-io/hindsight-coding-agents install all
+status=0
+npx @vectorize-io/hindsight-coding-agents install all || status=$?
 mise run hindsight-patch
+exit "$status"
 '''
 
 [tasks.hindsight-update]
@@ -140,9 +149,11 @@ shell = "bash -c"
 run = '''
 set -euo pipefail
 mise run pi-mimir-sync
-# The update re-stages ~/.hindsight/coding-agents and wipes the patch, so the patch always follows it.
-npx @vectorize-io/hindsight-coding-agents update
+# A failed update can still replace the dist, so restore compatibility before returning its status.
+status=0
+npx @vectorize-io/hindsight-coding-agents update || status=$?
 mise run hindsight-patch
+exit "$status"
 '''
 
 [tasks.hindsight-patch]
@@ -179,14 +190,75 @@ else
 fi
 cd "$dir"
 bun install
+revision=$(git rev-parse HEAD)
+state="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/updates"
+mkdir -p "$state"
+tmp=$(mktemp "$state/.claude-code-config.XXXXXXXX")
+printf '%s\n' "$revision" > "$tmp"
+mv -f "$tmp" "$state/claude-code-config.revision"
 '''
 
 [tasks.codebase-memory-build]
-description = "Pull and build DeusData/codebase-memory-mcp (with the UI) and install the binary into ~/.local/bin"
+description = "Build codebase-memory-mcp only when unused; stop and restore its native daemon"
 shell = "bash -c"
 run = '''
 set -euo pipefail
 dir="$HOME/github/DeusData/codebase-memory-mcp"
+bin="$HOME/.local/bin/codebase-memory-mcp"
+read_daemon() {
+  active=0
+  permanent=0
+  daemon_pid=
+  if [[ ! -x $bin ]]; then return; fi
+  if status=$("$bin" daemon status); then
+    [[ $status == 'daemon: active ('* ]] || { printf '%s\n' "$status" >&2; return 1; }
+    [[ $status =~ committed[[:space:]]clients:[[:space:]]([0-9]+) ]] &&
+      [[ ${BASH_REMATCH[1]} == 0 ]] || { printf '%s\n' "$status" >&2; return 1; }
+    [[ $status =~ [[:space:]]pid:[[:space:]]([0-9]+) ]] || return 1
+    daemon_pid=${BASH_REMATCH[1]}
+    active=1
+    if [[ $status == 'daemon: active (permanent)'* ]]; then permanent=1; fi
+  else
+    [[ ${status%%$'\n'*} == 'daemon: not running' ]] || { printf '%s\n' "$status" >&2; return 1; }
+  fi
+}
+check_processes() {
+  # Workers and disconnected frontends are not counted by daemon status.
+  processes=$(ps -u "$UID" -o pid=,comm=)
+  while read -r pid command; do
+    if [[ $command == codebase-memory* && $pid != "$daemon_pid" ]]; then
+      printf 'codebase-memory-mcp is in use by PID %s. Close its sessions before updating.\n' "$pid" >&2
+      return 1
+    fi
+  done <<< "$processes"
+}
+read_daemon
+check_processes
+restart_daemon=0
+restore_daemon() {
+  result=$?
+  trap - EXIT
+  if (( restart_daemon )); then
+    "$bin" daemon start || result=1
+  fi
+  exit "$result"
+}
+trap restore_daemon EXIT
+if (( active )); then
+  "$bin" daemon stop
+  restart_daemon=$permanent
+  deadline=$((SECONDS + 15))
+  while :; do
+    read_daemon
+    if (( ! active )); then break; fi
+    if (( SECONDS >= deadline )); then
+      printf '%s\n' 'codebase-memory-mcp did not finish stopping; update aborted.' >&2
+      exit 1
+    fi
+    sleep 0.2
+  done
+fi
+check_processes
 if [[ -d $dir/.git ]]; then
   git -C "$dir" pull --ff-only
 else
@@ -195,21 +267,22 @@ else
 fi
 cd "$dir"
 ./scripts/build.sh --with-ui
-# Every running process must be the same build, so stop the daemon before the binary changes. The copy goes
-# through a temporary name and a rename: overwriting a running executable in place fails with "text file busy".
-bin="$HOME/.local/bin/codebase-memory-mcp"
-had_daemon=0
-if [[ -x $bin ]] && systemctl --user is-active --quiet codebase-memory-mcp.service 2>/dev/null; then
-  had_daemon=1
-  systemctl --user stop codebase-memory-mcp.service
+build/c/codebase-memory-mcp --version
+read_daemon
+if (( active )); then
+  printf '%s\n' 'codebase-memory-mcp restarted during the build; update aborted.' >&2
+  exit 1
 fi
+check_processes
 mkdir -p "$HOME/.local/bin"
 install -m 755 build/c/codebase-memory-mcp "$bin.new"
 mv -f "$bin.new" "$bin"
-if (( had_daemon )); then
-  systemctl --user start codebase-memory-mcp.service
-fi
-"$bin" --version
+revision=$(git rev-parse HEAD)
+state="${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles/updates"
+mkdir -p "$state"
+tmp=$(mktemp "$state/.codebase-memory-mcp.XXXXXXXX")
+printf '%s\n' "$revision" > "$tmp"
+mv -f "$tmp" "$state/codebase-memory-mcp.revision"
 '''
 
 [tasks.codebase-memory-install]

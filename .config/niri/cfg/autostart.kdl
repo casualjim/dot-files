@@ -1,4 +1,3 @@
 // ────────────── Startup Applications ──────────────
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
 
-    spawn-at-startup "systemctl" "--user" "start" "noctalia.service"

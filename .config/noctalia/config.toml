@@ -13,6 +13,7 @@ enabled = [
   "aabidk20/yt-music",
   "cleboost/zed-provider",
   "noctalia/screen_recorder",
+  "tordex/system-updater",
 ]
 
 # Bar layout. These lists replace the built-in defaults, so the stock widgets are restated.
@@ -25,6 +26,7 @@ end = [
   "media",
   "aabidk20/yt-music:widget",
   "tray",
+  "tordex/system-updater:status",
   "davemhammer/tailscale:status",
   "davemhammer/gocryptfs:status",
   "gabedunn/voxtype:status",
@@ -40,6 +42,15 @@ end = [
   "control-center",
   "session",
 ]
+
+[plugin_settings."tordex/system-updater"]
+enable_packagekit = false
+enable_flatpak = false
+enable_cargo = false
+enable_pipx = false
+enable_gearlever = false
+enable_xbps = false
+adapters_folder = "/home/ivan/.config/noctalia/update-adapters"
 
 [idle]
 behavior_order = ["screensaver", "lock", "screen-off", "suspend"]

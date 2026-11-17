@@ -27,6 +27,7 @@ MOZ_ENABLE_WAYLAND = "1"
 "~/.config/autostart/bitwarden.desktop" = { mode = "copy" }
 "~/.config/autostart/dropbox.desktop" = { mode = "copy" }
 "~/.config/autostart/org.telegram.desktop.desktop" = { mode = "copy" }
+"~/.config/autostart/arch-update-tray.desktop" = { content = "[Desktop Entry]\nType=Application\nName=Cachy-Update Systray Applet\nExec=arch-update --tray\nHidden=true\n" }
 # Default applications (Brave for the web). Apps add to it, so it is a copy; dotfiles-sync-back carries their edits back into the repo.
 "~/.config/mimeapps.list" = { mode = "copy" }
 "~/.config/TMOG/Task Manager TMOG/settings.json" = { mode = "copy" }

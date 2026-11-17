@@ -8,6 +8,7 @@
 "pacman:claude-desktop" = "latest"
 "pacman:zed" = "latest"
 "pacman:ghostty" = "latest"
+"pacman:ghidra" = "latest"
 "pacman:remmina" = "latest"
 # Remmina's protocol plugins require these optional dependencies.
 "pacman:freerdp" = "latest"
@@ -126,6 +127,18 @@ enabled = true
 [bootstrap.services."nirinit.service"]
 scope = "user"
 enabled = true
+
+# The unit is deployed by dot apply; systemd starts it with the graphical session.
+[bootstrap.services."noctalia.service"]
+scope = "user"
+state = "running"
+enabled = true
+
+# Noctalia owns update notifications; keep Cachy's separate polling timer off.
+[bootstrap.services."arch-update.timer"]
+scope = "user"
+state = "stopped"
+enabled = false
 
 [tasks.screensaver-install]
 description = "Build the Niri screensaver fork into ~/.local/bin (run after bootstrap)"

@@ -1,0 +1,346 @@
+#!/usr/bin/env python3
+import concurrent.futures
+import datetime
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tomllib
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HOME = Path.home()
+STATE = Path(os.environ.get('XDG_STATE_HOME') or HOME / '.local/state')
+ROOT = Path(__file__).resolve().parents[2]
+if not (ROOT / 'mise.toml').is_file():
+    ROOT = HOME / 'github/casualjim/dot-files'
+TIMEOUT = 7
+
+
+def command(*args, codes=(0,), cwd=None, timeout=TIMEOUT):
+    env = dict(os.environ, GIT_TERMINAL_PROMPT='0', LC_ALL='C', NO_COLOR='1', MISE_SELF_UPDATE_AUTO='0')
+    result = subprocess.run(args, cwd=cwd, env=env, capture_output=True, text=True, timeout=timeout)
+    if result.returncode not in codes or (result.returncode != 0 and result.stderr.strip()):
+        raise RuntimeError(f'{args[0]} exited {result.returncode}: {result.stderr.strip() or result.stdout.strip()}')
+    return result.stdout
+
+
+def fetch(url, headers=None):
+    request = urllib.request.Request(url, headers={'User-Agent': 'dotfiles-update-check', **(headers or {})})
+    with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
+        return response.read(), response.headers
+
+
+def update(name, old, new, kind):
+    return {'id': kind + ':' + name, 'name': name, 'description': kind,
+            'from_version': str(old), 'to_version': str(new)}
+
+def packages(program, *args):
+    lines = command(program, *args, codes=(0, 2) if program == 'checkupdates' else (0, 1)).splitlines()
+    updates = []
+    for line in lines:
+        match = re.fullmatch(r'([^\s]+)\s+(\S+)\s+->\s+(\S+)', line.strip())
+        if not match:
+            raise ValueError(f'unrecognized {program} output: {line}')
+        updates.append(update(match[1], match[2], match[3], program))
+    return updates
+
+
+def mise_tools(scope):
+    env = dict(os.environ, GIT_TERMINAL_PROMPT='0', LC_ALL='C', NO_COLOR='1', MISE_SELF_UPDATE_AUTO='0')
+    result = subprocess.run(('mise', 'upgrade', scope, '--dry-run-code'), cwd=ROOT,
+                            env=env, capture_output=True, text=True, timeout=40)
+    if result.returncode == 0:
+        return [], []
+    if result.returncode != 1:
+        raise RuntimeError(f'mise upgrade exited {result.returncode}: {result.stderr.strip()}')
+    planned = re.findall(r'^Would install (\S+)@(\S+)$', result.stdout, re.MULTILINE)
+    if not planned:
+        raise ValueError(f'mise upgrade returned no recognizable plan: {result.stderr.strip()}')
+    data = json.loads(command('mise', 'outdated', '--json', scope, cwd=ROOT, timeout=40))
+    if not isinstance(data, dict):
+        raise ValueError('unexpected mise outdated JSON')
+    updates, errors = [], []
+    for name, target in planned:
+        current = data.get(name, {}).get('current')
+        if not current:
+            errors.append(f'{name}: installed version unknown')
+        else:
+            updates.append(update(name, current, target, 'mise ' + scope[2:]))
+    return updates, errors
+
+
+def git_remote(url, branch='HEAD'):
+    result = command('git', 'ls-remote', url, branch).splitlines()
+    if not result or not re.fullmatch(r'[0-9a-fA-F]{40,64}', result[0].split()[0]):
+        raise ValueError(f'no remote revision for {url} {branch}')
+    return result[0].split()[0]
+
+
+def source(name, url, branch='HEAD', installed=None):
+    if installed is None:
+        marker = STATE / 'dotfiles/updates' / (name + '.revision')
+        try:
+            installed = marker.read_text().strip()
+        except FileNotFoundError:
+            raise ValueError(f'{name}: installed revision unknown (no successful update marker)')
+    if not re.fullmatch(r'[0-9a-fA-F]{40,64}', installed):
+        raise ValueError(f'{name}: installed revision unknown (invalid marker)')
+    remote = git_remote(url, branch)
+    return [update(name, installed, remote, 'source')] if installed.lower() != remote.lower() else []
+
+
+def checkout(name, repo):
+    args = ('git', '-C', str(repo))
+    installed = command(*args, 'rev-parse', 'HEAD').strip()
+    ref = command(*args, 'symbolic-ref', '--quiet', 'HEAD').strip()
+    tracking = command(*args, 'for-each-ref',
+                       '--format=%(upstream:remotename)\t%(upstream:remoteref)', ref).strip().split('\t')
+    if len(tracking) != 2 or not all(tracking):
+        raise ValueError(f'{name}: no tracked upstream branch')
+    remote, branch = tracking
+    url = str(repo) if remote == '.' else command(*args, 'remote', 'get-url', remote).strip()
+    target = git_remote(url, branch)
+    if installed == target:
+        return []
+    known = command(*args, 'rev-parse', '--verify', '--quiet', target + '^{commit}', codes=(0, 1)).strip()
+    if known:
+        base = command(*args, 'merge-base', installed, target, codes=(0, 1)).strip()
+        if base == target:
+            return []
+        if base != installed:
+            raise ValueError(f'{name}: checkout diverged from upstream; cannot fast-forward')
+    return [update(name, installed, target, 'source')]
+
+
+def screensaver():
+    data = json.loads((HOME / '.local/.crates2.json').read_text())
+    matches = [re.search(r'#([0-9a-fA-F]{40,64})\)', name) for name in data['installs']
+               if name.startswith('omarchy-launch-screensaver ') and 'github.com/casualjim/omarchy-screensaver' in name]
+    if len(matches) != 1 or not matches[0]:
+        raise ValueError('screensaver: installed git revision unknown')
+    return source('screensaver', 'https://github.com/casualjim/omarchy-screensaver', 'refs/heads/niri-screensaver', matches[0][1])
+
+
+def plugins():
+    entries = command('noctalia', 'msg', 'plugins', 'source', 'list').splitlines()
+    def check(line):
+        fields = line.split(maxsplit=2)
+        if len(fields) != 3 or fields[1] != 'git' or not re.fullmatch(r'[\w.-]+', fields[0]):
+            raise ValueError(f'unrecognized Noctalia source: {line}')
+        name, _, url = fields
+        repo = STATE / 'noctalia/plugins/sources' / name / 'repo'
+        installed = command('git', '-C', str(repo), 'rev-parse', 'HEAD').strip()
+        return source('Noctalia ' + name, url, installed=installed)
+    result, errors = [], []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, len(entries))) as pool:
+        futures = [(line, pool.submit(check, line)) for line in entries]
+        for line, future in futures:
+            try:
+                result.extend(future.result())
+            except Exception as error:
+                errors.append(f'{line}: {error}')
+    return result, errors
+
+
+def hindsight():
+    path = HOME / '.hindsight/coding-agents/package.json'
+    installed = json.loads(path.read_text())['version']
+    data, _ = fetch('https://registry.npmjs.org/@vectorize-io%2fhindsight-coding-agents/latest')
+    latest = json.loads(data)['version']
+    return [update('Hindsight', installed, latest, 'npm')] if installed != latest else []
+
+
+def hindsight_patch():
+    pending = STATE / 'dotfiles/updates/hindsight-patch.pending'
+    return [update('Hindsight', 'pending', 'compatible runtime', 'patch')] if pending.exists() else []
+
+
+def mise_self():
+    version = command('mise', '--version').split()[0].lstrip('v')
+    settings = json.loads(command('mise', 'settings', '--json', cwd=ROOT))
+    self_settings = settings.get('self_update', {})
+    if self_settings.get('api_url', 'https://api.github.com') != 'https://api.github.com' or self_settings.get('repository', 'jdx/mise') != 'jdx/mise':
+        raise ValueError('custom mise self-update source cannot be checked')
+    age = self_settings.get('minimum_release_age') or settings.get('minimum_release_age') or '24h'
+    match = re.fullmatch(r'(\d+)(s|m|h|d|w)', str(age))
+    if match:
+        seconds = int(match[1]) * {'s': 1, 'm': 60, 'h': 3600, 'd': 86400, 'w': 604800}[match[2]]
+        cutoff = datetime.datetime.now(datetime.timezone.utc).timestamp() - seconds
+    else:
+        try:
+            parsed = datetime.datetime.fromisoformat(str(age).replace('Z', '+00:00'))
+            cutoff = parsed.replace(tzinfo=datetime.timezone.utc).timestamp() if parsed.tzinfo is None else parsed.timestamp()
+        except ValueError:
+            raise ValueError(f'unsupported mise minimum release age: {age}')
+    data, _ = fetch('https://mise.jdx.dev/releases.tsv')
+    releases = []
+    for line in data.decode().splitlines():
+        tag, published = line.split()
+        if not re.fullmatch(r'v?\d+\.\d+\.\d+', tag):
+            raise ValueError(f'invalid mise release: {tag}')
+        if int(published) <= cutoff:
+            releases.append(tuple(map(int, tag.lstrip('v').split('.'))))
+    if not re.fullmatch(r'\d+\.\d+\.\d+', version) or not releases:
+        raise ValueError('mise installed or eligible version unknown')
+    current = tuple(map(int, version.split('.')))
+    latest = max(releases)
+    return [update('mise', version, '.'.join(map(str, latest)), 'mise self')] if latest > current else []
+
+
+def helix_grammars():
+    config = Path(os.environ.get('XDG_CONFIG_HOME') or HOME / '.config') / 'helix'
+    with (config / 'languages.toml').open('rb') as file:
+        grammars = tomllib.load(file).get('grammar', [])
+    runtime = config / 'runtime/grammars'
+    for grammar in grammars:
+        name, source_config = grammar['name'], grammar['source']
+        source_dir = runtime / 'sources' / name
+        artifact = runtime / (name + ('.dylib' if sys.platform == 'darwin' else '.so'))
+        if not artifact.is_file() or ('git' in source_config and not source_dir.is_dir()):
+            return [update('helix', 'missing', 'configured grammars', 'grammar')]
+        if 'git' in source_config:
+            revision = command('git', '-C', str(source_dir), 'rev-parse', 'HEAD').strip()
+            if not re.fullmatch(r'[0-9a-fA-F]{40,64}', revision):
+                raise ValueError(f'{name}: grammar revision unknown')
+            if revision.lower() != source_config['rev'].lower():
+                return [update('helix', revision, source_config['rev'], 'grammar')]
+        else:
+            source_dir = Path(source_config['path']).expanduser()
+        src = source_dir / source_config.get('subpath', '') / 'src'
+        parser = src / 'parser.c'
+        inputs = [parser] + [p for p in (src / 'scanner.c', src / 'scanner.cc') if p.is_file()]
+        if any(p.stat().st_mtime_ns > artifact.stat().st_mtime_ns for p in inputs):
+            return [update('helix', 'stale', 'configured grammars', 'grammar')]
+    return []
+
+
+def bat_cache():
+    config = Path(os.environ.get('BAT_CONFIG_DIR') or Path(os.environ.get('XDG_CONFIG_HOME') or HOME / '.config') / 'bat')
+    cache = Path(command('bat', '--cache-dir').strip())
+    for directory, artifact in (('themes', 'themes.bin'), ('syntaxes', 'syntaxes.bin')):
+        target = cache / artifact
+        if not target.is_file():
+            return [update('bat', 'missing', 'current inputs', 'cache')]
+        inputs = config / directory
+        if inputs.exists() and any(p.stat().st_mtime_ns > target.stat().st_mtime_ns for p in (inputs, *inputs.rglob('*'))):
+            return [update('bat', 'stale', 'current inputs', 'cache')]
+    return []
+
+
+def registry_digest(image):
+    if '@' in image:
+        raise ValueError(f'{image}: digest-pinned image cannot follow a tag')
+    registry, sep, rest = image.partition('/')
+    if not sep or ('.' not in registry and ':' not in registry and registry != 'localhost'):
+        rest = image if '/' in image else 'library/' + image
+        registry = 'registry-1.docker.io'
+    name, colon, tag = rest.rpartition(':')
+    if not colon or '/' in tag:
+        name, tag = rest, 'latest'
+    url = f'https://{registry}/v2/{name}/manifests/{tag}'
+    headers = {'Accept': ', '.join(('application/vnd.oci.image.index.v1+json', 'application/vnd.docker.distribution.manifest.list.v2+json', 'application/vnd.oci.image.manifest.v1+json', 'application/vnd.docker.distribution.manifest.v2+json'))}
+    try:
+        _, response = fetch(url, headers)
+    except urllib.error.HTTPError as error:
+        if error.code != 401:
+            raise
+        challenge = error.headers.get('WWW-Authenticate', '')
+        fields = dict(re.findall(r'(\w+)="([^"]*)"', challenge))
+        realm = fields.get('realm', '')
+        if not challenge.lower().startswith('bearer ') or not realm.startswith('https://'):
+            raise ValueError(f'{image}: unsupported registry authentication')
+        query = urllib.parse.urlencode({k: fields[k] for k in ('service', 'scope') if k in fields})
+        token_data, _ = fetch(realm + ('&' if '?' in realm else '?') + query)
+        token = json.loads(token_data)
+        headers['Authorization'] = 'Bearer ' + (token.get('token') or token['access_token'])
+        _, response = fetch(url, headers)
+    digest = response.get('Docker-Content-Digest')
+    if not digest:
+        raise ValueError(f'{image}: registry omitted manifest digest')
+    return digest
+
+
+def containers():
+    rows = json.loads(command('podman', 'auto-update', '--dry-run', '--format', 'json'))
+    def check(row):
+        if row.get('Policy') != 'registry':
+            raise ValueError(f"{row.get('ContainerName', 'container')}: non-registry auto-update policy cannot compare remote digest")
+        status = str(row.get('Updated')).lower()
+        if status not in ('true', 'false', 'pending'):
+            raise ValueError(f"{row.get('ContainerName', 'container')}: podman update status {row.get('Updated')}")
+        if status == 'false':
+            return []
+        image = row['Image']
+        local = json.loads(command('podman', 'image', 'inspect', image))[0].get('RepoDigests', [])
+        remote = registry_digest(image)
+        digests = [item.split('@', 1)[1] for item in local if '@' in item]
+        if not digests:
+            raise ValueError(f'{image}: installed digest unknown')
+        return [update(row.get('ContainerName') or image, digests[0], remote, 'container')]
+    result, errors = [], []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, len(rows))) as pool:
+        futures = [(row, pool.submit(check, row)) for row in rows]
+        for row, future in futures:
+            try:
+                result.extend(future.result())
+            except Exception as error:
+                errors.append(f"{row.get('ContainerName', 'container')}: {error}")
+    return result, errors
+
+
+def collect_updates():
+    if sys.platform != 'linux':
+        return [], ['Dotfiles updater is supported only on Linux.']
+    jobs = {
+        'Arch packages': lambda: packages('checkupdates'),
+        'AUR packages': lambda: packages('paru', '-Qua'),
+        'mise global tools': lambda: mise_tools('--global'),
+        'mise project tools': lambda: mise_tools('--no-global'),
+        'mise self': mise_self,
+        'Noctalia sources': plugins,
+        'containers': containers,
+        'Hindsight': hindsight,
+        'Hindsight compatibility': hindsight_patch,
+        'pi-mimir': lambda: checkout('pi-mimir', HOME / 'github/casualjim/pi-mimir'),
+        'screensaver': screensaver,
+        'Helix grammars': helix_grammars,
+        'bat cache': bat_cache,
+    }
+    for name, url, branch in (
+        ('claude-code-config', 'https://github.com/casualjim/claude-code-config', 'HEAD'),
+        ('codebase-memory-mcp', 'https://github.com/DeusData/codebase-memory-mcp', 'HEAD'),
+        ('docker-credential-gopass', 'https://github.com/casualjim/docker-credential-helpers', 'refs/heads/mine'),
+    ):
+        jobs[name] = lambda name=name, url=url, branch=branch: source(name, url, branch)
+    updates, errors = [], []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(jobs)) as pool:
+        futures = {pool.submit(fn): name for name, fn in jobs.items()}
+        for future, name in futures.items():
+            try:
+                result = future.result()
+                if isinstance(result, tuple):
+                    rows, problems = result
+                    updates.extend(rows)
+                    errors.extend(f'{name}: {problem}' for problem in problems)
+                else:
+                    updates.extend(result)
+            except Exception as error:
+                errors.append(f'{name}: {error}')
+    return sorted(updates, key=lambda item: item['id']), errors
+
+
+def main():
+    updates, errors = collect_updates()
+    for error in errors:
+        print(error, file=sys.stderr)
+    info = ('INCOMPLETE: ' + '; '.join(errors) + '. ' if errors else '')
+    info += 'Update checks complete.'
+    print(json.dumps({'info': info, 'actions': [], 'updates': updates}))
+
+
+if __name__ == '__main__':
+    main()
