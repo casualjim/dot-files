@@ -29,7 +29,6 @@
 # try the AUR libappindicator-gtk3 instead.
 "pacman:libayatana-appindicator" = "latest"
 "aur:yubico-authenticator-bin" = "latest"
-"aur:zapzap-bin" = "latest"
 "aur:tmog-bin" = "latest"
 
 # Carried over from the previous machine's `paru -Qm` (everything mise can install is in

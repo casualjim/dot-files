@@ -23,7 +23,6 @@ MOZ_ENABLE_WAYLAND = "1"
 "~/.config/signal-desktop-flags.conf" = {}
 # What starts at login. Apps rewrite their own entries, so these are copies. Discord (a versioned path under ~/.config/discord)
 # and Tern (its own login entry) are left out: they manage theirs.
-"~/.config/autostart/com.rtosta.zapzap.desktop" = { mode = "copy" }
 "~/.config/autostart/bitwarden.desktop" = { mode = "copy" }
 "~/.config/autostart/dropbox.desktop" = { mode = "copy" }
 "~/.config/autostart/org.telegram.desktop.desktop" = { mode = "copy" }

@@ -10,6 +10,7 @@ x-scheme-handler/mailto=brave-browser.desktop
 x-scheme-handler/tern=so.stencil.tern.url.desktop
 application/schema+json=dev.zed.Zed.desktop
 application/yaml=dev.zed.Zed.desktop
+x-scheme-handler/ai.lotsa.pairidaeza=ai.lotsa.pairidaeza.desktop
 
 [Added Associations]
 x-scheme-handler/lobehub=lobehub-desktop.desktop;

@@ -61,7 +61,6 @@
     // an existing column, so stack two by hand with consume-or-expel-window-left/right.
     window-rule {
         match app-id="^signal$"
-        match app-id="^zapzap$"
         match app-id="^TelegramDesktop$"
         match app-id="^authenticator$"
         default-column-width { proportion 0.5; }
