@@ -45,8 +45,8 @@
   "servicesTableColumnWidths": {},
   "processTableSortColumn": "memory",
   "processTableSortDirection": "descending",
-  "performanceSelectedDeviceKind": "cpu",
-  "performanceSelectedDeviceId": "",
+  "performanceSelectedDeviceKind": "gpu",
+  "performanceSelectedDeviceId": "linux-drm-pci:0000:c6:00.0",
   "networkThroughputUnit": "bytesPerSecond",
   "performanceDeviceOrder": [],
   "expandedUserIDs": [],
@@ -55,5 +55,7 @@
   "diskLights.initialized": "true",
   "diskLights.monitored": "nvme0n1",
   "diskLights.order": "nvme0n1,nvme1n1",
-  "mainWindowGeometry": "AdnQywADAAAAAAoAAAAAAAAAEecAAAZ9AAAKAAAAAAAAABHnAAAGfQAAAAAAAAAAEAAAAAoAAAAAAAAAEecAAAZ9"
+  "displayMode": "color",
+  "mainWindowGeometry": "AdnQywADAAAAAAoAAAAAAAAAEecAAAZ9AAAKAAAAAAAAABHnAAAGfQAAAAAAAAAAEAAAAAoAAAAAAAAAEecAAAZ9",
+  "vfdTextColor": "automatic"
 }

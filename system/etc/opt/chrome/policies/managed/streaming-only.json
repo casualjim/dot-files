@@ -12,6 +12,9 @@
     "disney.com",
     "tv.apple.com",
     "apple.com",
+    "localhost",
+    "127.0.0.1",
+    "auth.lotsa.ai",
     "chrome://version",
     "chrome://settings",
     "chrome://policy"

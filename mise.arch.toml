@@ -38,6 +38,8 @@
 "pacman:gnupg" = "latest"
 "pacman:pinentry" = "latest"
 "pacman:gocryptfs" = "latest"
+"pacman:smolvm" = "latest"
+"pacman:virglrenderer" = "latest"
 
 # polkit prompts: a YubiKey touch, then the password. mise.fprint.toml replaces this on a machine with a
 # fingerprint reader. (system-auth is Arch's PAM stack; Ubuntu's differs.)
@@ -69,4 +71,3 @@ run = """
 systemd-cryptenroll --fido2-device=list
 sudo systemd-cryptenroll --fido2-device=auto "$LUKS_DEV"
 """
-

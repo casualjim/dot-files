@@ -3,7 +3,7 @@
 idiomatic_version_file_enable_tools = ["python", "bun", "pnpm"]
 python.uv_venv_auto = "create|source"
 env_shell_expand = true
-npm.package_manager = "bun"
+# npm.package_manager = "bun"
 # Set these too — mise's internal rust tool reads them BEFORE [env] is processed (#8943)
 # Redundancy is the workaround for the ordering bug
 #rust.cargo_home = "/home/ivan/.cargo"
@@ -93,10 +93,11 @@ kubelogin = "latest"
 "aqua:go-acme/lego" = "latest"
 "cargo:lspmux" = "latest"
 "aqua:nats-io/natscli" = "latest"
-restate = "latest"
+restate = { version = "latest", os = ["linux", "macos"] }
 slsa-verifier = "latest"
 gh = "latest"
 difftastic = "latest"
+"github:casualjim/fmp-rs" = "latest"
 
 [tools.rust]
 version = "stable"
